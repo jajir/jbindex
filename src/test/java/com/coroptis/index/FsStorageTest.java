@@ -1,10 +1,10 @@
 package com.coroptis.index;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.File;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.coroptis.index.storage.Directory;
 import com.coroptis.index.storage.FileReader;
@@ -19,7 +19,7 @@ public class FsStorageTest {
     private final static String TEXT = "Ahoj lidi!";
 
     private final static String TEXT_LONG = "Ahoj vsichni lidi!";
-
+    
     @Test
     public void test_read_write_text_fs() throws Exception {
 	Directory dir = new FsDirectory(new File("./target/pok"));

@@ -15,4 +15,9 @@ public class StringTypeDescriptor {
     public TypeRawArrayWriter<String> getRawArrayWriter() {
 	return object -> object.getBytes(CHARSET_ENCODING);
     }
+
+    public TypeArrayWriter<String> getArrayWriter() {
+	return object -> object.getBytes(CHARSET_ENCODING);
+    }
+
 }

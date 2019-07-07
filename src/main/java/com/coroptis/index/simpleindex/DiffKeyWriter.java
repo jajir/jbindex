@@ -16,7 +16,8 @@ public class DiffKeyWriter<K> {
 
     private K previousKey;
 
-    public DiffKeyWriter(final TypeRawArrayWriter<K> keyTypeRawArrayWriter, final Comparator<? super K> keyComparator) {
+    public DiffKeyWriter(final TypeRawArrayWriter<K> keyTypeRawArrayWriter,
+	    final Comparator<? super K> keyComparator) {
 	this.keyTypeWriter = keyTypeRawArrayWriter;
 	this.keyComparator = Objects.requireNonNull(keyComparator, "Key comparator can't be null");
 	previousKeyBytes = new byte[0];
@@ -26,10 +27,15 @@ public class DiffKeyWriter<K> {
     public int write(final FileWriter fileWriter, final K key, final boolean fullWrite) {
 	Objects.requireNonNull(key, "key can't be null");
 	if (previousKey != null) {
-	    if (keyComparator.compare(previousKey, key) >= 0) {
+	    final int cmp = keyComparator.compare(previousKey, key);
+	    if (cmp == 0) {
 		throw new IllegalArgumentException(
-			String.format("Attempt to insers key in invalid order.Previous key is %s, inserted key is %s",
-				previousKey, key));
+			String.format("Attempt to insers same key as previous. Key is %s.", key));
+	    }
+	    if (cmp > 0) {
+		throw new IllegalArgumentException(String.format(
+			"Attempt to insers key in invalid order. Previous key is %s, inserted key is %s",
+			previousKey, key));
 	    }
 	}
 	if (fullWrite) {
@@ -45,8 +51,8 @@ public class DiffKeyWriter<K> {
 	}
     }
 
-    private int write(final FileWriter fileWriter, final int sharedByteLength, final byte[] diffBytes, final K key,
-	    final byte[] keyBytes) {
+    private int write(final FileWriter fileWriter, final int sharedByteLength,
+	    final byte[] diffBytes, final K key, final byte[] keyBytes) {
 	fileWriter.write((byte) (sharedByteLength));
 	fileWriter.write((byte) (diffBytes.length));
 	fileWriter.write(diffBytes);

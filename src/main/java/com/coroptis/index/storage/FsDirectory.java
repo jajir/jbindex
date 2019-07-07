@@ -25,13 +25,13 @@ public class FsDirectory implements Directory {
 	if (!directory.exists()) {
 	    throw new IndexException(String.format("File '%s' doesn't exists."));
 	}
-	return new FsFileReader(file);
+	return new FsFileReaderStream(file);
     }
 
     @Override
     public FileWriter getFileWriter(final String fileName) {
 	Objects.requireNonNull(fileName);
-	return new FsFileWriter(getFile(fileName));
+	return new FsFileWriterStream(getFile(fileName));
     }
 
     private File getFile(final String fileName) {

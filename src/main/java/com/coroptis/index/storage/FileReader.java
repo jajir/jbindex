@@ -2,6 +2,13 @@ package com.coroptis.index.storage;
 
 import com.coroptis.index.simpleindex.CloseableResource;
 
+/**
+ * With file reader it's not possible to go back. When one byte could be read
+ * just once.
+ *
+ * @author jajir
+ *
+ */
 public interface FileReader extends CloseableResource {
 
     /**
@@ -21,6 +28,11 @@ public interface FileReader extends CloseableResource {
      */
     int read(byte bytes[]);
 
-    void seek(int position);
+    /**
+     * Skip n bytes to specific position in file.
+     *
+     * @param position
+     */
+    void skip(int position);
 
 }

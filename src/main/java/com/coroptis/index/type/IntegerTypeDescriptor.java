@@ -1,12 +1,14 @@
 package com.coroptis.index.type;
 
-import com.coroptis.jblinktree.type.TypeDescriptorInteger;
-
 public class IntegerTypeDescriptor {
 
     private TypeDescriptorInteger typeDescriptorInteger = new TypeDescriptorInteger();
 
     public TypeArrayWriter<Integer> getArrayWriter() {
+	return object -> typeDescriptorInteger.getBytes(object);
+    }
+
+    public TypeRawArrayWriter<Integer> getRawArrayWriter() {
 	return object -> typeDescriptorInteger.getBytes(object);
     }
 
