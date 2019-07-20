@@ -3,13 +3,12 @@ package com.coroptis.index;
 import java.util.Comparator;
 import java.util.Objects;
 
+import com.coroptis.index.directory.Directory;
 import com.coroptis.index.simpleindex.CloseableResource;
 import com.coroptis.index.simpleindex.Pair;
 import com.coroptis.index.simpleindex.SimpleIndexWriter;
-import com.coroptis.index.storage.Directory;
-import com.coroptis.index.type.IntegerTypeDescriptor;
-import com.coroptis.index.type.TypeArrayWriter;
-import com.coroptis.index.type.TypeRawArrayWriter;
+import com.coroptis.index.type.ConvertorToBytes;
+import com.coroptis.index.type.TypeDescriptorInteger;
 
 /**
  * Index contains following files:
@@ -37,7 +36,7 @@ public class IndexWriter<K, V> implements CloseableResource {
 
     final static String INDEX_DESCRIPTION_FILE = "desc.dat";
 
-    private final IntegerTypeDescriptor integerTypeDescriptor = new IntegerTypeDescriptor();
+    private final TypeDescriptorInteger integerTypeDescriptor = new TypeDescriptorInteger();
 
     private final SimpleIndexWriter<K, V> mainIndex;
 
@@ -48,12 +47,12 @@ public class IndexWriter<K, V> implements CloseableResource {
     private final IndexDesc indexDesc;
 
     public IndexWriter(final Directory directory, final int blockSize,
-	    final TypeRawArrayWriter<K> keyTypeRawArrayWriter, final Comparator<? super K> keyComparator,
-	    final TypeArrayWriter<V> valueTypeArrayWriter) {
-	this.mainIndex = new SimpleIndexWriter<>(directory.getFileWriter(INDEX_MAIN_DATA_FILE), keyTypeRawArrayWriter,
-		keyComparator, valueTypeArrayWriter);
-	this.metaIndex = new SimpleIndexWriter<>(directory.getFileWriter(INDEX_META_FILE), keyTypeRawArrayWriter,
-		keyComparator, integerTypeDescriptor.getArrayWriter());
+	    final ConvertorToBytes<K> keyConvertor, final Comparator<? super K> keyComparator,
+	    final ConvertorToBytes<V> valueConvertor) {
+	this.mainIndex = new SimpleIndexWriter<>(directory.getFileWriter(INDEX_MAIN_DATA_FILE), keyConvertor,
+		keyComparator, valueConvertor);
+	this.metaIndex = new SimpleIndexWriter<>(directory.getFileWriter(INDEX_META_FILE), keyConvertor,
+		keyComparator, integerTypeDescriptor.getConvertorTo());
 	this.indexDesc = IndexDesc.create(directory, blockSize);
     }
 

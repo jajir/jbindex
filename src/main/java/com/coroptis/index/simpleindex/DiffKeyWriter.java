@@ -3,12 +3,13 @@ package com.coroptis.index.simpleindex;
 import java.util.Comparator;
 import java.util.Objects;
 
-import com.coroptis.index.storage.FileWriter;
-import com.coroptis.index.type.TypeRawArrayWriter;
+import com.coroptis.index.directory.FileWriter;
+import com.coroptis.index.type.ConvertorToBytes;
+import com.coroptis.index.type.TypeWriter;
 
-public class DiffKeyWriter<K> {
+public class DiffKeyWriter<K> implements TypeWriter<K> {
 
-    private final TypeRawArrayWriter<K> keyTypeWriter;
+    private final ConvertorToBytes<K> keyTypeWriter;
 
     private final Comparator<? super K> keyComparator;
 
@@ -16,12 +17,17 @@ public class DiffKeyWriter<K> {
 
     private K previousKey;
 
-    public DiffKeyWriter(final TypeRawArrayWriter<K> keyTypeRawArrayWriter,
+    public DiffKeyWriter(final ConvertorToBytes<K> keyTypeRawArrayWriter,
 	    final Comparator<? super K> keyComparator) {
 	this.keyTypeWriter = keyTypeRawArrayWriter;
 	this.keyComparator = Objects.requireNonNull(keyComparator, "Key comparator can't be null");
 	previousKeyBytes = new byte[0];
 	previousKey = null;
+    }
+
+    @Override
+    public int write(final FileWriter fileWriter, final K key) {
+	return write(fileWriter, key, false);
     }
 
     public int write(final FileWriter fileWriter, final K key, final boolean fullWrite) {

@@ -1,0 +1,75 @@
+@startuml
+
+title Data types - Class Diagram
+
+
+package data-types {
+    
+    interface ConvertorToBytes<T> {
+        +byte[] toBytes(T)
+    }
+
+    interface ConvertorFromBytes<T> {
+        +T fromBytes(byte[])
+    }
+    
+    class IntegerConvertorToBytes{
+        +byte[] toBytes(Integer)
+    }
+    
+    class IntegerConvertorFromBytes{
+        +Integer fromBytes(byte[])
+    }
+    
+    ConvertorToBytes <|-- IntegerConvertorToBytes 
+    ConvertorFromBytes <|-- IntegerConvertorFromBytes 
+    
+    note "Converted type instance use all bytes of byte field." as N1
+    ConvertorToBytes ... N1
+    ConvertorFromBytes ... N1
+
+    
+    together {
+    interface TypeWriter<T> {
+        +write(FileWriter, T)
+    }
+    
+    interface TypeReader<T> {
+        +T read(FileReader)
+    }
+    }
+
+    class FixedLengthWriter<T> {
+        -int length
+        -ConvertorToBytes<T> convertor
+        +write(FileWriter, T)
+    }
+    
+    
+    class VarLengthWriter<T> {
+        -ConvertToBytes<T> convertor
+        +write(FileWriter, T)
+    }
+    
+    TypeWriter <|-- FixedLengthWriter
+    TypeWriter <|-- VarLengthWriter
+
+    
+    class FixedLengthReader<T> {
+        -int length
+        -ConvertorFromBytes<T> convertor
+        +T read(FileReader)
+    }
+    
+    class VarLengthReader<T> {
+        -ConvertorFromBytes<T> convertor
+        +T read(FileReader)
+    }
+    
+    TypeReader <|-- FixedLengthReader
+    TypeReader <|-- VarLengthReader
+
+}
+
+
+@enduml

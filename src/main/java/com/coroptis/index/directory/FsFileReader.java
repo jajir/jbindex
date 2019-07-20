@@ -1,21 +1,19 @@
-package com.coroptis.index.storage;
+package com.coroptis.index.directory;
 
-import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.RandomAccessFile;
 
 import com.coroptis.index.simpleindex.IndexException;
 import com.google.common.base.MoreObjects;
 
-public class FsFileReaderStream implements FileReader {
+public class FsFileReader implements FileReader {
 
-    private final BufferedInputStream bis;
+    private final RandomAccessFile randomAccessFile;
 
-    FsFileReaderStream(final File file) {
+    FsFileReader(final File file) {
 	try {
-	    FileInputStream fin = new FileInputStream(file);
-	    bis = new BufferedInputStream(fin, 1024 * 10);
+	    randomAccessFile = new RandomAccessFile(file, "r");
 	} catch (IOException e) {
 	    throw new IndexException(e.getMessage(), e);
 	}
@@ -24,7 +22,7 @@ public class FsFileReaderStream implements FileReader {
     @Override
     public void close() {
 	try {
-	    bis.close();
+	    randomAccessFile.close();
 	} catch (IOException e) {
 	    throw new IndexException(e.getMessage(), e);
 	}
@@ -33,7 +31,7 @@ public class FsFileReaderStream implements FileReader {
     @Override
     public int read() {
 	try {
-	    return bis.read();
+	    return randomAccessFile.read();
 	} catch (IOException e) {
 	    throw new IndexException(e.getMessage(), e);
 	}
@@ -42,7 +40,7 @@ public class FsFileReaderStream implements FileReader {
     @Override
     public int read(byte[] bytes) {
 	try {
-	    final int readBytes = bis.read(bytes);
+	    final int readBytes = randomAccessFile.read(bytes);
 	    return readBytes == bytes.length ? readBytes : -1;
 	} catch (IOException e) {
 	    throw new IndexException(e.getMessage(), e);
@@ -52,7 +50,7 @@ public class FsFileReaderStream implements FileReader {
     @Override
     public void skip(int position) {
 	try {
-	    bis.skip(position);
+	    randomAccessFile.seek(position);
 	} catch (IOException e) {
 	    throw new IndexException(e.getMessage(), e);
 	}
@@ -60,7 +58,7 @@ public class FsFileReaderStream implements FileReader {
 
     @Override
     public String toString() {
-	return MoreObjects.toStringHelper(FsFileReaderStream.class).add("bis", bis.toString())
+	return MoreObjects.toStringHelper(FsFileReader.class).add("randomAccessFile", randomAccessFile.toString())
 		.toString();
     }
 

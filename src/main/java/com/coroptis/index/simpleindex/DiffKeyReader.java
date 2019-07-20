@@ -1,19 +1,21 @@
 package com.coroptis.index.simpleindex;
 
-import com.coroptis.index.storage.FileReader;
-import com.coroptis.index.type.TypeRawArrayReader;
+import com.coroptis.index.directory.FileReader;
+import com.coroptis.index.type.ConvertorFromBytes;
+import com.coroptis.index.type.TypeReader;
 
-public class DiffKeyReader<K> {
+public class DiffKeyReader<K> implements TypeReader<K> {
 
-    private final TypeRawArrayReader<K> keyTypeReader;
+    private final ConvertorFromBytes<K> keyConvertor;
 
     private byte[] previousKeyBytes;
 
-    public DiffKeyReader(final TypeRawArrayReader<K> keyTypeReader) {
-	this.keyTypeReader = keyTypeReader;
+    public DiffKeyReader(final ConvertorFromBytes<K> keyConvertor) {
+	this.keyConvertor = keyConvertor;
 	previousKeyBytes = new byte[0];
     }
 
+    @Override
     public K read(final FileReader fileReader) {
 	final int sharedByteLength = fileReader.read();
 	if (sharedByteLength == -1) {
@@ -26,7 +28,7 @@ public class DiffKeyReader<K> {
 	    final byte[] keyBytes = concatenateArrays(sharedBytes, diffBytes);
 	    previousKeyBytes = keyBytes;
 
-	    return keyTypeReader.read(keyBytes);
+	    return keyConvertor.fromBytes(keyBytes);
 	}
     }
 

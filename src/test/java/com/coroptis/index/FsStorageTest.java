@@ -6,11 +6,11 @@ import java.io.File;
 
 import org.junit.jupiter.api.Test;
 
-import com.coroptis.index.storage.Directory;
-import com.coroptis.index.storage.FileReader;
-import com.coroptis.index.storage.FileWriter;
-import com.coroptis.index.storage.FsDirectory;
-import com.coroptis.index.storage.MemDirectory;
+import com.coroptis.index.directory.Directory;
+import com.coroptis.index.directory.FileReader;
+import com.coroptis.index.directory.FileWriter;
+import com.coroptis.index.directory.FsDirectory;
+import com.coroptis.index.directory.MemDirectory;
 
 public class FsStorageTest {
 

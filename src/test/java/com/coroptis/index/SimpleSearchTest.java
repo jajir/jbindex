@@ -6,11 +6,11 @@ import java.util.Comparator;
 
 import org.junit.jupiter.api.Test;
 
-import com.coroptis.index.storage.Directory;
-import com.coroptis.index.storage.FsDirectory;
-import com.coroptis.index.storage.MemDirectory;
-import com.coroptis.index.type.ByteTypeDescriptor;
-import com.coroptis.index.type.StringTypeDescriptor;
+import com.coroptis.index.directory.Directory;
+import com.coroptis.index.directory.FsDirectory;
+import com.coroptis.index.directory.MemDirectory;
+import com.coroptis.index.type.TypeDescriptorByte;
+import com.coroptis.index.type.TypeDescriptorString;
 
 public class SimpleSearchTest {
 
@@ -31,11 +31,11 @@ public class SimpleSearchTest {
     }
 
     private void search_test(final Directory directory) {
-	ByteTypeDescriptor byteTd = new ByteTypeDescriptor();
-	StringTypeDescriptor stringTd = new StringTypeDescriptor();
+	TypeDescriptorByte byteTd = new TypeDescriptorByte();
+	TypeDescriptorString stringTd = new TypeDescriptorString();
 
-	IndexSearcher<String, Byte> search = new IndexSearcher<>(directory, stringTd.getRawArrayReader(),
-		Comparator.naturalOrder(), byteTd.getStreamReader());
+	IndexSearcher<String, Byte> search = new IndexSearcher<>(directory, stringTd.getConvertorFromBytes(),
+		Comparator.naturalOrder(), byteTd.getReader());
 
 	assertEquals(Byte.valueOf((byte) 0), search.get("aaa"));
 	assertEquals(Byte.valueOf((byte) 1), search.get("aaabbb"));
@@ -49,11 +49,11 @@ public class SimpleSearchTest {
     }
 
     private void writeIndex(final Directory directory) {
-	ByteTypeDescriptor byteTd = new ByteTypeDescriptor();
-	StringTypeDescriptor stringTd = new StringTypeDescriptor();
+	TypeDescriptorByte byteTd = new TypeDescriptorByte();
+	TypeDescriptorString stringTd = new TypeDescriptorString();
 
-	IndexWriter<String, Byte> iw = new IndexWriter<>(directory, 2, stringTd.getRawArrayWriter(),
-		Comparator.naturalOrder(), byteTd.getArrayWrite());
+	IndexWriter<String, Byte> iw = new IndexWriter<>(directory, 2, stringTd.getConvertorToBytes(),
+		Comparator.naturalOrder(), byteTd.getConvertorToBytes());
 	iw.put("aaa", Byte.valueOf((byte) 0));
 	iw.put("aaabbb", Byte.valueOf((byte) 1));
 	iw.put("aaacc", Byte.valueOf((byte) 2));

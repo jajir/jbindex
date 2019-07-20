@@ -1,4 +1,4 @@
-package com.coroptis.index.storage;
+package com.coroptis.index.directory;
 
 import java.util.HashMap;
 import java.util.Map;

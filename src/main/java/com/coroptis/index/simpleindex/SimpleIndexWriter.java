@@ -2,13 +2,12 @@ package com.coroptis.index.simpleindex;
 
 import java.util.Comparator;
 
-import com.coroptis.index.storage.FileWriter;
-import com.coroptis.index.type.TypeArrayWriter;
-import com.coroptis.index.type.TypeRawArrayWriter;
+import com.coroptis.index.directory.FileWriter;
+import com.coroptis.index.type.ConvertorToBytes;
 
 public class SimpleIndexWriter<K, V> implements CloseableResource {
 
-    private final TypeArrayWriter<V> valueTypeWriter;
+    private final ConvertorToBytes<V> valueConvertor;
 
     private final FileWriter writer;
 
@@ -16,11 +15,11 @@ public class SimpleIndexWriter<K, V> implements CloseableResource {
 
     private int position;
 
-    public SimpleIndexWriter(final FileWriter fileWriter, final TypeRawArrayWriter<K> keyTypeRawArrayWriter,
-	    final Comparator<? super K> keyComparator, final TypeArrayWriter<V> valueTypeArrayWriter) {
+    public SimpleIndexWriter(final FileWriter fileWriter, final ConvertorToBytes<K> keyConvertor,
+	    final Comparator<? super K> keyComparator, final ConvertorToBytes<V> valueConvertor) {
 	this.writer = fileWriter;
-	this.valueTypeWriter = valueTypeArrayWriter;
-	diffKeyWriter = new DiffKeyWriter<>(keyTypeRawArrayWriter, keyComparator);
+	this.valueConvertor = valueConvertor;
+	diffKeyWriter = new DiffKeyWriter<>(keyConvertor, keyComparator);
 	position = 0;
     }
 
@@ -35,7 +34,7 @@ public class SimpleIndexWriter<K, V> implements CloseableResource {
     public int put(final Pair<K, V> pair, final boolean fullWrite) {
 	final int diffKeyLength = diffKeyWriter.write(writer, pair.getKey(), fullWrite);
 
-	final byte[] valueBytes = valueTypeWriter.toBytes(pair.getValue());
+	final byte[] valueBytes = valueConvertor.toBytes(pair.getValue());
 	writer.write(valueBytes);
 
 	int lastPosition = position;

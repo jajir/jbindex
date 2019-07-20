@@ -7,4 +7,4 @@
  * @author jan
  *
  */
-package com.coroptis.index.storage;
+package com.coroptis.index.directory;

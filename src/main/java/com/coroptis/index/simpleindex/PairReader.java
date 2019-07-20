@@ -1,8 +1,8 @@
 package com.coroptis.index.simpleindex;
 
-import com.coroptis.index.storage.FileReader;
-import com.coroptis.index.type.TypeRawArrayReader;
-import com.coroptis.index.type.TypeStreamReader;
+import com.coroptis.index.directory.FileReader;
+import com.coroptis.index.type.ConvertorFromBytes;
+import com.coroptis.index.type.TypeReader;
 
 /**
  * Allows read key value pairs from index. Class allows to skip n-byte to first
@@ -15,18 +15,17 @@ import com.coroptis.index.type.TypeStreamReader;
  */
 public class PairReader<K, V> implements CloseableResource {
 
-    private final TypeStreamReader<V> valueTypeReader;
+    private final TypeReader<V> valueReader;
 
     private final DiffKeyReader<K> diffKeyReader;
 
     private final FileReader reader;
 
-    public PairReader(final FileReader fileReader,
-	    final TypeRawArrayReader<K> keyTypeRawArrayReader,
-	    final TypeStreamReader<V> valueTypeStreamReader) {
+    public PairReader(final FileReader fileReader, final ConvertorFromBytes<K> keyConvertor,
+	    final TypeReader<V> valueReader) {
 	this.reader = fileReader;
-	this.valueTypeReader = valueTypeStreamReader;
-	this.diffKeyReader = new DiffKeyReader<>(keyTypeRawArrayReader);
+	this.valueReader = valueReader;
+	this.diffKeyReader = new DiffKeyReader<>(keyConvertor);
     }
 
     public Pair<K, V> read() {
@@ -34,7 +33,7 @@ public class PairReader<K, V> implements CloseableResource {
 	if (key == null) {
 	    return null;
 	} else {
-	    final V value = valueTypeReader.read(reader);
+	    final V value = valueReader.read(reader);
 	    return new Pair<K, V>(key, value);
 	}
     }

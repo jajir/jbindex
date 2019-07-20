@@ -1,8 +1,8 @@
 package com.coroptis.index.type;
 
-public class ByteTypeDescriptor {
+public class TypeDescriptorByte {
 
-    public TypeArrayWriter<Byte> getArrayWrite() {
+    public ConvertorToBytes<Byte> getConvertorToBytes() {
 	return b -> {
 	    final byte[] out = new byte[1];
 	    out[0] = b;
@@ -10,7 +10,7 @@ public class ByteTypeDescriptor {
 	};
     }
 
-    public TypeStreamReader<Byte> getStreamReader() {
+    public TypeReader<Byte> getReader() {
 	return inputStream -> (byte) inputStream.read();
     }
 

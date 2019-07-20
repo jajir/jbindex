@@ -2,18 +2,18 @@ package com.coroptis.index;
 
 import java.util.Objects;
 
-import com.coroptis.index.storage.Directory;
-import com.coroptis.index.storage.FileReader;
-import com.coroptis.index.storage.FileWriter;
-import com.coroptis.index.type.IntegerTypeDescriptor;
-import com.coroptis.index.type.TypeArrayWriter;
-import com.coroptis.index.type.TypeRawArrayReader;
+import com.coroptis.index.directory.Directory;
+import com.coroptis.index.directory.FileReader;
+import com.coroptis.index.directory.FileWriter;
+import com.coroptis.index.type.ConvertorToBytes;
+import com.coroptis.index.type.TypeDescriptorInteger;
+import com.coroptis.index.type.ConvertorFromBytes;
 
 public class IndexDesc {
 
     final static String INDEX_DESCRIPTION_FILE = "desc.dat";
 
-    private final IntegerTypeDescriptor integerTypeDescriptor = new IntegerTypeDescriptor();
+    private final TypeDescriptorInteger integerTypeDescriptor = new TypeDescriptorInteger();
 
     private int writtenKeyCount = 0;
 
@@ -41,7 +41,7 @@ public class IndexDesc {
 
     public void writeDescriptionFile() {
 	try (final FileWriter desc = directory.getFileWriter(INDEX_DESCRIPTION_FILE)) {
-	    final TypeArrayWriter<Integer> intWriter = integerTypeDescriptor.getArrayWriter();
+	    final ConvertorToBytes<Integer> intWriter = integerTypeDescriptor.getConvertorTo();
 	    desc.write(intWriter.toBytes(blockSize));
 	    desc.write(intWriter.toBytes(writtenBlockCount));
 	    desc.write(intWriter.toBytes(writtenKeyCount));
@@ -50,16 +50,16 @@ public class IndexDesc {
 
     private void load() {
 	try (final FileReader desc = directory.getFileReader(INDEX_DESCRIPTION_FILE)) {
-	    final TypeRawArrayReader<Integer> intReader = integerTypeDescriptor.getRawArrayReader();
+	    final ConvertorFromBytes<Integer> intReader = integerTypeDescriptor.getConvertorFrom();
 	    final byte[] data = new byte[4];
 	    desc.read(data);
-	    blockSize = intReader.read(data);
+	    blockSize = intReader.fromBytes(data);
 
 	    desc.read(data);
-	    writtenBlockCount = intReader.read(data);
+	    writtenBlockCount = intReader.fromBytes(data);
 
 	    desc.read(data);
-	    writtenKeyCount = intReader.read(data);
+	    writtenKeyCount = intReader.fromBytes(data);
 	}
     }
 

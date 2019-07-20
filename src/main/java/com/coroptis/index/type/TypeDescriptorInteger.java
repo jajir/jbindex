@@ -1,8 +1,6 @@
 package com.coroptis.index.type;
 
-@Deprecated
 public class TypeDescriptorInteger {
-    // FIXME remove this class
 
     /**
      * How many bytes is required to store Integer.
@@ -34,39 +32,30 @@ public class TypeDescriptorInteger {
      */
     private static final int BYTE_SHIFT_24 = 24;
 
-    /**
-     * Default hash code.
-     */
-    private static final int DEFAULT_HASHCODE = 7312485;
-
-    public Integer load(final byte[] data, final int from) {
-	int pos = from;
-	return data[pos++] << BYTE_SHIFT_24 | (data[pos++] & BYTE_MASK) << BYTE_SHIFT_16
-		| (data[pos++] & BYTE_MASK) << BYTE_SHIFT_8 | (data[pos] & BYTE_MASK);
+    public ConvertorToBytes<Integer> getConvertorTo() {
+	return object -> getBytes(object);
     }
 
-    public String toString() {
-	return "TypeDescriptorInteger{maxLength=4}";
+    public ConvertorFromBytes<Integer> getConvertorFrom() {
+	return bytes -> load(bytes, 0);
     }
 
-    /**
-     * Always return same number. All instances of this class are same.
-     */
-    public int hashCode() {
-	return DEFAULT_HASHCODE;
+    public TypeReader<Integer> getReader() {
+	return fileReader -> {
+	    final byte[] bytes = new byte[4];
+	    fileReader.read(bytes);
+	    return load(bytes, 0);
+	};
     }
 
-    public boolean equals(final Object obj) {
-	if (this == obj) {
-	    return true;
-	}
-	if (obj == null) {
-	    return false;
-	}
-	return getClass() == obj.getClass();
+    public TypeWriter<Integer> getWriter() {
+	return (writer, object) -> {
+	    writer.write(getBytes(object));
+	    return 4;
+	};
     }
 
-    public byte[] getBytes(final Integer value) {
+    private byte[] getBytes(final Integer value) {
 	int pos = 0;
 	int v = value.intValue();
 	byte[] out = new byte[REQUIRED_BYTES];
@@ -75,6 +64,12 @@ public class TypeDescriptorInteger {
 	out[pos++] = (byte) ((v >>> BYTE_SHIFT_8) & BYTE_MASK);
 	out[pos] = (byte) ((v >>> BYTE_SHIFT_0) & BYTE_MASK);
 	return out;
+    }
+
+    private Integer load(final byte[] data, final int from) {
+	int pos = from;
+	return data[pos++] << BYTE_SHIFT_24 | (data[pos++] & BYTE_MASK) << BYTE_SHIFT_16
+		| (data[pos++] & BYTE_MASK) << BYTE_SHIFT_8 | (data[pos] & BYTE_MASK);
     }
 
 }

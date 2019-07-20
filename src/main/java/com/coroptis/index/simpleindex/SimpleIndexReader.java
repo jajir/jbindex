@@ -5,9 +5,9 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import com.coroptis.index.PairComparator;
-import com.coroptis.index.storage.FileReader;
-import com.coroptis.index.type.TypeRawArrayReader;
-import com.coroptis.index.type.TypeStreamReader;
+import com.coroptis.index.directory.FileReader;
+import com.coroptis.index.type.ConvertorFromBytes;
+import com.coroptis.index.type.TypeReader;
 
 public class SimpleIndexReader<K, V> implements CloseableResource {
 
@@ -16,8 +16,8 @@ public class SimpleIndexReader<K, V> implements CloseableResource {
     private final PairReader<K, V> pairReader;
 
     public SimpleIndexReader(final FileReader fileReader,
-	    final TypeRawArrayReader<K> keyTypeRawArrayReader,
-	    final TypeStreamReader<V> valueTypeStreamReader,
+	    final ConvertorFromBytes<K> keyTypeRawArrayReader,
+	    final TypeReader<V> valueTypeStreamReader,
 	    final Comparator<? super K> keyComparator) {
 	pairReader = new PairReader<>(fileReader, keyTypeRawArrayReader, valueTypeStreamReader);
 	pairComparator = new PairComparator<>(keyComparator);

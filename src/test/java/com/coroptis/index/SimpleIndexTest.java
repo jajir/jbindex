@@ -9,20 +9,20 @@ import java.util.Comparator;
 
 import org.junit.jupiter.api.Test;
 
+import com.coroptis.index.directory.Directory;
+import com.coroptis.index.directory.FsDirectory;
+import com.coroptis.index.directory.MemDirectory;
 import com.coroptis.index.simpleindex.Pair;
 import com.coroptis.index.simpleindex.SimpleIndexReader;
 import com.coroptis.index.simpleindex.SimpleIndexWriter;
-import com.coroptis.index.storage.Directory;
-import com.coroptis.index.storage.FsDirectory;
-import com.coroptis.index.storage.MemDirectory;
-import com.coroptis.index.type.ByteTypeDescriptor;
-import com.coroptis.index.type.StringTypeDescriptor;
+import com.coroptis.index.type.TypeDescriptorByte;
+import com.coroptis.index.type.TypeDescriptorString;
 
 public class SimpleIndexTest {
 
     private final static String FILE_NAME = "pok.dat";
-    private final ByteTypeDescriptor byteTd = new ByteTypeDescriptor();
-    private final StringTypeDescriptor stringTd = new StringTypeDescriptor();
+    private final TypeDescriptorByte byteTd = new TypeDescriptorByte();
+    private final TypeDescriptorString stringTd = new TypeDescriptorString();
 
     @Test
     public void read_and_write_index_fs() throws Exception {
@@ -38,8 +38,8 @@ public class SimpleIndexTest {
 
     private void test_read_write(final Directory directory) throws IOException {
 	final SimpleIndexWriter<String, Byte> siw = new SimpleIndexWriter<>(
-		directory.getFileWriter(FILE_NAME), stringTd.getRawArrayWriter(),
-		Comparator.naturalOrder(), byteTd.getArrayWrite());
+		directory.getFileWriter(FILE_NAME), stringTd.getConvertorToBytes(),
+		Comparator.naturalOrder(), byteTd.getConvertorToBytes());
 	assertEquals(0, siw.put(new Pair<String, Byte>("aaa", (byte) 0), false));
 	assertEquals(6, siw.put(new Pair<String, Byte>("aaabbb", (byte) 1)));
 	assertEquals(12, siw.put(new Pair<String, Byte>("aaacc", (byte) 2)));
@@ -47,8 +47,8 @@ public class SimpleIndexTest {
 	siw.close();
 
 	final SimpleIndexReader<String, Byte> sir = new SimpleIndexReader<>(
-		directory.getFileReader(FILE_NAME), stringTd.getRawArrayReader(),
-		byteTd.getStreamReader(), Comparator.naturalOrder());
+		directory.getFileReader(FILE_NAME), stringTd.getConvertorFromBytes(),
+		byteTd.getReader(), Comparator.naturalOrder());
 	final Pair<String, Byte> p1 = sir.read();
 	final Pair<String, Byte> p2 = sir.read();
 	final Pair<String, Byte> p3 = sir.read();
@@ -68,8 +68,8 @@ public class SimpleIndexTest {
     @Test
     public void test_invalidOrder() throws Exception {
 	try (final SimpleIndexWriter<String, Byte> siw = new SimpleIndexWriter<>(
-		new MemDirectory().getFileWriter(FILE_NAME), stringTd.getRawArrayWriter(),
-		Comparator.naturalOrder(), byteTd.getArrayWrite())) {
+		new MemDirectory().getFileWriter(FILE_NAME), stringTd.getConvertorToBytes(),
+		Comparator.naturalOrder(), byteTd.getConvertorToBytes())) {
 	    siw.put(new Pair<String, Byte>("aaa", (byte) 0));
 	    siw.put(new Pair<String, Byte>("abbb", (byte) 1));
 	    assertThrows(IllegalArgumentException.class,
@@ -80,8 +80,8 @@ public class SimpleIndexTest {
     @Test
     public void test_duplicatedValue() throws Exception {
 	try (final SimpleIndexWriter<String, Byte> siw = new SimpleIndexWriter<>(
-		new MemDirectory().getFileWriter(FILE_NAME), stringTd.getRawArrayWriter(),
-		Comparator.naturalOrder(), byteTd.getArrayWrite())) {
+		new MemDirectory().getFileWriter(FILE_NAME), stringTd.getConvertorToBytes(),
+		Comparator.naturalOrder(), byteTd.getConvertorToBytes())) {
 	    siw.put(new Pair<String, Byte>("aaa", (byte) 0));
 	    siw.put(new Pair<String, Byte>("abbb", (byte) 1));
 	    assertThrows(IllegalArgumentException.class,
@@ -92,8 +92,8 @@ public class SimpleIndexTest {
     @Test
     public void test_null_key() throws Exception {
 	try (final SimpleIndexWriter<String, Byte> siw = new SimpleIndexWriter<>(
-		new MemDirectory().getFileWriter(FILE_NAME), stringTd.getRawArrayWriter(),
-		Comparator.naturalOrder(), byteTd.getArrayWrite())) {
+		new MemDirectory().getFileWriter(FILE_NAME), stringTd.getConvertorToBytes(),
+		Comparator.naturalOrder(), byteTd.getConvertorToBytes())) {
 
 	    assertThrows(NullPointerException.class,
 		    () -> siw.put(new Pair<String, Byte>(null, (byte) 0)));

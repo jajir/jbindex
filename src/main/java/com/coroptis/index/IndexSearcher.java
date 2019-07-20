@@ -7,39 +7,42 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import com.coroptis.index.directory.Directory;
 import com.coroptis.index.simpleindex.Pair;
 import com.coroptis.index.simpleindex.SimpleIndexReader;
-import com.coroptis.index.storage.Directory;
-import com.coroptis.index.type.IntegerTypeDescriptor;
-import com.coroptis.index.type.TypeRawArrayReader;
-import com.coroptis.index.type.TypeStreamReader;
+import com.coroptis.index.type.ConvertorFromBytes;
+import com.coroptis.index.type.TypeDescriptorInteger;
+import com.coroptis.index.type.TypeReader;
 
+/**
+ * Index is ordered list of unique keys with associated values.
+ * 
+ * @author jajir
+ *
+ * @param <K>
+ * @param <V>
+ */
 public class IndexSearcher<K, V> {
 
     private final List<Pair<K, Integer>> metaIndex = new ArrayList<>();
 
     private final Directory directory;
 
-    private final TypeRawArrayReader<K> keyTypeRawArrayReader;
+    private final ConvertorFromBytes<K> keyConvertor;
 
-    private final TypeStreamReader<V> valueTypeStreamReader;
+    private final TypeReader<V> valueReader;
 
-    private final IntegerTypeDescriptor integerTypeDescriptor = new IntegerTypeDescriptor();
+    private final TypeDescriptorInteger integerTypeDescriptor = new TypeDescriptorInteger();
 
     private final Comparator<? super K> keyComparator;
 
     private final IndexDesc indexDesc;
 
-    public IndexSearcher(final Directory directory,
-	    final TypeRawArrayReader<K> keyTypeRawArrayReader,
-	    final Comparator<? super K> keyComparator,
-	    final TypeStreamReader<V> valueTypeStreamReader) {
-	// TODO variable names are crazy
+    public IndexSearcher(final Directory directory, final ConvertorFromBytes<K> convertorKey,
+	    final Comparator<? super K> keyComparator, final TypeReader<V> valueReader) {
 	this.directory = Objects.requireNonNull(directory, "directory must not be null");
-	this.keyTypeRawArrayReader = Objects.requireNonNull(keyTypeRawArrayReader,
-		"keyTypeRawArrayReader must not be null");
-	this.valueTypeStreamReader = Objects.requireNonNull(valueTypeStreamReader,
-		"valueTypeStreamReader must not be null");
+	this.keyConvertor = Objects.requireNonNull(convertorKey, "key convertor must not be null");
+	this.valueReader = Objects.requireNonNull(valueReader, "value convertor must not be null");
 	this.indexDesc = IndexDesc.load(directory);
 	this.keyComparator = Objects.requireNonNull(keyComparator,
 		"keyComparator must not be null");
@@ -65,9 +68,8 @@ public class IndexSearcher<K, V> {
     }
 
     public IndexStreamer<K, V> getStreamer() {
-	return new IndexStreamer<>(directory, IndexWriter.INDEX_MAIN_DATA_FILE,
-		keyTypeRawArrayReader, valueTypeStreamReader, keyComparator,
-		indexDesc.getWrittenKeyCount());
+	return new IndexStreamer<>(directory, IndexWriter.INDEX_MAIN_DATA_FILE, keyConvertor,
+		valueReader, keyComparator, indexDesc.getWrittenKeyCount());
     }
 
     @Deprecated
@@ -79,8 +81,8 @@ public class IndexSearcher<K, V> {
 
     private void loadMetaIndex() {
 	try (final SimpleIndexReader<K, Integer> sir = new SimpleIndexReader<>(
-		directory.getFileReader(IndexWriter.INDEX_META_FILE), keyTypeRawArrayReader,
-		integerTypeDescriptor.getStreamReader(), keyComparator)) {
+		directory.getFileReader(IndexWriter.INDEX_META_FILE), keyConvertor,
+		integerTypeDescriptor.getReader(), keyComparator)) {
 	    sir.stream(indexDesc.getWrittenBlockCount()).forEach(pair -> metaIndex.add(pair));
 	}
     }
@@ -105,6 +107,6 @@ public class IndexSearcher<K, V> {
 
     private SimpleIndexReader<K, V> getMainIndexReader() {
 	return new SimpleIndexReader<>(directory.getFileReader(IndexWriter.INDEX_MAIN_DATA_FILE),
-		keyTypeRawArrayReader, valueTypeStreamReader, keyComparator);
+		keyConvertor, valueReader, keyComparator);
     }
 }
