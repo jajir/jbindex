@@ -13,13 +13,13 @@ public class SimpleIndexReader<K, V> implements CloseableResource {
 
     private final PairComparator<K, V> pairComparator;
 
-    private final PairReader<K, V> pairReader;
+    private final PairReaderOld<K, V> pairReader;
 
     public SimpleIndexReader(final FileReader fileReader,
 	    final ConvertorFromBytes<K> keyTypeRawArrayReader,
 	    final TypeReader<V> valueTypeStreamReader,
 	    final Comparator<? super K> keyComparator) {
-	pairReader = new PairReader<>(fileReader, keyTypeRawArrayReader, valueTypeStreamReader);
+	pairReader = new PairReaderOld<>(fileReader, keyTypeRawArrayReader, valueTypeStreamReader);
 	pairComparator = new PairComparator<>(keyComparator);
     }
 

@@ -2,8 +2,10 @@ package com.coroptis.index.directory;
 
 import java.io.File;
 import java.util.Objects;
+import java.util.stream.Stream;
 
 import com.coroptis.index.simpleindex.IndexException;
+import com.google.common.collect.Lists;
 
 public class FsDirectory implements Directory {
 
@@ -15,7 +17,8 @@ public class FsDirectory implements Directory {
 	    directory.mkdirs();
 	}
 	if (directory.isFile()) {
-	    throw new IndexException(String.format("There is required directory but '%s' is file."));
+	    throw new IndexException(
+		    String.format("There is required directory but '%s' is file."));
 	}
     }
 
@@ -37,6 +40,16 @@ public class FsDirectory implements Directory {
     private File getFile(final String fileName) {
 	Objects.requireNonNull(fileName);
 	return directory.toPath().resolve(fileName).toFile();
+    }
+
+    @Override
+    public boolean deleteFile(final String fileName) {
+	return getFile(fileName).delete();
+    }
+
+    @Override
+    public Stream<String> getFileNames() {
+	return Lists.newArrayList(directory.list()).stream();
     }
 
 }

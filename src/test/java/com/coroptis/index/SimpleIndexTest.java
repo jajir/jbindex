@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Comparator;
 
 import org.junit.jupiter.api.Test;
@@ -36,33 +35,33 @@ public class SimpleIndexTest {
 	test_read_write(directory);
     }
 
-    private void test_read_write(final Directory directory) throws IOException {
-	final SimpleIndexWriter<String, Byte> siw = new SimpleIndexWriter<>(
+    private void test_read_write(final Directory directory) {
+	try (final SimpleIndexWriter<String, Byte> siw = new SimpleIndexWriter<>(
 		directory.getFileWriter(FILE_NAME), stringTd.getConvertorToBytes(),
-		Comparator.naturalOrder(), byteTd.getConvertorToBytes());
-	assertEquals(0, siw.put(new Pair<String, Byte>("aaa", (byte) 0), false));
-	assertEquals(6, siw.put(new Pair<String, Byte>("aaabbb", (byte) 1)));
-	assertEquals(12, siw.put(new Pair<String, Byte>("aaacc", (byte) 2)));
-	assertEquals(17, siw.put(new Pair<String, Byte>("ccc", (byte) 3)));
-	siw.close();
+		Comparator.naturalOrder(), byteTd.getConvertorToBytes())) {
+	    assertEquals(0, siw.put(new Pair<String, Byte>("aaa", (byte) 0), false));
+	    assertEquals(6, siw.put(new Pair<String, Byte>("aaabbb", (byte) 1)));
+	    assertEquals(12, siw.put(new Pair<String, Byte>("aaacc", (byte) 2)));
+	    assertEquals(17, siw.put(new Pair<String, Byte>("ccc", (byte) 3)));
+	}
 
-	final SimpleIndexReader<String, Byte> sir = new SimpleIndexReader<>(
+	try (final SimpleIndexReader<String, Byte> sir = new SimpleIndexReader<>(
 		directory.getFileReader(FILE_NAME), stringTd.getConvertorFromBytes(),
-		byteTd.getReader(), Comparator.naturalOrder());
-	final Pair<String, Byte> p1 = sir.read();
-	final Pair<String, Byte> p2 = sir.read();
-	final Pair<String, Byte> p3 = sir.read();
-	final Pair<String, Byte> p4 = sir.read();
+		byteTd.getReader(), Comparator.naturalOrder())) {
+	    final Pair<String, Byte> p1 = sir.read();
+	    final Pair<String, Byte> p2 = sir.read();
+	    final Pair<String, Byte> p3 = sir.read();
+	    final Pair<String, Byte> p4 = sir.read();
 
-	assertEquals("aaa", p1.getKey());
-	assertEquals(0, (int) p1.getValue());
-	assertEquals("aaabbb", p2.getKey());
-	assertEquals(1, (int) p2.getValue());
-	assertEquals("aaacc", p3.getKey());
-	assertEquals(2, (int) p3.getValue());
-	assertEquals("ccc", p4.getKey());
-	assertEquals(3, (int) p4.getValue());
-	sir.close();
+	    assertEquals("aaa", p1.getKey());
+	    assertEquals(0, (int) p1.getValue());
+	    assertEquals("aaabbb", p2.getKey());
+	    assertEquals(1, (int) p2.getValue());
+	    assertEquals("aaacc", p3.getKey());
+	    assertEquals(2, (int) p3.getValue());
+	    assertEquals("ccc", p4.getKey());
+	    assertEquals(3, (int) p4.getValue());
+	}
     }
 
     @Test

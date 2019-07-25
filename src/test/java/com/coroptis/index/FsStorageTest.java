@@ -1,6 +1,6 @@
 package com.coroptis.index;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.File;
 
@@ -19,7 +19,7 @@ public class FsStorageTest {
     private final static String TEXT = "Ahoj lidi!";
 
     private final static String TEXT_LONG = "Ahoj vsichni lidi!";
-    
+
     @Test
     public void test_read_write_text_fs() throws Exception {
 	Directory dir = new FsDirectory(new File("./target/pok"));
@@ -33,18 +33,19 @@ public class FsStorageTest {
     }
 
     private void test_read_write_text(final Directory dir) {
-	FileWriter fw = dir.getFileWriter(FILE_NAME);
-	fw.write(TEXT.getBytes());
-	fw.close();
+	try (final FileWriter fw = dir.getFileWriter(FILE_NAME)) {
+	    fw.write(TEXT.getBytes());
+	}
 
-	FileReader fr = dir.getFileReader(FILE_NAME);
-	byte[] bytes = new byte[TEXT.getBytes().length];
-	final int loadedBytes = fr.read(bytes);
-	String pok = new String(bytes);
-	fr.close();
+	try (final FileReader fr = dir.getFileReader(FILE_NAME)) {
+	    byte[] bytes = new byte[TEXT.getBytes().length];
+	    final int loadedBytes = fr.read(bytes);
 
-	assertEquals(TEXT.getBytes().length, loadedBytes);
-	assertEquals(TEXT, pok);
+	    String pok = new String(bytes);
+	    assertEquals(TEXT, pok);
+	    assertEquals(TEXT.getBytes().length, loadedBytes);
+	}
+
     }
 
     @Test
@@ -60,17 +61,16 @@ public class FsStorageTest {
     }
 
     private void test_read_long_bytes(final Directory dir) {
-	FileWriter fw = dir.getFileWriter(FILE_NAME);
-	fw.write(TEXT.getBytes());
-	fw.close();
+	try (final FileWriter fw = dir.getFileWriter(FILE_NAME)) {
+	    fw.write(TEXT.getBytes());
+	}
 
-	FileReader fr = dir.getFileReader(FILE_NAME);
-	byte[] bytes = new byte[TEXT_LONG.getBytes().length];
+	try (final FileReader fr = dir.getFileReader(FILE_NAME)) {
+	    byte[] bytes = new byte[TEXT_LONG.getBytes().length];
 
-	final int loadedBytes = fr.read(bytes);
-	fr.close();
-
-	assertEquals(-1, loadedBytes);
+	    final int loadedBytes = fr.read(bytes);
+	    assertEquals(-1, loadedBytes);
+	}
     }
 
 }

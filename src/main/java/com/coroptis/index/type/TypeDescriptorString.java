@@ -16,4 +16,11 @@ public class TypeDescriptorString {
 	return object -> object.getBytes(CHARSET_ENCODING);
     }
 
+    public VarLengthWriter<String> getVarLenghtWriter() {
+	return new VarLengthWriter<String>(getConvertorToBytes());
+    }
+
+    public VarLengthReader<String> getVarLengthReader() {
+	return new VarLengthReader<String>(getConvertorFromBytes());
+    }
 }

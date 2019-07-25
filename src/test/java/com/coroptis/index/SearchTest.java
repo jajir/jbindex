@@ -40,14 +40,12 @@ public class SearchTest {
     }
 
     private void writeIndex(final Directory directory) {
-
-	final IndexWriter<Integer, Integer> iw = new IndexWriter<>(directory, 5,
-		iTd.getConvertorTo(), Comparator.naturalOrder(), iTd.getConvertorTo());
-
-	for (int i = 0; i < LIMIT; i++) {
-	    iw.put(i, Integer.MAX_VALUE);
+	try (final IndexWriter<Integer, Integer> iw = new IndexWriter<>(directory, 5,
+		iTd.getConvertorTo(), Comparator.naturalOrder(), iTd.getConvertorTo())) {
+	    for (int i = 0; i < LIMIT; i++) {
+		iw.put(i, Integer.MAX_VALUE);
+	    }
 	}
-	iw.close();
     }
 
 }

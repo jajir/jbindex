@@ -2,6 +2,7 @@ package com.coroptis.index.directory;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import com.coroptis.index.simpleindex.IndexException;
 
@@ -24,5 +25,15 @@ public class MemDirectory implements Directory {
 
     void addFile(final String fileName, final byte bytes[]) {
 	data.put(fileName, bytes);
+    }
+
+    @Override
+    public boolean deleteFile(final String fileName) {
+	return data.remove(fileName) != null;
+    }
+
+    @Override
+    public Stream<String> getFileNames() {
+	return data.keySet().stream();
     }
 }
