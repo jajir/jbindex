@@ -1,12 +1,13 @@
-package com.coroptis.index.simpleindex;
+package com.coroptis.index.fileindex;
 
 import java.util.Comparator;
 
+import com.coroptis.index.CloseableResource;
 import com.coroptis.index.directory.FileWriter;
 import com.coroptis.index.type.ConvertorToBytes;
 import com.coroptis.index.type.TypeWriter;
 
-public class SimpleIndexWriter<K, V> implements CloseableResource {
+public class FileIndexWriter<K, V> implements CloseableResource {
 
     private final TypeWriter<V> valueWriter;
 
@@ -16,7 +17,7 @@ public class SimpleIndexWriter<K, V> implements CloseableResource {
 
     private int position;
 
-    public SimpleIndexWriter(final FileWriter fileWriter, final ConvertorToBytes<K> keyConvertor,
+    public FileIndexWriter(final FileWriter fileWriter, final ConvertorToBytes<K> keyConvertor,
 	    final Comparator<? super K> keyComparator, final TypeWriter<V> valueWriter) {
 	this.writer = fileWriter;
 	this.valueWriter = valueWriter;

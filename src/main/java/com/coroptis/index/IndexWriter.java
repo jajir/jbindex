@@ -4,9 +4,8 @@ import java.util.Comparator;
 import java.util.Objects;
 
 import com.coroptis.index.directory.Directory;
-import com.coroptis.index.simpleindex.CloseableResource;
-import com.coroptis.index.simpleindex.Pair;
-import com.coroptis.index.simpleindex.SimpleIndexWriter;
+import com.coroptis.index.fileindex.Pair;
+import com.coroptis.index.fileindex.FileIndexWriter;
 import com.coroptis.index.type.ConvertorToBytes;
 import com.coroptis.index.type.OperationType;
 import com.coroptis.index.type.TypeConvertors;
@@ -41,9 +40,9 @@ public class IndexWriter<K, V> implements CloseableResource {
 
     private final TypeDescriptorInteger integerTypeDescriptor = new TypeDescriptorInteger();
 
-    private final SimpleIndexWriter<K, V> mainIndex;
+    private final FileIndexWriter<K, V> mainIndex;
 
-    private final SimpleIndexWriter<K, Integer> metaIndex;
+    private final FileIndexWriter<K, Integer> metaIndex;
 
     private int previousPosition = 0;
 
@@ -56,9 +55,9 @@ public class IndexWriter<K, V> implements CloseableResource {
 	final TypeWriter<V> valueWriter = tc.get(valueClass, OperationType.WRITER);
 	final Comparator<? super K> keyComparator = tc.get(keyClass, OperationType.COMPARATOR);
 
-	this.mainIndex = new SimpleIndexWriter<>(directory.getFileWriter(INDEX_MAIN_DATA_FILE),
+	this.mainIndex = new FileIndexWriter<>(directory.getFileWriter(INDEX_MAIN_DATA_FILE),
 		keyConvertor, keyComparator, valueWriter);
-	this.metaIndex = new SimpleIndexWriter<>(directory.getFileWriter(INDEX_META_FILE),
+	this.metaIndex = new FileIndexWriter<>(directory.getFileWriter(INDEX_META_FILE),
 		keyConvertor, keyComparator, integerTypeDescriptor.getWriter());
 	this.indexDesc = IndexDesc.create(directory, blockSize);
     }

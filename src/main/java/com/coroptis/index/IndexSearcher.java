@@ -7,9 +7,9 @@ import java.util.Objects;
 import java.util.Optional;
 
 import com.coroptis.index.directory.Directory;
-import com.coroptis.index.simpleindex.DiffKeyReader;
-import com.coroptis.index.simpleindex.Pair;
-import com.coroptis.index.simpleindex.SimpleIndexReader;
+import com.coroptis.index.fileindex.DiffKeyReader;
+import com.coroptis.index.fileindex.Pair;
+import com.coroptis.index.fileindex.FileIndexReader;
 import com.coroptis.index.type.ConvertorFromBytes;
 import com.coroptis.index.type.OperationType;
 import com.coroptis.index.type.TypeConvertors;
@@ -54,7 +54,7 @@ public class IndexSearcher<K, V> {
 	if (blockId < 0) {
 	    return null;
 	}
-	try (final SimpleIndexReader<K, V> mainIndexReader = getMainIndexReader()) {
+	try (final FileIndexReader<K, V> mainIndexReader = getMainIndexReader()) {
 	    mainIndexReader.skip(blockId);
 	    final Optional<Pair<K, V>> oVal = mainIndexReader.stream(indexDesc.getWrittenKeyCount())
 		    .limit(indexDesc.getBlockSize())
@@ -79,7 +79,7 @@ public class IndexSearcher<K, V> {
     }
 
     private void loadMetaIndex() {
-	try (final SimpleIndexReader<K, Integer> sir = new SimpleIndexReader<>(
+	try (final FileIndexReader<K, Integer> sir = new FileIndexReader<>(
 		directory.getFileReader(IndexWriter.INDEX_META_FILE), keyConvertorToBytes,
 		integerTypeDescriptor.getReader(), keyComparator)) {
 	    sir.stream(indexDesc.getWrittenBlockCount()).forEach(pair -> metaIndex.add(pair));
@@ -105,8 +105,8 @@ public class IndexSearcher<K, V> {
 	return previousPair == null ? INVALID_BLOCK_ID : previousPair.getValue();
     }
 
-    private SimpleIndexReader<K, V> getMainIndexReader() {
-	return new SimpleIndexReader<>(directory.getFileReader(IndexWriter.INDEX_MAIN_DATA_FILE),
+    private FileIndexReader<K, V> getMainIndexReader() {
+	return new FileIndexReader<>(directory.getFileReader(IndexWriter.INDEX_MAIN_DATA_FILE),
 		keyConvertorToBytes, valueReader, keyComparator);
     }
 }

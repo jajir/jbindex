@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.zip.ZipInputStream;
 
-import com.coroptis.index.simpleindex.IndexException;
+import com.coroptis.index.IndexException;
 import com.google.common.base.MoreObjects;
 
 public class FsZipFileReaderStream implements FileReader {

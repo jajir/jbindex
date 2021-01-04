@@ -11,9 +11,9 @@ import org.junit.jupiter.api.Test;
 import com.coroptis.index.directory.Directory;
 import com.coroptis.index.directory.FsDirectory;
 import com.coroptis.index.directory.MemDirectory;
-import com.coroptis.index.simpleindex.Pair;
-import com.coroptis.index.simpleindex.SimpleIndexReader;
-import com.coroptis.index.simpleindex.SimpleIndexWriter;
+import com.coroptis.index.fileindex.Pair;
+import com.coroptis.index.fileindex.FileIndexReader;
+import com.coroptis.index.fileindex.FileIndexWriter;
 import com.coroptis.index.type.TypeDescriptorByte;
 import com.coroptis.index.type.TypeDescriptorString;
 
@@ -36,7 +36,7 @@ public class SimpleIndexTest {
     }
 
     private void test_read_write(final Directory directory) {
-	try (final SimpleIndexWriter<String, Byte> siw = new SimpleIndexWriter<>(
+	try (final FileIndexWriter<String, Byte> siw = new FileIndexWriter<>(
 		directory.getFileWriter(FILE_NAME), stringTd.getConvertorToBytes(),
 		Comparator.naturalOrder(), byteTd.getWriter())) {
 	    assertEquals(0, siw.put(new Pair<String, Byte>("aaa", (byte) 0), false));
@@ -45,7 +45,7 @@ public class SimpleIndexTest {
 	    assertEquals(17, siw.put(new Pair<String, Byte>("ccc", (byte) 3)));
 	}
 
-	try (final SimpleIndexReader<String, Byte> sir = new SimpleIndexReader<>(
+	try (final FileIndexReader<String, Byte> sir = new FileIndexReader<>(
 		directory.getFileReader(FILE_NAME), stringTd.getConvertorFromBytes(),
 		byteTd.getReader(), Comparator.naturalOrder())) {
 	    final Pair<String, Byte> p1 = sir.read();
@@ -66,7 +66,7 @@ public class SimpleIndexTest {
 
     @Test
     public void test_invalidOrder() throws Exception {
-	try (final SimpleIndexWriter<String, Byte> siw = new SimpleIndexWriter<>(
+	try (final FileIndexWriter<String, Byte> siw = new FileIndexWriter<>(
 		new MemDirectory().getFileWriter(FILE_NAME), stringTd.getConvertorToBytes(),
 		Comparator.naturalOrder(), byteTd.getWriter())) {
 	    siw.put(new Pair<String, Byte>("aaa", (byte) 0));
@@ -78,7 +78,7 @@ public class SimpleIndexTest {
 
     @Test
     public void test_duplicatedValue() throws Exception {
-	try (final SimpleIndexWriter<String, Byte> siw = new SimpleIndexWriter<>(
+	try (final FileIndexWriter<String, Byte> siw = new FileIndexWriter<>(
 		new MemDirectory().getFileWriter(FILE_NAME), stringTd.getConvertorToBytes(),
 		Comparator.naturalOrder(), byteTd.getWriter())) {
 	    siw.put(new Pair<String, Byte>("aaa", (byte) 0));
@@ -90,7 +90,7 @@ public class SimpleIndexTest {
 
     @Test
     public void test_null_key() throws Exception {
-	try (final SimpleIndexWriter<String, Byte> siw = new SimpleIndexWriter<>(
+	try (final FileIndexWriter<String, Byte> siw = new FileIndexWriter<>(
 		new MemDirectory().getFileWriter(FILE_NAME), stringTd.getConvertorToBytes(),
 		Comparator.naturalOrder(), byteTd.getWriter())) {
 

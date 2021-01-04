@@ -1,4 +1,4 @@
-package com.coroptis.index.simpleindex;
+package com.coroptis.index.fileindex;
 
 import java.util.Comparator;
 import java.util.Objects;
@@ -8,7 +8,7 @@ import java.util.function.Consumer;
 import com.coroptis.index.PairComparator;
 import com.coroptis.index.directory.FileReader;
 
-public class SimpleIndexSpliterator<K, V> implements Spliterator<Pair<K, V>> {
+public class FileIndexSpliterator<K, V> implements Spliterator<Pair<K, V>> {
 
     private final PairReader<K, V> pairReader;
 
@@ -18,7 +18,7 @@ public class SimpleIndexSpliterator<K, V> implements Spliterator<Pair<K, V>> {
 
     private final long estimateSize;
 
-    public SimpleIndexSpliterator(final PairReader<K, V> pairReader, final FileReader fileReader,
+    public FileIndexSpliterator(final PairReader<K, V> pairReader, final FileReader fileReader,
 	    final PairComparator<K, V> pairComparator, final long estimateSize) {
 	this.pairReader = Objects.requireNonNull(pairReader);
 	this.fileReader = Objects.requireNonNull(fileReader);

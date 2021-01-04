@@ -3,7 +3,7 @@ package com.coroptis.index;
 import java.util.Comparator;
 import java.util.Objects;
 
-import com.coroptis.index.simpleindex.Pair;
+import com.coroptis.index.fileindex.Pair;
 
 public class PairComparator<K, V> implements Comparator<Pair<K, V>> {
 

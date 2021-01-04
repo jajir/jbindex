@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 
-import com.coroptis.index.simpleindex.IndexException;
+import com.coroptis.index.IndexException;
 import com.google.common.base.MoreObjects;
 
 public class FsFileReader implements FileReader {

@@ -2,9 +2,9 @@ package com.coroptis.store;
 
 import java.util.Objects;
 
+import com.coroptis.index.CloseableResource;
 import com.coroptis.index.directory.Directory;
 import com.coroptis.index.directory.FileWriter;
-import com.coroptis.index.simpleindex.CloseableResource;
 import com.coroptis.index.type.TypeWriter;
 
 public class StoreFileWriter<K, V> implements CloseableResource {

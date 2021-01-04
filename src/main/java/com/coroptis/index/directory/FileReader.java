@@ -1,6 +1,6 @@
 package com.coroptis.index.directory;
 
-import com.coroptis.index.simpleindex.CloseableResource;
+import com.coroptis.index.CloseableResource;
 
 /**
  * With file reader it's not possible to go back. When one byte could be read

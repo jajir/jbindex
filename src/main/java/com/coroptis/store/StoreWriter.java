@@ -1,7 +1,7 @@
 package com.coroptis.store;
 
+import com.coroptis.index.CloseableResource;
 import com.coroptis.index.directory.Directory;
-import com.coroptis.index.simpleindex.CloseableResource;
 import com.coroptis.index.type.OperationType;
 import com.coroptis.index.type.TypeConvertors;
 

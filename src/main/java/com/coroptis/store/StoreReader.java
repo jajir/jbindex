@@ -4,8 +4,8 @@ import java.util.Objects;
 import java.util.Optional;
 
 import com.coroptis.index.directory.FileReader;
-import com.coroptis.index.simpleindex.Pair;
-import com.coroptis.index.simpleindex.PairReader;
+import com.coroptis.index.fileindex.Pair;
+import com.coroptis.index.fileindex.PairReader;
 
 public class StoreReader<K, V> {
 

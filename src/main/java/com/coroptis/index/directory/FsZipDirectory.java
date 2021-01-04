@@ -4,7 +4,7 @@ import java.io.File;
 import java.util.Objects;
 import java.util.stream.Stream;
 
-import com.coroptis.index.simpleindex.IndexException;
+import com.coroptis.index.IndexException;
 import com.google.common.collect.Lists;
 
 public class FsZipDirectory implements Directory {

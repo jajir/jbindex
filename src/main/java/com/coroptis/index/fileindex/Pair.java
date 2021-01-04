@@ -1,4 +1,4 @@
-package com.coroptis.index.simpleindex;
+package com.coroptis.index.fileindex;
 
 import com.google.common.base.MoreObjects;
 

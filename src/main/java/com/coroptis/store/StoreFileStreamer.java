@@ -4,11 +4,11 @@ import java.util.Objects;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
+import com.coroptis.index.CloseableResource;
 import com.coroptis.index.directory.Directory;
 import com.coroptis.index.directory.FileReader;
-import com.coroptis.index.simpleindex.CloseableResource;
-import com.coroptis.index.simpleindex.Pair;
-import com.coroptis.index.simpleindex.PairReader;
+import com.coroptis.index.fileindex.Pair;
+import com.coroptis.index.fileindex.PairReader;
 import com.coroptis.index.type.TypeReader;
 
 public class StoreFileStreamer<K, V> implements CloseableResource {

@@ -1,6 +1,6 @@
 package com.coroptis.store;
 
-import com.coroptis.index.simpleindex.Pair;
+import com.coroptis.index.fileindex.Pair;
 
 /**
  * Allows to merge two key value pairs into one.

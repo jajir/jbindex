@@ -1,4 +1,4 @@
-package com.coroptis.index.simpleindex;
+package com.coroptis.index.fileindex;
 
 import com.coroptis.index.directory.FileReader;
 import com.coroptis.index.type.ConvertorFromBytes;

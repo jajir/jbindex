@@ -1,6 +1,6 @@
 package com.coroptis.index.directory;
 
-import com.coroptis.index.simpleindex.CloseableResource;
+import com.coroptis.index.CloseableResource;
 
 public interface FileWriter extends CloseableResource {
 

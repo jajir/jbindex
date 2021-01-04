@@ -1,22 +1,23 @@
-package com.coroptis.index.simpleindex;
+package com.coroptis.index.fileindex;
 
 import java.util.Comparator;
 import java.util.Objects;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
+import com.coroptis.index.CloseableResource;
 import com.coroptis.index.PairComparator;
 import com.coroptis.index.directory.FileReader;
 import com.coroptis.index.type.ConvertorFromBytes;
 import com.coroptis.index.type.TypeReader;
 
-public class SimpleIndexReader<K, V> implements CloseableResource {
+public class FileIndexReader<K, V> implements CloseableResource {
 
     private final FileReader fileReader;
     private final PairComparator<K, V> pairComparator;
     private final PairReader<K, V> pairReader;
 
-    public SimpleIndexReader(final FileReader fileReader,
+    public FileIndexReader(final FileReader fileReader,
 	    final ConvertorFromBytes<K> keyConvertorToBytes,
 	    final TypeReader<V> valueReader, final Comparator<? super K> keyComparator) {
 	this.fileReader = Objects.requireNonNull(fileReader);
@@ -35,7 +36,7 @@ public class SimpleIndexReader<K, V> implements CloseableResource {
 
     public Stream<Pair<K, V>> stream(final long estimateSize) {
 	return StreamSupport.stream(
-		new SimpleIndexSpliterator<>(pairReader, fileReader, pairComparator, estimateSize),
+		new FileIndexSpliterator<>(pairReader, fileReader, pairComparator, estimateSize),
 		false);
     }
 

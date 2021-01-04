@@ -5,8 +5,8 @@ import java.util.Spliterator;
 import java.util.function.Consumer;
 
 import com.coroptis.index.directory.FileReader;
-import com.coroptis.index.simpleindex.Pair;
-import com.coroptis.index.simpleindex.PairReader;
+import com.coroptis.index.fileindex.Pair;
+import com.coroptis.index.fileindex.PairReader;
 
 public class StoreSpliterator<K, V> implements Spliterator<Pair<K, V>> {
 
