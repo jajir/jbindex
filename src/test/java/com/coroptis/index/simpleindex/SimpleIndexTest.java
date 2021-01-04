@@ -1,4 +1,4 @@
-package com.coroptis.index;
+package com.coroptis.index.simpleindex;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -38,7 +38,7 @@ public class SimpleIndexTest {
     private void test_read_write(final Directory directory) {
 	try (final SimpleIndexWriter<String, Byte> siw = new SimpleIndexWriter<>(
 		directory.getFileWriter(FILE_NAME), stringTd.getConvertorToBytes(),
-		Comparator.naturalOrder(), byteTd.getConvertorToBytes())) {
+		Comparator.naturalOrder(), byteTd.getWriter())) {
 	    assertEquals(0, siw.put(new Pair<String, Byte>("aaa", (byte) 0), false));
 	    assertEquals(6, siw.put(new Pair<String, Byte>("aaabbb", (byte) 1)));
 	    assertEquals(12, siw.put(new Pair<String, Byte>("aaacc", (byte) 2)));
@@ -68,7 +68,7 @@ public class SimpleIndexTest {
     public void test_invalidOrder() throws Exception {
 	try (final SimpleIndexWriter<String, Byte> siw = new SimpleIndexWriter<>(
 		new MemDirectory().getFileWriter(FILE_NAME), stringTd.getConvertorToBytes(),
-		Comparator.naturalOrder(), byteTd.getConvertorToBytes())) {
+		Comparator.naturalOrder(), byteTd.getWriter())) {
 	    siw.put(new Pair<String, Byte>("aaa", (byte) 0));
 	    siw.put(new Pair<String, Byte>("abbb", (byte) 1));
 	    assertThrows(IllegalArgumentException.class,
@@ -80,7 +80,7 @@ public class SimpleIndexTest {
     public void test_duplicatedValue() throws Exception {
 	try (final SimpleIndexWriter<String, Byte> siw = new SimpleIndexWriter<>(
 		new MemDirectory().getFileWriter(FILE_NAME), stringTd.getConvertorToBytes(),
-		Comparator.naturalOrder(), byteTd.getConvertorToBytes())) {
+		Comparator.naturalOrder(), byteTd.getWriter())) {
 	    siw.put(new Pair<String, Byte>("aaa", (byte) 0));
 	    siw.put(new Pair<String, Byte>("abbb", (byte) 1));
 	    assertThrows(IllegalArgumentException.class,
@@ -92,7 +92,7 @@ public class SimpleIndexTest {
     public void test_null_key() throws Exception {
 	try (final SimpleIndexWriter<String, Byte> siw = new SimpleIndexWriter<>(
 		new MemDirectory().getFileWriter(FILE_NAME), stringTd.getConvertorToBytes(),
-		Comparator.naturalOrder(), byteTd.getConvertorToBytes())) {
+		Comparator.naturalOrder(), byteTd.getWriter())) {
 
 	    assertThrows(NullPointerException.class,
 		    () -> siw.put(new Pair<String, Byte>(null, (byte) 0)));

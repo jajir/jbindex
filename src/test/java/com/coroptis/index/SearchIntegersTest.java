@@ -3,19 +3,14 @@ package com.coroptis.index;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-import java.util.Comparator;
-
 import org.junit.jupiter.api.Test;
 
 import com.coroptis.index.directory.Directory;
 import com.coroptis.index.directory.MemDirectory;
-import com.coroptis.index.type.TypeDescriptorInteger;
 
-public class SearchTest {
+public class SearchIntegersTest {
 
     private final static Integer LIMIT = 1000 * 10;
-
-    private final TypeDescriptorInteger iTd = new TypeDescriptorInteger();
 
     @Test
     public void test_search_mem() throws Exception {
@@ -25,8 +20,8 @@ public class SearchTest {
     }
 
     private void search_test(final Directory directory) {
-	IndexSearcher<Integer, Integer> search = new IndexSearcher<>(directory,
-		iTd.getConvertorFrom(), Comparator.naturalOrder(), iTd.getReader());
+	IndexSearcher<Integer, Integer> search = new IndexSearcher<>(directory, Integer.class,
+		Integer.class);
 
 	for (int i = 0; i < LIMIT; i++) {
 	    assertEquals(Integer.MAX_VALUE, search.get(i),
@@ -40,8 +35,8 @@ public class SearchTest {
     }
 
     private void writeIndex(final Directory directory) {
-	try (final IndexWriter<Integer, Integer> iw = new IndexWriter<>(directory, 5,
-		iTd.getConvertorTo(), Comparator.naturalOrder(), iTd.getConvertorTo())) {
+	try (final IndexWriter<Integer, Integer> iw = new IndexWriter<>(directory, 5, Integer.class,
+		Integer.class)) {
 	    for (int i = 0; i < LIMIT; i++) {
 		iw.put(i, Integer.MAX_VALUE);
 	    }

@@ -1,18 +1,17 @@
-package com.coroptis.index;
+package com.coroptis.index.simpleindex;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.io.File;
-import java.util.Comparator;
 
 import org.junit.jupiter.api.Test;
 
+import com.coroptis.index.IndexSearcher;
+import com.coroptis.index.IndexWriter;
 import com.coroptis.index.directory.Directory;
 import com.coroptis.index.directory.FsDirectory;
 import com.coroptis.index.directory.MemDirectory;
-import com.coroptis.index.type.TypeDescriptorByte;
-import com.coroptis.index.type.TypeDescriptorString;
 
 public class SimpleSearchTest {
 
@@ -33,11 +32,8 @@ public class SimpleSearchTest {
     }
 
     private void search_test(final Directory directory) {
-	TypeDescriptorByte byteTd = new TypeDescriptorByte();
-	TypeDescriptorString stringTd = new TypeDescriptorString();
-
-	IndexSearcher<String, Byte> search = new IndexSearcher<>(directory,
-		stringTd.getConvertorFromBytes(), Comparator.naturalOrder(), byteTd.getReader());
+	IndexSearcher<String, Byte> search = new IndexSearcher<>(directory, String.class,
+		Byte.class);
 
 	assertEquals(Byte.valueOf((byte) 0), search.get("aaa"));
 	assertEquals(Byte.valueOf((byte) 1), search.get("aaabbb"));
@@ -51,12 +47,8 @@ public class SimpleSearchTest {
     }
 
     private void writeIndex(final Directory directory) {
-	TypeDescriptorByte byteTd = new TypeDescriptorByte();
-	TypeDescriptorString stringTd = new TypeDescriptorString();
-
-	try (IndexWriter<String, Byte> iw = new IndexWriter<>(directory, 2,
-		stringTd.getConvertorToBytes(), Comparator.naturalOrder(),
-		byteTd.getConvertorToBytes())) {
+	try (IndexWriter<String, Byte> iw = new IndexWriter<>(directory, 2, String.class,
+		Byte.class)) {
 	    iw.put("aaa", Byte.valueOf((byte) 0));
 	    iw.put("aaabbb", Byte.valueOf((byte) 1));
 	    iw.put("aaacc", Byte.valueOf((byte) 2));
