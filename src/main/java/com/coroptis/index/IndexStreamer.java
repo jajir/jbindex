@@ -6,39 +6,42 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import com.coroptis.index.directory.Directory;
+import com.coroptis.index.directory.FileReader;
 import com.coroptis.index.simpleindex.CloseableResource;
 import com.coroptis.index.simpleindex.Pair;
-import com.coroptis.index.simpleindex.PairReaderOld;
+import com.coroptis.index.simpleindex.PairReader;
 import com.coroptis.index.simpleindex.SimpleIndexSpliterator;
-import com.coroptis.index.type.ConvertorFromBytes;
 import com.coroptis.index.type.TypeReader;
 
 public class IndexStreamer<K, V> implements CloseableResource {
 
     private final PairComparator<K, V> pairComparator;
 
+    private final FileReader fileReader;
+
     private final long estimateSize;
 
-    private final PairReaderOld<K, V> pairReader;
+    private final PairReader<K, V> pairReader;
 
-    IndexStreamer(final Directory directory, final String fileName,
-	    final ConvertorFromBytes<K> keyConvertor, final TypeReader<V> valueReader,
-	    final Comparator<? super K> keyComparator, final long estimateSize) {
+    IndexStreamer(final Directory directory, final String fileName, final TypeReader<K> keyReader,
+	    final TypeReader<V> valueReader, final Comparator<? super K> keyComparator,
+	    final long estimateSize) {
 	Objects.requireNonNull(valueReader, "Value reader is null");
 	pairComparator = new PairComparator<>(keyComparator);
 	this.estimateSize = estimateSize;
-	pairReader = new PairReaderOld<>(directory.getFileReader(fileName), keyConvertor, valueReader);
+	pairReader = new PairReader<>(keyReader, valueReader);
+	fileReader = directory.getFileReader(fileName);
     }
 
     public Stream<Pair<K, V>> stream() {
 	return StreamSupport.stream(
-		new SimpleIndexSpliterator<>(pairReader, pairComparator, estimateSize), false);
+		new SimpleIndexSpliterator<>(pairReader, fileReader, pairComparator, estimateSize),
+		false);
     }
 
     @Override
     public void close() {
-	pairReader.close();
-
+	fileReader.close();
     }
 
 }

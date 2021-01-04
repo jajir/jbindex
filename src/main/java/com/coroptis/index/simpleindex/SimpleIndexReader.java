@@ -1,6 +1,7 @@
 package com.coroptis.index.simpleindex;
 
 import java.util.Comparator;
+import java.util.Objects;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -11,35 +12,36 @@ import com.coroptis.index.type.TypeReader;
 
 public class SimpleIndexReader<K, V> implements CloseableResource {
 
+    private final FileReader fileReader;
     private final PairComparator<K, V> pairComparator;
-
-    private final PairReaderOld<K, V> pairReader;
+    private final PairReader<K, V> pairReader;
 
     public SimpleIndexReader(final FileReader fileReader,
-	    final ConvertorFromBytes<K> keyTypeRawArrayReader,
-	    final TypeReader<V> valueTypeStreamReader,
-	    final Comparator<? super K> keyComparator) {
-	pairReader = new PairReaderOld<>(fileReader, keyTypeRawArrayReader, valueTypeStreamReader);
+	    final ConvertorFromBytes<K> keyConvertorToBytes,
+	    final TypeReader<V> valueReader, final Comparator<? super K> keyComparator) {
+	this.fileReader = Objects.requireNonNull(fileReader);
+	final DiffKeyReader<K> diffKeyReader = new DiffKeyReader<K>(keyConvertorToBytes);
+	pairReader = new PairReader<>(diffKeyReader, valueReader);
 	pairComparator = new PairComparator<>(keyComparator);
     }
 
     public Pair<K, V> read() {
-	return pairReader.read();
+	return pairReader.read(fileReader);
     }
 
     public void skip(final int position) {
-	pairReader.skip(position);
+	fileReader.skip(position);
     }
 
     public Stream<Pair<K, V>> stream(final long estimateSize) {
 	return StreamSupport.stream(
-		new SimpleIndexSpliterator<>(pairReader, pairComparator, estimateSize), false);
+		new SimpleIndexSpliterator<>(pairReader, fileReader, pairComparator, estimateSize),
+		false);
     }
 
     @Override
     public void close() {
-	// FIXME close buffere reader.
-//	reader.close();
+	fileReader.close();
     }
 
 }

@@ -6,18 +6,22 @@ import java.util.Spliterator;
 import java.util.function.Consumer;
 
 import com.coroptis.index.PairComparator;
+import com.coroptis.index.directory.FileReader;
 
 public class SimpleIndexSpliterator<K, V> implements Spliterator<Pair<K, V>> {
 
-    private final PairReaderOld<K, V> pairReader;
+    private final PairReader<K, V> pairReader;
+
+    private final FileReader fileReader;
 
     private final PairComparator<K, V> pairComparator;
 
     private final long estimateSize;
 
-    public SimpleIndexSpliterator(final PairReaderOld<K, V> pairReader,
+    public SimpleIndexSpliterator(final PairReader<K, V> pairReader, final FileReader fileReader,
 	    final PairComparator<K, V> pairComparator, final long estimateSize) {
 	this.pairReader = Objects.requireNonNull(pairReader);
+	this.fileReader = Objects.requireNonNull(fileReader);
 	this.pairComparator = Objects.requireNonNull(pairComparator,
 		"pair comparator must not be null");
 	this.estimateSize = estimateSize;
@@ -25,7 +29,7 @@ public class SimpleIndexSpliterator<K, V> implements Spliterator<Pair<K, V>> {
 
     @Override
     public boolean tryAdvance(final Consumer<? super Pair<K, V>> action) {
-	final Pair<K, V> out = pairReader.read();
+	final Pair<K, V> out = pairReader.read(fileReader);
 	if (out == null) {
 	    return false;
 	} else {

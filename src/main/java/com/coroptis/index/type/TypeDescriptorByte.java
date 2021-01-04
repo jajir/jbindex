@@ -10,8 +10,19 @@ public class TypeDescriptorByte {
 	};
     }
 
+    public ConvertorFromBytes<Byte> getConvertorFromBytes() {
+	return bytes -> bytes[0];
+    }
+
     public TypeReader<Byte> getReader() {
 	return inputStream -> (byte) inputStream.read();
+    }
+
+    public TypeWriter<Byte> getWriter() {
+	return (fileWriter, b) -> {
+	    fileWriter.write(b);
+	    return 1;
+	};
     }
 
 }

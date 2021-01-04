@@ -1,14 +1,36 @@
 package com.coroptis.store;
 
-import com.coroptis.index.directory.Directory;
-import com.coroptis.index.simpleindex.CloseableResource;
-import com.coroptis.index.type.TypeReader;
+import java.util.Objects;
+import java.util.Optional;
 
-public class StoreReader<K, V> extends StoreFileStreamer<K, V> implements CloseableResource {
+import com.coroptis.index.directory.FileReader;
+import com.coroptis.index.simpleindex.Pair;
+import com.coroptis.index.simpleindex.PairReader;
 
-    public StoreReader(final Directory directory, final TypeReader<K> keyReader,
-	    final TypeReader<V> valueReader) {
-	super(directory, StoreWriter.STORE, keyReader, valueReader);
+public class StoreReader<K, V> {
+
+    private final PairReader<K, V> pairReader;
+
+    private final FileReader fileReader;
+
+    private Pair<K, V> currentPair;
+
+    StoreReader(final PairReader<K, V> pairReader, final FileReader fileReader) {
+	this.pairReader = Objects.requireNonNull(pairReader);
+	this.fileReader = Objects.requireNonNull(fileReader);
+	tryToReadNextPair();
+    }
+
+    public Optional<Pair<K, V>> readCurrent() {
+	return Optional.ofNullable(currentPair);
+    }
+
+    public void moveToNext() {
+	tryToReadNextPair();
+    }
+
+    private void tryToReadNextPair() {
+	currentPair = pairReader.read(fileReader);
     }
 
 }

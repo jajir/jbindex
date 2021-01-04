@@ -12,4 +12,6 @@ public interface Directory {
 
     Stream<String> getFileNames();
 
+    void renameFile(String currentFileName, String newFileName);
+
 }

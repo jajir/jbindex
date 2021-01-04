@@ -7,11 +7,11 @@ import java.util.stream.Stream;
 import com.coroptis.index.simpleindex.IndexException;
 import com.google.common.collect.Lists;
 
-public class FsDirectory implements Directory {
+public class FsZipDirectory implements Directory {
 
     private final File directory;
 
-    public FsDirectory(final File directory) {
+    public FsZipDirectory(final File directory) {
 	this.directory = Objects.requireNonNull(directory);
 	if (!directory.exists()) {
 	    directory.mkdirs();
@@ -28,13 +28,13 @@ public class FsDirectory implements Directory {
 	if (!directory.exists()) {
 	    throw new IndexException(String.format("File '%s' doesn't exists."));
 	}
-	return new FsFileReaderStream(file);
+	return new FsZipFileReaderStream(file);
     }
 
     @Override
     public FileWriter getFileWriter(final String fileName) {
 	Objects.requireNonNull(fileName);
-	return new FsFileWriterStream(getFile(fileName));
+	return new FsZipFileWriterStream(getFile(fileName));
     }
 
     @Override

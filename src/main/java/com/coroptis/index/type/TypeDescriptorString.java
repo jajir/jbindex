@@ -13,7 +13,7 @@ public class TypeDescriptorString {
     }
 
     public ConvertorToBytes<String> getConvertorToBytes() {
-	return object -> object.getBytes(CHARSET_ENCODING);
+	return string -> string.getBytes(CHARSET_ENCODING);
     }
 
     public VarLengthWriter<String> getVarLenghtWriter() {

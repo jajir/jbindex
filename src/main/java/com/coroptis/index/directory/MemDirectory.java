@@ -23,6 +23,14 @@ public class MemDirectory implements Directory {
 	return new MemFileWriter(fileName, this);
     }
 
+    @Override
+    public void renameFile(final String currentFileName, final String newFileName) {
+	if (data.containsKey(currentFileName)) {
+	    final byte[] tmp = data.remove(currentFileName);
+	    data.put(newFileName, tmp);
+	}
+    }
+
     void addFile(final String fileName, final byte bytes[]) {
 	data.put(fileName, bytes);
     }

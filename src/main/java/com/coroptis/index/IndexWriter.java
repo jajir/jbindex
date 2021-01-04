@@ -8,7 +8,10 @@ import com.coroptis.index.simpleindex.CloseableResource;
 import com.coroptis.index.simpleindex.Pair;
 import com.coroptis.index.simpleindex.SimpleIndexWriter;
 import com.coroptis.index.type.ConvertorToBytes;
+import com.coroptis.index.type.OperationType;
+import com.coroptis.index.type.TypeConvertors;
 import com.coroptis.index.type.TypeDescriptorInteger;
+import com.coroptis.index.type.TypeWriter;
 
 /**
  * Index contains following files:
@@ -46,13 +49,17 @@ public class IndexWriter<K, V> implements CloseableResource {
 
     private final IndexDesc indexDesc;
 
-    public IndexWriter(final Directory directory, final int blockSize,
-	    final ConvertorToBytes<K> keyConvertor, final Comparator<? super K> keyComparator,
-	    final ConvertorToBytes<V> valueConvertor) {
-	this.mainIndex = new SimpleIndexWriter<>(directory.getFileWriter(INDEX_MAIN_DATA_FILE), keyConvertor,
-		keyComparator, valueConvertor);
-	this.metaIndex = new SimpleIndexWriter<>(directory.getFileWriter(INDEX_META_FILE), keyConvertor,
-		keyComparator, integerTypeDescriptor.getConvertorTo());
+    public IndexWriter(final Directory directory, final int blockSize, final Class<?> keyClass,
+	    final Class<?> valueClass) {
+	final TypeConvertors tc = TypeConvertors.getInstance();
+	final ConvertorToBytes<K> keyConvertor = tc.get(keyClass, OperationType.CONVERTOR_TO_BYTES);
+	final TypeWriter<V> valueWriter = tc.get(valueClass, OperationType.WRITER);
+	final Comparator<? super K> keyComparator = tc.get(keyClass, OperationType.COMPARATOR);
+
+	this.mainIndex = new SimpleIndexWriter<>(directory.getFileWriter(INDEX_MAIN_DATA_FILE),
+		keyConvertor, keyComparator, valueWriter);
+	this.metaIndex = new SimpleIndexWriter<>(directory.getFileWriter(INDEX_META_FILE),
+		keyConvertor, keyComparator, integerTypeDescriptor.getWriter());
 	this.indexDesc = IndexDesc.create(directory, blockSize);
     }
 

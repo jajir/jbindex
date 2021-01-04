@@ -4,20 +4,20 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.util.zip.ZipInputStream;
 
 import com.coroptis.index.simpleindex.IndexException;
 import com.google.common.base.MoreObjects;
 
-public class FsFileReaderStream implements FileReader {
+public class FsZipFileReaderStream implements FileReader {
 
-    private final BufferedInputStream bis;
-    
-    private final static int BUFFER_SIZE = 1024 * 100;
+    private final InputStream bis;
 
-    FsFileReaderStream(final File file) {
+    FsZipFileReaderStream(final File file) {
 	try {
 	    FileInputStream fin = new FileInputStream(file);
-	    bis = new BufferedInputStream(fin, BUFFER_SIZE);
+	    bis = new ZipInputStream(new BufferedInputStream(fin, 1024 * 10));
 	} catch (IOException e) {
 	    throw new IndexException(e.getMessage(), e);
 	}
@@ -62,7 +62,7 @@ public class FsFileReaderStream implements FileReader {
 
     @Override
     public String toString() {
-	return MoreObjects.toStringHelper(FsFileReaderStream.class).add("bis", bis.toString())
+	return MoreObjects.toStringHelper(FsZipFileReaderStream.class).add("bis", bis.toString())
 		.toString();
     }
 

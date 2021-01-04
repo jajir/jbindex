@@ -5,12 +5,14 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Stream;
 
 import com.coroptis.index.directory.Directory;
+import com.coroptis.index.simpleindex.DiffKeyReader;
 import com.coroptis.index.simpleindex.Pair;
 import com.coroptis.index.simpleindex.SimpleIndexReader;
 import com.coroptis.index.type.ConvertorFromBytes;
+import com.coroptis.index.type.OperationType;
+import com.coroptis.index.type.TypeConvertors;
 import com.coroptis.index.type.TypeDescriptorInteger;
 import com.coroptis.index.type.TypeReader;
 
@@ -24,27 +26,24 @@ import com.coroptis.index.type.TypeReader;
  */
 public class IndexSearcher<K, V> {
 
+    private final static Integer INVALID_BLOCK_ID = -2;
+
     private final List<Pair<K, Integer>> metaIndex = new ArrayList<>();
-
     private final Directory directory;
-
-    private final ConvertorFromBytes<K> keyConvertor;
-
+    private final ConvertorFromBytes<K> keyConvertorToBytes;
     private final TypeReader<V> valueReader;
-
     private final TypeDescriptorInteger integerTypeDescriptor = new TypeDescriptorInteger();
-
     private final Comparator<? super K> keyComparator;
-
     private final IndexDesc indexDesc;
 
-    public IndexSearcher(final Directory directory, final ConvertorFromBytes<K> convertorKey,
-	    final Comparator<? super K> keyComparator, final TypeReader<V> valueReader) {
+    public IndexSearcher(final Directory directory, final Class<?> keyClass,
+	    final Class<?> valueClass) {
 	this.directory = Objects.requireNonNull(directory, "directory must not be null");
-	this.keyConvertor = Objects.requireNonNull(convertorKey, "key convertor must not be null");
-	this.valueReader = Objects.requireNonNull(valueReader, "value convertor must not be null");
+	final TypeConvertors tc = TypeConvertors.getInstance();
+	this.keyConvertorToBytes = tc.get(keyClass, OperationType.CONVERTOR_FROM_BYTES);
+	this.valueReader = tc.get(valueClass, OperationType.READER);
 	this.indexDesc = IndexDesc.load(directory);
-	this.keyComparator = Objects.requireNonNull(keyComparator,
+	this.keyComparator = Objects.requireNonNull(tc.get(keyClass, OperationType.COMPARATOR),
 		"keyComparator must not be null");
 	loadMetaIndex();
     }
@@ -68,20 +67,20 @@ public class IndexSearcher<K, V> {
     }
 
     public IndexStreamer<K, V> getStreamer() {
-	return new IndexStreamer<>(directory, IndexWriter.INDEX_MAIN_DATA_FILE, keyConvertor,
+	final DiffKeyReader<K> diffKeyReader = new DiffKeyReader<K>(keyConvertorToBytes);
+	return new IndexStreamer<>(directory, IndexWriter.INDEX_MAIN_DATA_FILE, diffKeyReader,
 		valueReader, keyComparator, indexDesc.getWrittenKeyCount());
     }
 
-    @Deprecated
-    public Stream<Pair<K, V>> stream() {
-	try (final SimpleIndexReader<K, V> mainIndexReader = getMainIndexReader()) {
-	    return mainIndexReader.stream(indexDesc.getWrittenKeyCount());
-	}
+    public IndexIterator<K, V> getIterator() {
+	final DiffKeyReader<K> diffKeyReader = new DiffKeyReader<K>(keyConvertorToBytes);
+	return new IndexIterator<>(directory.getFileReader(IndexWriter.INDEX_MAIN_DATA_FILE),
+		diffKeyReader, valueReader);
     }
 
     private void loadMetaIndex() {
 	try (final SimpleIndexReader<K, Integer> sir = new SimpleIndexReader<>(
-		directory.getFileReader(IndexWriter.INDEX_META_FILE), keyConvertor,
+		directory.getFileReader(IndexWriter.INDEX_META_FILE), keyConvertorToBytes,
 		integerTypeDescriptor.getReader(), keyComparator)) {
 	    sir.stream(indexDesc.getWrittenBlockCount()).forEach(pair -> metaIndex.add(pair));
 	}
@@ -95,18 +94,19 @@ public class IndexSearcher<K, V> {
 		 * key doesn't belongs to this block. So it belong to previous one.
 		 */
 		if (previousPair == null) {
-		    return -2; // no such block
+		    return INVALID_BLOCK_ID; // no such block
 		} else {
 		    return previousPair.getValue();
 		}
 	    }
 	    previousPair = blockPair;
 	}
-	return previousPair.getValue();
+
+	return previousPair == null ? INVALID_BLOCK_ID : previousPair.getValue();
     }
 
     private SimpleIndexReader<K, V> getMainIndexReader() {
 	return new SimpleIndexReader<>(directory.getFileReader(IndexWriter.INDEX_MAIN_DATA_FILE),
-		keyConvertor, valueReader, keyComparator);
+		keyConvertorToBytes, valueReader, keyComparator);
     }
 }
