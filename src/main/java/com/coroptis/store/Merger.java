@@ -1,5 +1,7 @@
 package com.coroptis.store;
 
+import java.util.Objects;
+
 import com.coroptis.index.fileindex.Pair;
 
 /**
@@ -12,12 +14,17 @@ import com.coroptis.index.fileindex.Pair;
  */
 public interface Merger<K, V> {
 
-    default Pair<K, V> merge(Pair<K, V> pair1, Pair<K, V> pair2) {
+    default Pair<K, V> merge(final Pair<K, V> pair1, final Pair<K, V> pair2) {
+	Objects.requireNonNull(pair1, "First pair for merging can't be null.");
+	Objects.requireNonNull(pair2, "Second pair for merging can't be null.");
 	final K key = pair1.getKey();
 	if (!key.equals(pair2.getKey())) {
 	    throw new IllegalArgumentException("Comparing pair with different keys");
 	}
-	return new Pair<K, V>(key, merge(key, pair1.getValue(), pair2.getValue()));
+	final V val = merge(key, pair1.getValue(), pair2.getValue());
+	Objects.requireNonNull(val,
+		() -> String.format("Results of merging values '%s' and '%s' cant't by null.", pair1, pair2));
+	return new Pair<K, V>(key, val);
     }
 
     /**
