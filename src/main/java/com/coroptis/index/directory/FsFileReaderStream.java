@@ -11,8 +11,8 @@ import com.google.common.base.MoreObjects;
 public class FsFileReaderStream implements FileReader {
 
     private final BufferedInputStream bis;
-    
-    private final static int BUFFER_SIZE = 1024 * 100;
+
+    private final static int BUFFER_SIZE = 1024 * 1024 * 5;
 
     FsFileReaderStream(final File file) {
 	try {
@@ -62,8 +62,7 @@ public class FsFileReaderStream implements FileReader {
 
     @Override
     public String toString() {
-	return MoreObjects.toStringHelper(FsFileReaderStream.class).add("bis", bis.toString())
-		.toString();
+	return MoreObjects.toStringHelper(FsFileReaderStream.class).add("bis", bis.toString()).toString();
     }
 
 }
