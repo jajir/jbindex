@@ -2,7 +2,7 @@ package com.coroptis.store;
 
 import static org.mockito.Mockito.*;
 import com.coroptis.index.directory.FileReader;
-import com.coroptis.index.fileindex.PairReader;
+import com.coroptis.index.sorteddatafile.PairReader;
 
 public class MockStoreReader extends StoreReader<String, String> {
 

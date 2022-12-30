@@ -11,8 +11,8 @@ import static org.mockito.Mockito.when;
 import org.junit.jupiter.api.Test;
 
 import com.coroptis.index.directory.FileReader;
-import com.coroptis.index.fileindex.Pair;
-import com.coroptis.index.fileindex.PairReader;
+import com.coroptis.index.sorteddatafile.Pair;
+import com.coroptis.index.sorteddatafile.PairReader;
 
 public class MergeSpliteratorTest {
 

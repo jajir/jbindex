@@ -2,7 +2,7 @@ package com.coroptis.store;
 
 import java.util.Objects;
 
-import com.coroptis.index.fileindex.Pair;
+import com.coroptis.index.sorteddatafile.Pair;
 
 /**
  * Allows to merge two key value pairs into one.

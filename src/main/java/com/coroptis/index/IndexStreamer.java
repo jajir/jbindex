@@ -7,9 +7,9 @@ import java.util.stream.StreamSupport;
 
 import com.coroptis.index.directory.Directory;
 import com.coroptis.index.directory.FileReader;
-import com.coroptis.index.fileindex.Pair;
-import com.coroptis.index.fileindex.PairReader;
-import com.coroptis.index.fileindex.FileIndexSpliterator;
+import com.coroptis.index.sorteddatafile.SortedDataFileSpliterator;
+import com.coroptis.index.sorteddatafile.Pair;
+import com.coroptis.index.sorteddatafile.PairReader;
 import com.coroptis.index.type.TypeReader;
 
 public class IndexStreamer<K, V> implements CloseableResource {
@@ -34,7 +34,7 @@ public class IndexStreamer<K, V> implements CloseableResource {
 
     public Stream<Pair<K, V>> stream() {
 	return StreamSupport.stream(
-		new FileIndexSpliterator<>(pairReader, fileReader, pairComparator, estimateSize),
+		new SortedDataFileSpliterator<>(pairReader, fileReader, pairComparator, estimateSize),
 		false);
     }
 

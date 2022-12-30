@@ -13,8 +13,12 @@ import java.util.stream.StreamSupport;
 import com.coroptis.index.IndexWriter;
 import com.coroptis.index.directory.Directory;
 import com.coroptis.index.directory.FileReader;
-import com.coroptis.index.fileindex.Pair;
-import com.coroptis.index.fileindex.PairReader;
+import com.coroptis.index.sorteddatafile.Pair;
+import com.coroptis.index.sorteddatafile.PairReader;
+import com.coroptis.index.sorteddatafile.SortedDataFileReader;
+import com.coroptis.index.sorteddatafile.SortedDataFileWriter;
+import com.coroptis.index.type.ConvertorFromBytes;
+import com.coroptis.index.type.ConvertorToBytes;
 import com.coroptis.index.type.OperationType;
 import com.coroptis.index.type.TypeConvertors;
 import com.coroptis.index.type.TypeReader;
@@ -48,9 +52,8 @@ public class StoreSorter<K, V> {
     private final Integer howManySortInMemory;
     private final Integer blockSize;
 
-    public StoreSorter(final Directory directory, final Merger<K, V> merger,
-	    final Class<?> keyClass, final Class<?> valueClass, final Integer howManySortInMemory,
-	    final Integer blockSize) {
+    public StoreSorter(final Directory directory, final Merger<K, V> merger, final Class<?> keyClass,
+	    final Class<?> valueClass, final Integer howManySortInMemory, final Integer blockSize) {
 	this.directory = Objects.requireNonNull(directory);
 	this.merger = Objects.requireNonNull(merger);
 	this.keyClass = Objects.requireNonNull(keyClass);
@@ -96,13 +99,19 @@ public class StoreSorter<K, V> {
     }
 
     private void writeSortedListToFile(final List<Pair<K, V>> cache, final int fileCounter) {
-	Collections.sort(cache,
-		(pair1, pair2) -> keyComparator.compare(pair1.getKey(), pair2.getKey()));
+	Collections.sort(cache, (pair1, pair2) -> keyComparator.compare(pair1.getKey(), pair2.getKey()));
 	final String fileName = makeFileName(0, fileCounter);
-	try (final StoreFileWriter<K, V> output = new StoreFileWriter<>(directory, fileName,
-		keyWriter, valueWriter)) {
-	    cache.forEach(pair -> output.put(pair.getKey(), pair.getValue()));
+
+	final TypeConvertors tc = TypeConvertors.getInstance();
+	final ConvertorToBytes<K> keyConvertor = tc.get(keyClass, OperationType.CONVERTOR_TO_BYTES);
+	try (final SortedDataFileWriter<K, V> mainIndex = new SortedDataFileWriter<>(directory.getFileWriter(fileName),
+		keyConvertor, keyComparator, valueWriter)) {
+	    cache.forEach(pair -> mainIndex.put(pair));
 	}
+
+//	try (final StoreFileWriter<K, V> output = new StoreFileWriter<>(directory, fileName, keyWriter, valueWriter)) {
+//	    cache.forEach(pair -> output.put(pair.getKey(), pair.getValue()));
+//	}
     }
 
     // Return number of produced files.
@@ -110,20 +119,21 @@ public class StoreSorter<K, V> {
 	final List<String> filesToMerge = getFilesInRound(roundNo);
 
 	if (filesToMerge.size() == 0) {
-	    try (final IndexWriter<K, V> indexWriter = new IndexWriter<K, V>(directory, 3, keyClass,
-		    valueClass)) {
+	    try (final IndexWriter<K, V> indexWriter = new IndexWriter<K, V>(directory, 3, keyClass, valueClass)) {
 		// do nothing, just create empty index.
 	    }
 	    return 1;
 	}
 
 	if (filesToMerge.size() == 1) {
-	    try (final FileStreamer<K, V> fileStreamer = new FileStreamer<K, V>(directory,
-		    filesToMerge.get(0), keyReader, valueReader)) {
-		try (final IndexWriter<K, V> indexWriter = new IndexWriter<K, V>(directory,
-			blockSize, keyClass, valueClass)) {
-		    fileStreamer.stream()
-			    .forEach(pair -> indexWriter.put(pair.getKey(), pair.getValue()));
+	    final TypeConvertors tc = TypeConvertors.getInstance();
+	    final ConvertorFromBytes<K> keyConvertor = tc.get(keyClass, OperationType.CONVERTOR_FROM_BYTES);
+	    try (final SortedDataFileReader<K, V> fileStreamer = new SortedDataFileReader<K, V>(
+		    directory.getFileReader(filesToMerge.get(0)), keyConvertor, valueReader, keyComparator)) {
+		// create final index
+		try (final IndexWriter<K, V> indexWriter = new IndexWriter<K, V>(directory, blockSize, keyClass,
+			valueClass)) {
+		    fileStreamer.stream(1).forEach(pair -> indexWriter.put(pair.getKey(), pair.getValue()));
 		}
 	    }
 	    directory.deleteFile(filesToMerge.get(0));
@@ -134,8 +144,8 @@ public class StoreSorter<K, V> {
 	    final String fn1 = filesToMerge.get(0);
 	    final String fn2 = filesToMerge.get(1);
 
-	    try (final IndexWriter<K, V> indexWriter = new IndexWriter<K, V>(directory, blockSize,
-		    keyClass, valueClass)) {
+	    try (final IndexWriter<K, V> indexWriter = new IndexWriter<K, V>(directory, blockSize, keyClass,
+		    valueClass)) {
 		mergeSortedFiles(fn1, fn2, pair -> indexWriter.put(pair.getKey(), pair.getValue()));
 	    }
 
@@ -158,9 +168,14 @@ public class StoreSorter<K, V> {
 	    final String fn1 = filesToMerge.get(i * 2);
 	    final String fn2 = filesToMerge.get(i * 2 + 1);
 
-	    try (final StoreFileWriter<K, V> output = new StoreFileWriter<>(directory,
-		    makeFileName(roundNo + 1, currentFileNo), keyWriter, valueWriter)) {
-		mergeSortedFiles(fn1, fn2, pair -> output.put(pair.getKey(), pair.getValue()));
+	    final TypeConvertors tc = TypeConvertors.getInstance();
+	    final ConvertorToBytes<K> keyConvertor = tc.get(keyClass, OperationType.CONVERTOR_TO_BYTES);
+	    try (final SortedDataFileWriter<K, V> indexWriter = new SortedDataFileWriter<>(
+		    directory.getFileWriter(makeFileName(roundNo + 1, currentFileNo)), keyConvertor, keyComparator,
+		    valueWriter)) {
+//	    try (final StoreFileWriter<K, V> output = new StoreFileWriter<>(directory,
+//		    makeFileName(roundNo + 1, currentFileNo), keyWriter, valueWriter)) {
+		mergeSortedFiles(fn1, fn2, pair -> indexWriter.put(pair));
 	    }
 
 	    directory.deleteFile(fn1);
@@ -176,19 +191,34 @@ public class StoreSorter<K, V> {
 		.collect(Collectors.toList());
     };
 
-    private void mergeSortedFiles(final String fileName1, final String fileName2,
-	    final Consumer<Pair<K, V>> consumer) {
+    private void mergeSortedFiles(final String fileName1, final String fileName2, final Consumer<Pair<K, V>> consumer) {
 	final PairReader<K, V> pairReader = new PairReader<K, V>(keyReader, valueReader);
-	try (final FileReader fileReader1 = directory.getFileReader(fileName1)) {
-	    final StoreReader<K, V> reader1 = new StoreReader<K, V>(pairReader, fileReader1);
-	    try (final FileReader fileReader2 = directory.getFileReader(fileName2)) {
-		final StoreReader<K, V> reader2 = new StoreReader<K, V>(pairReader, fileReader2);
-		final MergeSpliterator<K, V> mergeSpliterator = new MergeSpliterator<K, V>(reader1,
-			reader2, keyComparator, merger);
+
+	final TypeConvertors tc = TypeConvertors.getInstance();
+	final ConvertorFromBytes<K> keyConvertor = tc.get(keyClass, OperationType.CONVERTOR_FROM_BYTES);
+	try (final SortedDataFileReader<K, V> fileStreamer1 = new SortedDataFileReader<K, V>(
+		directory.getFileReader(fileName1), keyConvertor, valueReader, keyComparator)) {
+	    try (final SortedDataFileReader<K, V> fileStreamer2 = new SortedDataFileReader<K, V>(
+		    directory.getFileReader(fileName2), keyConvertor, valueReader, keyComparator)) {
+		final MergeSpliterator<K, V> mergeSpliterator = new MergeSpliterator<K, V>(fileStreamer1, fileStreamer2,
+			keyComparator, merger);
 		final Stream<Pair<K, V>> pairStream = StreamSupport.stream(mergeSpliterator, false);
 		pairStream.forEach(pair -> consumer.accept(pair));
 	    }
 	}
+//	try (final FileReader fileReader1 = directory.getFileReader(fileName1)) {
+//	    final StoreReader<K, V> reader1 = new StoreReader<K, V>(pairReader, fileReader1);
+//	    try (final FileReader fileReader2 = directory.getFileReader(fileName2)) {
+//		final StoreReader<K, V> reader2 = new StoreReader<K, V>(pairReader, fileReader2);
+//
+//		final MergeSpliterator<K, V> mergeSpliterator = new MergeSpliterator<K, V>(reader1, reader2,
+//			keyComparator, merger);
+//
+//		final Stream<Pair<K, V>> pairStream = StreamSupport.stream(mergeSpliterator, false);
+//		pairStream.forEach(pair -> consumer.accept(pair));
+//
+//	    }
+//	}
     }
 
     private String makeFileName(final int roundNo, final int no) {

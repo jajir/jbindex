@@ -4,8 +4,8 @@ import java.util.Iterator;
 import java.util.Objects;
 
 import com.coroptis.index.directory.FileReader;
-import com.coroptis.index.fileindex.Pair;
-import com.coroptis.index.fileindex.PairReader;
+import com.coroptis.index.sorteddatafile.Pair;
+import com.coroptis.index.sorteddatafile.PairReader;
 import com.coroptis.index.type.TypeReader;
 
 public class IndexIterator<K, V> implements Iterator<Pair<K, V>>, CloseableResource {

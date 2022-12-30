@@ -6,7 +6,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import com.coroptis.index.fileindex.Pair;
+import com.coroptis.index.sorteddatafile.Pair;
 
 public class UniqueCache<K, V> {
 

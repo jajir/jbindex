@@ -5,33 +5,38 @@ import java.util.Objects;
 import java.util.Spliterator;
 import java.util.function.Consumer;
 
-import com.coroptis.index.fileindex.Pair;
+import com.coroptis.index.sorteddatafile.Pair;
+import com.coroptis.index.sorteddatafile.SortedDataFileIterator;
+import com.coroptis.index.sorteddatafile.SortedDataFileReader;
 
 public class MergeSpliterator<K, V> implements Spliterator<Pair<K, V>> {
 
-    private final StoreReader<K, V> reader1;
+    private final SortedDataFileIterator<K, V> reader1;
 
-    private final StoreReader<K, V> reader2;
+    private final SortedDataFileIterator<K, V> reader2;
 
     private final Comparator<? super K> keyComparator;
 
     private final Merger<K, V> merger;
 
-    MergeSpliterator(final StoreReader<K, V> reader1, final StoreReader<K, V> reader2,
+    MergeSpliterator(final SortedDataFileReader<K, V> reader1, final SortedDataFileReader<K, V> reader2,
 	    final Comparator<? super K> keyComparator, final Merger<K, V> merger) {
-	this.reader1 = Objects.requireNonNull(reader1);
-	this.reader2 = Objects.requireNonNull(reader2);
+	this.reader1 = new SortedDataFileIterator<K, V>(Objects.requireNonNull(reader1));
+	this.reader2 = new SortedDataFileIterator<K, V>(Objects.requireNonNull(reader2));
 	this.keyComparator = Objects.requireNonNull(keyComparator);
 	this.merger = Objects.requireNonNull(merger);
     }
 
     @Override
     public int characteristics() {
-	return Spliterator.SORTED | Spliterator.NONNULL | Spliterator.DISTINCT;
+	return Spliterator.SORTED | Spliterator.NONNULL | Spliterator.DISTINCT | Spliterator.IMMUTABLE;
     }
 
     @Override
     public long estimateSize() {
+	/*
+	 * Size is not known.
+	 */
 	return Long.MAX_VALUE;
     }
 
@@ -40,7 +45,7 @@ public class MergeSpliterator<K, V> implements Spliterator<Pair<K, V>> {
 	if (!reader1.readCurrent().isPresent()) {
 	    if (reader2.readCurrent().isPresent()) {
 		consumer.accept(reader2.readCurrent().get());
-		reader2.moveToNext();
+		reader2.next();
 		return true;
 	    } else {
 		return false;
@@ -50,7 +55,7 @@ public class MergeSpliterator<K, V> implements Spliterator<Pair<K, V>> {
 
 	if (!reader2.readCurrent().isPresent()) {
 	    consumer.accept(p1);
-	    reader1.moveToNext();
+	    reader1.next();
 	    return true;
 	}
 	final Pair<K, V> p2 = reader2.readCurrent().get();
@@ -59,16 +64,16 @@ public class MergeSpliterator<K, V> implements Spliterator<Pair<K, V>> {
 	if (cmp == 0) {
 	    // p1 == p2
 	    consumer.accept(merger.merge(p1, p2));
-	    reader1.moveToNext();
-	    reader2.moveToNext();
+	    reader1.next();
+	    reader2.next();
 	} else if (cmp < 0) {
 	    // p1 < p2
 	    consumer.accept(p1);
-	    reader1.moveToNext();
+	    reader1.next();
 	} else {
 	    // p1 > p2
 	    consumer.accept(p2);
-	    reader2.moveToNext();
+	    reader2.next();
 	}
 	return true;
     }

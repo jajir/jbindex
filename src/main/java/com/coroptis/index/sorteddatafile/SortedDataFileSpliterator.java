@@ -1,4 +1,4 @@
-package com.coroptis.index.fileindex;
+package com.coroptis.index.sorteddatafile;
 
 import java.util.Comparator;
 import java.util.Objects;
@@ -8,7 +8,7 @@ import java.util.function.Consumer;
 import com.coroptis.index.PairComparator;
 import com.coroptis.index.directory.FileReader;
 
-public class FileIndexSpliterator<K, V> implements Spliterator<Pair<K, V>> {
+public class SortedDataFileSpliterator<K, V> implements Spliterator<Pair<K, V>> {
 
     private final PairReader<K, V> pairReader;
 
@@ -18,7 +18,7 @@ public class FileIndexSpliterator<K, V> implements Spliterator<Pair<K, V>> {
 
     private final long estimateSize;
 
-    public FileIndexSpliterator(final PairReader<K, V> pairReader, final FileReader fileReader,
+    public SortedDataFileSpliterator(final PairReader<K, V> pairReader, final FileReader fileReader,
 	    final PairComparator<K, V> pairComparator, final long estimateSize) {
 	this.pairReader = Objects.requireNonNull(pairReader);
 	this.fileReader = Objects.requireNonNull(fileReader);
@@ -56,6 +56,7 @@ public class FileIndexSpliterator<K, V> implements Spliterator<Pair<K, V>> {
 	/*
 	 * Stream is not sized. It's not possible to determine stream size.
 	 */
+	//FIXME tak proc tu hodnotu vracim?
 	return estimateSize;
     }
 

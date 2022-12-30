@@ -1,4 +1,4 @@
-package com.coroptis.index.fileindex;
+package com.coroptis.index.sorteddatafile;
 
 import java.util.Comparator;
 import java.util.Objects;
@@ -11,14 +11,13 @@ import com.coroptis.index.directory.FileReader;
 import com.coroptis.index.type.ConvertorFromBytes;
 import com.coroptis.index.type.TypeReader;
 
-public class FileIndexReader<K, V> implements CloseableResource {
+public class SortedDataFileReader<K, V> implements CloseableResource {
 
     private final FileReader fileReader;
     private final PairComparator<K, V> pairComparator;
     private final PairReader<K, V> pairReader;
 
-    public FileIndexReader(final FileReader fileReader,
-	    final ConvertorFromBytes<K> keyConvertorToBytes,
+    public SortedDataFileReader(final FileReader fileReader, final ConvertorFromBytes<K> keyConvertorToBytes,
 	    final TypeReader<V> valueReader, final Comparator<? super K> keyComparator) {
 	this.fileReader = Objects.requireNonNull(fileReader);
 	final DiffKeyReader<K> diffKeyReader = new DiffKeyReader<K>(keyConvertorToBytes);
@@ -26,6 +25,12 @@ public class FileIndexReader<K, V> implements CloseableResource {
 	pairComparator = new PairComparator<>(keyComparator);
     }
 
+    /**
+     * Try to read data.
+     * 
+     * @return Return read data when it's possible. Return <code>null</code> when
+     *         there are no data.
+     */
     public Pair<K, V> read() {
 	return pairReader.read(fileReader);
     }
@@ -35,9 +40,8 @@ public class FileIndexReader<K, V> implements CloseableResource {
     }
 
     public Stream<Pair<K, V>> stream(final long estimateSize) {
-	return StreamSupport.stream(
-		new FileIndexSpliterator<>(pairReader, fileReader, pairComparator, estimateSize),
-		false);
+	return StreamSupport
+		.stream(new SortedDataFileSpliterator<>(pairReader, fileReader, pairComparator, estimateSize), false);
     }
 
     @Override

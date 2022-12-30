@@ -1,4 +1,4 @@
-package com.coroptis.index.fileindex;
+package com.coroptis.index.sorteddatafile;
 
 import com.google.common.base.MoreObjects;
 
