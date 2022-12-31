@@ -8,7 +8,7 @@ import com.coroptis.index.directory.Directory;
 import com.coroptis.index.sorteddatafile.Pair;
 import com.coroptis.index.type.OperationType;
 import com.coroptis.index.type.TypeConvertors;
-import com.coroptis.store.Merger;
+import com.coroptis.index.unsorteddatafile.Merger;
 
 public class MergeIndexAndConsumer<K, V> implements CloseableResource {
 

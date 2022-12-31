@@ -10,6 +10,8 @@ import org.junit.jupiter.api.Test;
 import com.coroptis.index.IndexSearcher;
 import com.coroptis.index.directory.Directory;
 import com.coroptis.index.directory.MemDirectory;
+import com.coroptis.index.unsorteddatafile.StoreSorter;
+import com.coroptis.index.unsorteddatafile.UnsortedDataFileWriter;
 
 public class SortTest {
 
@@ -119,7 +121,7 @@ public class SortTest {
     }
 
     private void setup(final List<String> keys) {
-	try (final StoreWriter<String, String> store = new StoreWriter<String, String>(directory,
+	try (final UnsortedDataFileWriter<String, String> store = new UnsortedDataFileWriter<String, String>(directory,
 		String.class, String.class)) {
 	    keys.forEach(key -> store.put(key, "Ahoj"));
 	}

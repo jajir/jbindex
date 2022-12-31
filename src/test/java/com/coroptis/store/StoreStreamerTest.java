@@ -8,8 +8,8 @@ import org.junit.jupiter.api.Test;
 import com.coroptis.index.directory.Directory;
 import com.coroptis.index.directory.MemDirectory;
 import com.coroptis.index.type.TypeDescriptorString;
-import com.coroptis.store.StoreStreamer;
-import com.coroptis.store.StoreWriter;
+import com.coroptis.index.unsorteddatafile.UnsortedDataFileStreamer;
+import com.coroptis.index.unsorteddatafile.UnsortedDataFileWriter;
 
 public class StoreStreamerTest {
 
@@ -22,7 +22,7 @@ public class StoreStreamerTest {
 
     @Test
     void test_read() throws Exception {
-	try (final StoreStreamer<String, String> reader = new StoreStreamer<String, String>(
+	try (final UnsortedDataFileStreamer<String, String> reader = new UnsortedDataFileStreamer<String, String>(
 		directory, td.getVarLengthReader(), td.getVarLengthReader())) {
 	    reader.stream().forEach(pair -> {
 		System.out.println(pair.getKey());
@@ -32,7 +32,7 @@ public class StoreStreamerTest {
 
     @BeforeEach
     private void setup() {
-	try (final StoreWriter<String, String> store = new StoreWriter<String, String>(directory,
+	try (final UnsortedDataFileWriter<String, String> store = new UnsortedDataFileWriter<String, String>(directory,
 		String.class, String.class)) {
 	    for (int i = 0; i < NUMBERS; i++) {
 		store.put(String.valueOf(random.nextInt(NUMBERS)), "Ahoj");

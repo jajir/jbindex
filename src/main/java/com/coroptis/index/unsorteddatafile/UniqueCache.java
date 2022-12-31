@@ -1,4 +1,4 @@
-package com.coroptis.store;
+package com.coroptis.index.unsorteddatafile;
 
 import java.util.HashMap;
 import java.util.List;

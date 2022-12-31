@@ -1,4 +1,4 @@
-package com.coroptis.store;
+package com.coroptis.index.unsorteddatafile;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -89,8 +89,8 @@ public class StoreSorter<K, V> {
 
     private void splitIntoSortedIndexes() {
 	final PairReader<K, V> pairReader = new PairReader<K, V>(keyReader, valueReader);
-	try (final FileReader fileReader = directory.getFileReader(StoreWriter.STORE)) {
-	    final StoreReader<K, V> reader = new StoreReader<K, V>(pairReader, fileReader);
+	try (final FileReader fileReader = directory.getFileReader(UnsortedDataFileWriter.STORE)) {
+	    final UnsortedDataFileReader<K, V> reader = new UnsortedDataFileReader<K, V>(pairReader, fileReader);
 	    int cx = 0;
 	    int fileCounter = 0;
 	    final UniqueCache<K, V> cache = new UniqueCache<>(merger);
@@ -106,7 +106,7 @@ public class StoreSorter<K, V> {
 	    }
 	    writeSortedListToFile(cache.toList(), fileCounter);
 	}
-	directory.deleteFile(StoreWriter.STORE);
+	directory.deleteFile(UnsortedDataFileWriter.STORE);
     }
 
     private void writeSortedListToFile(final List<Pair<K, V>> cache, final int fileCounter) {

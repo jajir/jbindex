@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import com.coroptis.index.directory.FileReader;
 import com.coroptis.index.sorteddatafile.Pair;
 import com.coroptis.index.sorteddatafile.PairReader;
+import com.coroptis.index.unsorteddatafile.MergeSpliterator;
 
 public class MergeSpliteratorTest {
 

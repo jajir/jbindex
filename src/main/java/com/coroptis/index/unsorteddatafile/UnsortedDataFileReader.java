@@ -1,4 +1,4 @@
-package com.coroptis.store;
+package com.coroptis.index.unsorteddatafile;
 
 import java.util.Objects;
 import java.util.Optional;
@@ -7,7 +7,7 @@ import com.coroptis.index.directory.FileReader;
 import com.coroptis.index.sorteddatafile.Pair;
 import com.coroptis.index.sorteddatafile.PairReader;
 
-public class StoreReader<K, V> {
+public class UnsortedDataFileReader<K, V> {
 
     private final PairReader<K, V> pairReader;
 
@@ -15,7 +15,7 @@ public class StoreReader<K, V> {
 
     private Pair<K, V> currentPair;
 
-    StoreReader(final PairReader<K, V> pairReader, final FileReader fileReader) {
+    UnsortedDataFileReader(final PairReader<K, V> pairReader, final FileReader fileReader) {
 	this.pairReader = Objects.requireNonNull(pairReader);
 	this.fileReader = Objects.requireNonNull(fileReader);
 	tryToReadNextPair();

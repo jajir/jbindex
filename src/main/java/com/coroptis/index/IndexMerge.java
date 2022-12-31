@@ -7,7 +7,7 @@ import java.util.stream.StreamSupport;
 import com.coroptis.index.directory.Directory;
 import com.coroptis.index.type.OperationType;
 import com.coroptis.index.type.TypeConvertors;
-import com.coroptis.store.Merger;
+import com.coroptis.index.unsorteddatafile.Merger;
 
 public class IndexMerge<K, V> {
 
