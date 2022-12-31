@@ -1,9 +1,13 @@
 package com.coroptis.store;
 
+import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Spliterator;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import com.coroptis.index.sorteddatafile.Pair;
 import com.coroptis.index.sorteddatafile.SortedDataFileIterator;
@@ -11,18 +15,17 @@ import com.coroptis.index.sorteddatafile.SortedDataFileReader;
 
 public class MergeSpliterator<K, V> implements Spliterator<Pair<K, V>> {
 
-    private final SortedDataFileIterator<K, V> reader1;
-
-    private final SortedDataFileIterator<K, V> reader2;
+    private final List<SortedDataFileIterator<K, V>> readers;
 
     private final Comparator<? super K> keyComparator;
 
     private final Merger<K, V> merger;
 
-    MergeSpliterator(final SortedDataFileReader<K, V> reader1, final SortedDataFileReader<K, V> reader2,
-	    final Comparator<? super K> keyComparator, final Merger<K, V> merger) {
-	this.reader1 = new SortedDataFileIterator<K, V>(Objects.requireNonNull(reader1));
-	this.reader2 = new SortedDataFileIterator<K, V>(Objects.requireNonNull(reader2));
+    MergeSpliterator(List<SortedDataFileReader<K, V>> readers, final Comparator<? super K> keyComparator,
+	    final Merger<K, V> merger) {
+	this.readers = readers.stream().map(
+		sortedDataFileReader -> new SortedDataFileIterator<K, V>(Objects.requireNonNull(sortedDataFileReader)))
+		.collect(Collectors.toList());
 	this.keyComparator = Objects.requireNonNull(keyComparator);
 	this.merger = Objects.requireNonNull(merger);
     }
@@ -42,40 +45,41 @@ public class MergeSpliterator<K, V> implements Spliterator<Pair<K, V>> {
 
     @Override
     public boolean tryAdvance(final Consumer<? super Pair<K, V>> consumer) {
-	if (!reader1.readCurrent().isPresent()) {
-	    if (reader2.readCurrent().isPresent()) {
-		consumer.accept(reader2.readCurrent().get());
-		reader2.next();
-		return true;
+	final List<SortedDataFileIterator<K, V>> iteratorsWithBiggerKey = getIteratorsWithSmallerValue();
+	if (iteratorsWithBiggerKey.isEmpty()) {
+	    // there are no more items to read
+	    return false;
+	}
+
+	Pair<K, V> out = null;
+	for (final SortedDataFileIterator<K, V> reader : iteratorsWithBiggerKey) {
+	    final Pair<K, V> readed = reader.readCurrent().get();
+	    if (out == null) {
+		out = readed;
 	    } else {
-		return false;
+		out = merger.merge(out, readed);
 	    }
+	    reader.next();
 	}
-	final Pair<K, V> p1 = reader1.readCurrent().get();
-
-	if (!reader2.readCurrent().isPresent()) {
-	    consumer.accept(p1);
-	    reader1.next();
-	    return true;
-	}
-	final Pair<K, V> p2 = reader2.readCurrent().get();
-
-	final int cmp = keyComparator.compare(p1.getKey(), p2.getKey());
-	if (cmp == 0) {
-	    // p1 == p2
-	    consumer.accept(merger.merge(p1, p2));
-	    reader1.next();
-	    reader2.next();
-	} else if (cmp < 0) {
-	    // p1 < p2
-	    consumer.accept(p1);
-	    reader1.next();
-	} else {
-	    // p1 > p2
-	    consumer.accept(p2);
-	    reader2.next();
-	}
+	consumer.accept(out);
 	return true;
+    }
+
+    /**
+     * Minimal value is chosen because index order is ascending.
+     * 
+     * @return
+     */
+    private List<SortedDataFileIterator<K, V>> getIteratorsWithSmallerValue() {
+	final Optional<K> maxValue = readers.stream().filter(reader -> reader.readCurrent().isPresent())
+		.map(reader -> reader.readCurrent().get().getKey()).min(keyComparator);
+	if (maxValue.isEmpty()) {
+	    return Collections.emptyList();
+	}
+	return readers.stream().filter(reader -> reader.readCurrent().isPresent()).filter(reader -> {
+	    final K key = reader.readCurrent().get().getKey();
+	    return keyComparator.compare(key, maxValue.get()) == 0;
+	}).collect(Collectors.toList());
     }
 
     @Override

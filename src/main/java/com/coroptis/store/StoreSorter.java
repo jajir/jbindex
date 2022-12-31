@@ -1,5 +1,6 @@
 package com.coroptis.store;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -38,6 +39,7 @@ public class StoreSorter<K, V> {
 
     private final static String ROUND_NAME = "round";
     private final static String ROUND_SEPARTOR = "-";
+    private final static int HOW_MANY_FILES_TO_MERGE_AT_ONCE = 50;
 
     private final Random random = new Random();
     private final Directory directory;
@@ -71,7 +73,7 @@ public class StoreSorter<K, V> {
     public void sort() {
 	splitIntoSortedIndexes();
 	int roundNo = 0;
-	while (mergeRound(roundNo) != 1) {
+	while (mergeRound2(roundNo) != 1) {
 	    roundNo++;
 	}
     }
@@ -108,14 +110,9 @@ public class StoreSorter<K, V> {
 		keyConvertor, keyComparator, valueWriter)) {
 	    cache.forEach(pair -> mainIndex.put(pair));
 	}
-
-//	try (final StoreFileWriter<K, V> output = new StoreFileWriter<>(directory, fileName, keyWriter, valueWriter)) {
-//	    cache.forEach(pair -> output.put(pair.getKey(), pair.getValue()));
-//	}
     }
 
-    // Return number of produced files.
-    private int mergeRound(final int roundNo) {
+    private int mergeRound2(final int roundNo) {
 	final List<String> filesToMerge = getFilesInRound(roundNo);
 
 	if (filesToMerge.size() == 0) {
@@ -140,50 +137,39 @@ public class StoreSorter<K, V> {
 	    return 1;
 	}
 
-	if (filesToMerge.size() == 2) {
-	    final String fn1 = filesToMerge.get(0);
-	    final String fn2 = filesToMerge.get(1);
-
-	    try (final IndexWriter<K, V> indexWriter = new IndexWriter<K, V>(directory, blockSize, keyClass,
-		    valueClass)) {
-		mergeSortedFiles(fn1, fn2, pair -> indexWriter.put(pair.getKey(), pair.getValue()));
+	for (int i = 0; i < howManyFilesShoulBeProduces(filesToMerge.size()); i++) {
+	    final List<String> filesToMergeLocaly = new ArrayList<>();
+	    for (int j = 0; j < HOW_MANY_FILES_TO_MERGE_AT_ONCE; j++) {
+		final int index = i + j;
+		if (index < filesToMerge.size()) {
+		    final String fileName = filesToMerge.get(index);
+		    filesToMergeLocaly.add(fileName);
+		}
 	    }
-
-	    directory.deleteFile(fn1);
-	    directory.deleteFile(fn2);
-	    return 1;
-	}
-
-	int currentFileNo = 0;
-	if (filesToMerge.size() % 2 == 1) {
-	    final int fileNo = random.nextInt(filesToMerge.size());
-	    final String fileToMove = makeFileName(roundNo, fileNo);
-	    directory.renameFile(fileToMove, makeFileName(roundNo + 1, currentFileNo));
-	    filesToMerge.remove(fileToMove);
-	    currentFileNo++;
-	}
-
-	// Merge files. Number of files to merge is even number
-	for (int i = 0; i < filesToMerge.size() / 2; i++) {
-	    final String fn1 = filesToMerge.get(i * 2);
-	    final String fn2 = filesToMerge.get(i * 2 + 1);
-
 	    final TypeConvertors tc = TypeConvertors.getInstance();
 	    final ConvertorToBytes<K> keyConvertor = tc.get(keyClass, OperationType.CONVERTOR_TO_BYTES);
 	    try (final SortedDataFileWriter<K, V> indexWriter = new SortedDataFileWriter<>(
-		    directory.getFileWriter(makeFileName(roundNo + 1, currentFileNo)), keyConvertor, keyComparator,
-		    valueWriter)) {
-//	    try (final StoreFileWriter<K, V> output = new StoreFileWriter<>(directory,
-//		    makeFileName(roundNo + 1, currentFileNo), keyWriter, valueWriter)) {
-		mergeSortedFiles(fn1, fn2, pair -> indexWriter.put(pair));
+		    directory.getFileWriter(makeFileName(roundNo + 1, i)), keyConvertor, keyComparator, valueWriter)) {
+		mergeSortedFiles(filesToMergeLocaly, pair -> indexWriter.put(pair));
 	    }
-
-	    directory.deleteFile(fn1);
-	    directory.deleteFile(fn2);
-	    currentFileNo++;
+	    filesToMergeLocaly.forEach(fileName -> directory.deleteFile(fileName));
+	    // 1. pripravit seznam soubor u
+	    // 2. vsechny otevrit a uzavrit
+	    // 3. poslat do mergeru ;-)
+	    // 4. ppuvodni soubory smazat
 	}
+	return 0;
+    }
 
-	return currentFileNo;
+    /**
+     * Divide number of which should be merged by how many files should be merged at
+     * on run. Result is rounded up.
+     * 
+     * @param numberOfFiles return number of round which should merge files
+     * @return
+     */
+    private int howManyFilesShoulBeProduces(final int numberOfFiles) {
+	return (int) Math.ceil(((float) numberOfFiles) / ((float) HOW_MANY_FILES_TO_MERGE_AT_ONCE));
     }
 
     private List<String> getFilesInRound(final int roundNo) {
@@ -191,34 +177,29 @@ public class StoreSorter<K, V> {
 		.collect(Collectors.toList());
     };
 
-    private void mergeSortedFiles(final String fileName1, final String fileName2, final Consumer<Pair<K, V>> consumer) {
-	final PairReader<K, V> pairReader = new PairReader<K, V>(keyReader, valueReader);
-
+    private void mergeSortedFiles(final List<String> filesToMergeLocaly, final Consumer<Pair<K, V>> consumer) {
 	final TypeConvertors tc = TypeConvertors.getInstance();
 	final ConvertorFromBytes<K> keyConvertor = tc.get(keyClass, OperationType.CONVERTOR_FROM_BYTES);
-	try (final SortedDataFileReader<K, V> fileStreamer1 = new SortedDataFileReader<K, V>(
-		directory.getFileReader(fileName1), keyConvertor, valueReader, keyComparator)) {
-	    try (final SortedDataFileReader<K, V> fileStreamer2 = new SortedDataFileReader<K, V>(
-		    directory.getFileReader(fileName2), keyConvertor, valueReader, keyComparator)) {
-		final MergeSpliterator<K, V> mergeSpliterator = new MergeSpliterator<K, V>(fileStreamer1, fileStreamer2,
-			keyComparator, merger);
-		final Stream<Pair<K, V>> pairStream = StreamSupport.stream(mergeSpliterator, false);
-		pairStream.forEach(pair -> consumer.accept(pair));
+	List<SortedDataFileReader<K, V>> readers = null;
+	try {
+	    readers = filesToMergeLocaly.stream()
+		    .map(fileName -> new SortedDataFileReader<K, V>(directory.getFileReader(fileName), keyConvertor,
+			    valueReader, keyComparator))
+		    .collect(Collectors.toList());
+	    final MergeSpliterator<K, V> mergeSpliterator = new MergeSpliterator<K, V>(readers, keyComparator, merger);
+	    final Stream<Pair<K, V>> pairStream = StreamSupport.stream(mergeSpliterator, false);
+	    pairStream.forEach(pair -> consumer.accept(pair));
+	} finally {
+	    if (readers != null) {
+		readers.forEach(reader -> {
+		    try {
+			reader.close();
+		    } catch (Exception e) {
+			// Just closing all readers, when exceptions occurs I don't care.
+		    }
+		});
 	    }
 	}
-//	try (final FileReader fileReader1 = directory.getFileReader(fileName1)) {
-//	    final StoreReader<K, V> reader1 = new StoreReader<K, V>(pairReader, fileReader1);
-//	    try (final FileReader fileReader2 = directory.getFileReader(fileName2)) {
-//		final StoreReader<K, V> reader2 = new StoreReader<K, V>(pairReader, fileReader2);
-//
-//		final MergeSpliterator<K, V> mergeSpliterator = new MergeSpliterator<K, V>(reader1, reader2,
-//			keyComparator, merger);
-//
-//		final Stream<Pair<K, V>> pairStream = StreamSupport.stream(mergeSpliterator, false);
-//		pairStream.forEach(pair -> consumer.accept(pair));
-//
-//	    }
-//	}
     }
 
     private String makeFileName(final int roundNo, final int no) {
