@@ -70,10 +70,19 @@ public class StoreSorter<K, V> {
 	keyComparator = tc.get(keyClass, OperationType.COMPARATOR);
     }
 
-    public void sort() {
+//    public void sort() {
+//	splitIntoSortedIndexes();
+//	int roundNo = 0;
+//	while (mergeRound(roundNo, null)) {
+//	    roundNo++;
+//	}
+//    }
+
+    public void consumeSortedData(final Consumer<Pair<K, V>> consumer) {
+	Objects.requireNonNull(consumer);
 	splitIntoSortedIndexes();
 	int roundNo = 0;
-	while (mergeRound2(roundNo) != 1) {
+	while (mergeRound(roundNo, consumer)) {
 	    roundNo++;
 	}
     }
@@ -112,32 +121,27 @@ public class StoreSorter<K, V> {
 	}
     }
 
-    private int mergeRound2(final int roundNo) {
+    /**
+     * 
+     * @param roundNo
+     * @param consumer
+     * @return return <code>true</code> when next merging round should be done
+     *         otherwise return <code>false</code>
+     */
+    private boolean mergeRound(final int roundNo, final Consumer<Pair<K, V>> consumer) {
 	final List<String> filesToMerge = getFilesInRound(roundNo);
 
 	if (filesToMerge.size() == 0) {
 	    try (final IndexWriter<K, V> indexWriter = new IndexWriter<K, V>(directory, 3, keyClass, valueClass)) {
 		// do nothing, just create empty index.
 	    }
-	    return 1;
+	    return false;
 	}
 
-	if (filesToMerge.size() == 1) {
-	    final TypeConvertors tc = TypeConvertors.getInstance();
-	    final ConvertorFromBytes<K> keyConvertor = tc.get(keyClass, OperationType.CONVERTOR_FROM_BYTES);
-	    try (final SortedDataFileReader<K, V> fileStreamer = new SortedDataFileReader<K, V>(
-		    directory.getFileReader(filesToMerge.get(0)), keyConvertor, valueReader, keyComparator)) {
-		// create final index
-		try (final IndexWriter<K, V> indexWriter = new IndexWriter<K, V>(directory, blockSize, keyClass,
-			valueClass)) {
-		    fileStreamer.stream(1).forEach(pair -> indexWriter.put(pair.getKey(), pair.getValue()));
-		}
-	    }
-	    directory.deleteFile(filesToMerge.get(0));
-	    return 1;
-	}
+	final int howManyFilesShouldBeProduces = howManyFilesShouldBeProduces(filesToMerge.size());
+	final boolean isFinalMergingRound = howManyFilesShouldBeProduces == 1;
 
-	for (int i = 0; i < howManyFilesShoulBeProduces(filesToMerge.size()); i++) {
+	for (int i = 0; i < howManyFilesShouldBeProduces(filesToMerge.size()); i++) {
 	    final List<String> filesToMergeLocaly = new ArrayList<>();
 	    for (int j = 0; j < HOW_MANY_FILES_TO_MERGE_AT_ONCE; j++) {
 		final int index = i + j;
@@ -148,17 +152,20 @@ public class StoreSorter<K, V> {
 	    }
 	    final TypeConvertors tc = TypeConvertors.getInstance();
 	    final ConvertorToBytes<K> keyConvertor = tc.get(keyClass, OperationType.CONVERTOR_TO_BYTES);
-	    try (final SortedDataFileWriter<K, V> indexWriter = new SortedDataFileWriter<>(
-		    directory.getFileWriter(makeFileName(roundNo + 1, i)), keyConvertor, keyComparator, valueWriter)) {
-		mergeSortedFiles(filesToMergeLocaly, pair -> indexWriter.put(pair));
+
+	    if (isFinalMergingRound) {
+		mergeSortedFiles(filesToMergeLocaly, consumer::accept);
+	    } else {
+		try (final SortedDataFileWriter<K, V> indexWriter = new SortedDataFileWriter<>(
+			directory.getFileWriter(makeFileName(roundNo + 1, i)), keyConvertor, keyComparator,
+			valueWriter)) {
+		    mergeSortedFiles(filesToMergeLocaly, pair -> indexWriter.put(pair));
+		}
 	    }
 	    filesToMergeLocaly.forEach(fileName -> directory.deleteFile(fileName));
-	    // 1. pripravit seznam soubor u
-	    // 2. vsechny otevrit a uzavrit
-	    // 3. poslat do mergeru ;-)
-	    // 4. ppuvodni soubory smazat
 	}
-	return 0;
+
+	return !isFinalMergingRound;
     }
 
     /**
@@ -168,7 +175,7 @@ public class StoreSorter<K, V> {
      * @param numberOfFiles return number of round which should merge files
      * @return
      */
-    private int howManyFilesShoulBeProduces(final int numberOfFiles) {
+    private int howManyFilesShouldBeProduces(final int numberOfFiles) {
 	return (int) Math.ceil(((float) numberOfFiles) / ((float) HOW_MANY_FILES_TO_MERGE_AT_ONCE));
     }
 
