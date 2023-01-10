@@ -8,12 +8,12 @@ import com.coroptis.index.directory.FileReader;
 import com.coroptis.index.sorteddatafile.Pair;
 import com.coroptis.index.sorteddatafile.PairReader;
 
-public class StoreSpliterator<K, V> implements Spliterator<Pair<K, V>> {
+public class UnsortedDataFileSpliterator<K, V> implements Spliterator<Pair<K, V>> {
 
     private final PairReader<K, V> pairReader;
     private final FileReader fileReader;
 
-    public StoreSpliterator(final FileReader fileReader, final PairReader<K, V> pairReader) {
+    public UnsortedDataFileSpliterator(final FileReader fileReader, final PairReader<K, V> pairReader) {
 	this.fileReader = Objects.requireNonNull(fileReader);
 	this.pairReader = Objects.requireNonNull(pairReader);
     }

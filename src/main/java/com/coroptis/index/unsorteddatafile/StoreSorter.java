@@ -13,9 +13,7 @@ import java.util.stream.StreamSupport;
 
 import com.coroptis.index.IndexWriter;
 import com.coroptis.index.directory.Directory;
-import com.coroptis.index.directory.FileReader;
 import com.coroptis.index.sorteddatafile.Pair;
-import com.coroptis.index.sorteddatafile.PairReader;
 import com.coroptis.index.sorteddatafile.SortedDataFileReader;
 import com.coroptis.index.sorteddatafile.SortedDataFileWriter;
 import com.coroptis.index.type.ConvertorFromBytes;
@@ -88,9 +86,8 @@ public class StoreSorter<K, V> {
     }
 
     private void splitIntoSortedIndexes() {
-	final PairReader<K, V> pairReader = new PairReader<K, V>(keyReader, valueReader);
-	try (final FileReader fileReader = directory.getFileReader(UnsortedDataFileWriter.STORE)) {
-	    final UnsortedDataFileReader<K, V> reader = new UnsortedDataFileReader<K, V>(pairReader, fileReader);
+	try (final UnsortedDataFileReader<K, V> reader = new UnsortedDataFileReader<K, V>(directory, keyClass,
+		valueClass)) {
 	    int cx = 0;
 	    int fileCounter = 0;
 	    final UniqueCache<K, V> cache = new UniqueCache<>(merger);

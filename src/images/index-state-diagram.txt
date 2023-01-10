@@ -1,0 +1,11 @@
+@startuml
+
+'Index state diagram
+[*] --> Search
+
+Search --> Write
+Write --> Search
+Write : Writing of data and sorting them
+Search --> [*]
+
+@enduml

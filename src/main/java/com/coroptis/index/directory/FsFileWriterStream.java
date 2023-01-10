@@ -2,23 +2,25 @@ package com.coroptis.index.directory;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 import com.coroptis.index.IndexException;
 
 public class FsFileWriterStream implements FileWriter {
 
     private final OutputStream fio;
-    
+
     private static final int BUFFER_SIZE = 1024 * 1024 * 5;
 
     FsFileWriterStream(final File file) {
 	try {
-	    this.fio = new BufferedOutputStream(new FileOutputStream(file), BUFFER_SIZE);
-	} catch (FileNotFoundException e) {
+	    final Path path = file.toPath();
+	    final OutputStream os = Files.newOutputStream(path);
+	    this.fio = new BufferedOutputStream(os, BUFFER_SIZE);
+	} catch (IOException e) {
 	    throw new IndexException(e.getMessage(), e);
 	}
     }

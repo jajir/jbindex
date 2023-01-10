@@ -28,7 +28,7 @@ public class UnsortedDataFileStreamer<K, V> implements CloseableResource {
     }
 
     public Stream<Pair<K, V>> stream() {
-	return StreamSupport.stream(new StoreSpliterator<>(fileReader, new PairReader<K, V>(keyReader, valueReader)),
+	return StreamSupport.stream(new UnsortedDataFileSpliterator<>(fileReader, new PairReader<K, V>(keyReader, valueReader)),
 		false);
     }
 
