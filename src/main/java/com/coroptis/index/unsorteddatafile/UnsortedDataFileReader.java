@@ -1,15 +1,12 @@
 package com.coroptis.index.unsorteddatafile;
 
-import java.util.Objects;
 import java.util.Optional;
 
 import com.coroptis.index.CloseableResource;
-import com.coroptis.index.directory.Directory;
+import com.coroptis.index.IndexConfiguration;
 import com.coroptis.index.directory.FileReader;
 import com.coroptis.index.sorteddatafile.Pair;
 import com.coroptis.index.sorteddatafile.PairReader;
-import com.coroptis.index.type.OperationType;
-import com.coroptis.index.type.TypeConvertors;
 import com.coroptis.index.type.TypeReader;
 
 public class UnsortedDataFileReader<K, V> implements CloseableResource {
@@ -20,11 +17,11 @@ public class UnsortedDataFileReader<K, V> implements CloseableResource {
 
     private Pair<K, V> currentPair;
 
-    public UnsortedDataFileReader(final Directory directory, final Class<?> keyClass, final Class<?> valueClass) {
-	final TypeConvertors tc = TypeConvertors.getInstance();
-	this.fileReader = directory.getFileReader(UnsortedDataFileWriter.STORE);
-	final TypeReader<K> keyReader = tc.get(Objects.requireNonNull(keyClass), OperationType.READER);
-	final TypeReader<V> valueReader = tc.get(Objects.requireNonNull(valueClass), OperationType.READER);
+    //FIXME jmeno souboru ma prijit jako parameter
+    public UnsortedDataFileReader(final IndexConfiguration<K, V> indexConfiguration) {
+	this.fileReader = indexConfiguration.getDirectory().getFileReader(UnsortedDataFileWriter.STORE);
+	final TypeReader<K> keyReader = indexConfiguration.getKeyReader();
+	final TypeReader<V> valueReader = indexConfiguration.getValueReader();
 	this.pairReader = new PairReader<K, V>(keyReader, valueReader);
 	tryToReadNextPair();
     }
