@@ -5,21 +5,21 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.zip.ZipOutputStream;
 
 import com.coroptis.index.IndexException;
 
 public class FsZipFileWriterStream implements FileWriter {
 
-    private final OutputStream fio;
-    
+    private final ZipOutputStream fio;
+
     private final static int BUFFER_SIZE = 1024 * 100;
 
     FsZipFileWriterStream(final File file) {
 	try {
-	    this.fio = new ZipOutputStream(
-		    new BufferedOutputStream(new FileOutputStream(file), BUFFER_SIZE));
+	    this.fio = new ZipOutputStream(new BufferedOutputStream(new FileOutputStream(file), BUFFER_SIZE));
+	    fio.setMethod(ZipOutputStream.DEFLATED);
+	    fio.setLevel(9);
 	} catch (FileNotFoundException e) {
 	    throw new IndexException(e.getMessage(), e);
 	}

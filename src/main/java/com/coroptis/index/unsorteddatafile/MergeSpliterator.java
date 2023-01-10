@@ -21,7 +21,7 @@ public class MergeSpliterator<K, V> implements Spliterator<Pair<K, V>> {
 
     private final Merger<K, V> merger;
 
-    MergeSpliterator(List<SortedDataFileReader<K, V>> readers, final Comparator<? super K> keyComparator,
+    MergeSpliterator(final List<SortedDataFileReader<K, V>> readers, final Comparator<? super K> keyComparator,
 	    final Merger<K, V> merger) {
 	this.readers = readers.stream().map(
 		sortedDataFileReader -> new SortedDataFileIterator<K, V>(Objects.requireNonNull(sortedDataFileReader)))

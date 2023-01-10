@@ -5,6 +5,7 @@ import java.util.Objects;
 import com.coroptis.index.CloseableResource;
 import com.coroptis.index.directory.Directory;
 import com.coroptis.index.directory.FileWriter;
+import com.coroptis.index.sorteddatafile.Pair;
 import com.coroptis.index.type.OperationType;
 import com.coroptis.index.type.TypeConvertors;
 import com.coroptis.index.type.TypeWriter;
@@ -26,11 +27,11 @@ public class UnsortedDataFileWriter<K, V> implements CloseableResource {
 	this.valueWriter = tc.get(valueClass, OperationType.WRITER);
     }
 
-    public void put(final K key, final V value) {
-	Objects.requireNonNull(key);
-	Objects.requireNonNull(value);
-	keyWriter.write(fileWriter, key);
-	valueWriter.write(fileWriter, value);
+    public void put(final Pair<K, V> pair) {
+	Objects.requireNonNull(pair.getKey());
+	Objects.requireNonNull(pair.getValue());
+	keyWriter.write(fileWriter, pair.getKey());
+	valueWriter.write(fileWriter, pair.getValue());
     }
 
     @Override

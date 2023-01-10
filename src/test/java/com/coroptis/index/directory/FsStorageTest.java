@@ -6,12 +6,6 @@ import java.io.File;
 
 import org.junit.jupiter.api.Test;
 
-import com.coroptis.index.directory.Directory;
-import com.coroptis.index.directory.FileReader;
-import com.coroptis.index.directory.FileWriter;
-import com.coroptis.index.directory.FsDirectory;
-import com.coroptis.index.directory.MemDirectory;
-
 public class FsStorageTest {
 
     private final static String FILE_NAME = "pok.txt";
