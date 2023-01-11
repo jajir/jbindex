@@ -67,7 +67,9 @@ public class StoreSorter<K, V> {
     }
 
     private void splitIntoSortedIndexes() {
-	try (final UnsortedDataFileReader<K, V> reader = new UnsortedDataFileReader<K, V>(indexConfiguration)) {
+	try (final UnsortedDataFileReader<K, V> reader = new UnsortedDataFileReader<K, V>(
+		indexConfiguration.getDirectory(), UnsortedDataFileWriter.STORE, indexConfiguration.getKeyReader(),
+		indexConfiguration.getValueReader())) {
 	    int cx = 0;
 	    int fileCounter = 0;
 	    final UniqueCache<K, V> cache = new UniqueCache<>(merger);

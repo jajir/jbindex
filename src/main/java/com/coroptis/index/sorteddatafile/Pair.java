@@ -21,10 +21,13 @@ public class Pair<K, V> {
 	this.value = value;
     }
 
+    public static <M, N> Pair<M, N> of(final M m, final N n) {
+	return new Pair<M, N>(m, n);
+    }
+
     @Override
     public String toString() {
-	return MoreObjects.toStringHelper(Pair.class).add("key", key).add("value", value)
-		.toString();
+	return MoreObjects.toStringHelper(Pair.class).add("key", key).add("value", value).toString();
     }
 
     public K getKey() {

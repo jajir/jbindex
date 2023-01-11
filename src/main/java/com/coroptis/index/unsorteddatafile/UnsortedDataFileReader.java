@@ -4,7 +4,6 @@ import java.util.Objects;
 import java.util.Optional;
 
 import com.coroptis.index.CloseableResource;
-import com.coroptis.index.IndexConfiguration;
 import com.coroptis.index.directory.Directory;
 import com.coroptis.index.directory.FileReader;
 import com.coroptis.index.sorteddatafile.Pair;
@@ -19,24 +18,13 @@ public class UnsortedDataFileReader<K, V> implements CloseableResource {
 
     private Pair<K, V> currentPair;
 
-    @Deprecated
-    public UnsortedDataFileReader(final IndexConfiguration<K, V> indexConfiguration) {
-	this(indexConfiguration.getDirectory(), indexConfiguration.getKeyReader(), indexConfiguration.getValueReader());
-    }
-
-    @Deprecated
-    public UnsortedDataFileReader(final Directory directory, final TypeReader<K> keyReader,
-	    final TypeReader<V> valueReader) {
-	this(directory, UnsortedDataFileWriter.STORE, keyReader, valueReader);
-    }
-
-    public UnsortedDataFileReader(final Directory directory, final String file, final TypeReader<K> keyReader,
+    public UnsortedDataFileReader(final Directory directory, final String fileName, final TypeReader<K> keyReader,
 	    final TypeReader<V> valueReader) {
 	Objects.requireNonNull(directory);
-	Objects.requireNonNull(file);
+	Objects.requireNonNull(fileName);
 	Objects.requireNonNull(keyReader);
 	Objects.requireNonNull(valueReader);
-	this.fileReader = directory.getFileReader(UnsortedDataFileWriter.STORE);
+	this.fileReader = directory.getFileReader(fileName);
 	this.pairReader = new PairReader<K, V>(keyReader, valueReader);
 	tryToReadNextPair();
     }

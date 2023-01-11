@@ -10,7 +10,7 @@ public class UnsortedDataFileBuilder<K, V> {
 
     private Directory directory;
 
-    private String file;
+    private String fileName;
 
     private TypeWriter<K> keyWriter;
 
@@ -25,8 +25,8 @@ public class UnsortedDataFileBuilder<K, V> {
 	return this;
     }
 
-    public UnsortedDataFileBuilder<K, V> withFile(final String file) {
-	this.file = Objects.requireNonNull(file);
+    public UnsortedDataFileBuilder<K, V> withFileName(final String file) {
+	this.fileName = Objects.requireNonNull(file);
 	return this;
     }
 
@@ -51,7 +51,7 @@ public class UnsortedDataFileBuilder<K, V> {
     }
 
     public UnsortedDataFile<K, V> build() {
-	return new UnsortedDataFile<>(directory, file, keyWriter, valueWriter, keyReader, valueReader);
+	return new UnsortedDataFile<>(directory, fileName, keyWriter, valueWriter, keyReader, valueReader);
     }
 
 }

@@ -18,13 +18,13 @@ public class UnsortedDataFileWriter<K, V> implements CloseableResource {
     private final TypeWriter<V> valueWriter;
     private final FileWriter fileWriter;
 
-    public UnsortedDataFileWriter(final Directory directory, final String file, final TypeWriter<K> keyWriter,
+    public UnsortedDataFileWriter(final Directory directory, final String fileName, final TypeWriter<K> keyWriter,
 	    final TypeWriter<V> valueWriter) {
 	this.keyWriter = Objects.requireNonNull(keyWriter);
 	this.valueWriter = Objects.requireNonNull(valueWriter);
 	Objects.requireNonNull(directory);
-	Objects.requireNonNull(file);
-	fileWriter = directory.getFileWriter(file);
+	Objects.requireNonNull(fileName);
+	fileWriter = directory.getFileWriter(fileName);
     }
 
     @Deprecated

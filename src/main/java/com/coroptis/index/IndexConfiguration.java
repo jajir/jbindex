@@ -58,7 +58,7 @@ public class IndexConfiguration<K, V> {
     }
 
     public UnsortedDataFile<K, V> getUnsortedFile(final String fileName) {
-	final UnsortedDataFile<K, V> out = UnsortedDataFile.<K, V>builder().withDirectory(getDirectory()).withFile(fileName)
+	final UnsortedDataFile<K, V> out = UnsortedDataFile.<K, V>builder().withDirectory(getDirectory()).withFileName(fileName)
 		.withKeyReader(getKeyReader()).withValueReader(getValueReader()).withKeyWriter(getKeyWriter())
 		.withValueWriter(getValueWriter()).build();
 	return out;

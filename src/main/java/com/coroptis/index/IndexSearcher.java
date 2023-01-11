@@ -8,8 +8,9 @@ import java.util.Optional;
 
 import com.coroptis.index.directory.Directory;
 import com.coroptis.index.sorteddatafile.DiffKeyReader;
-import com.coroptis.index.sorteddatafile.SortedDataFileReader;
 import com.coroptis.index.sorteddatafile.Pair;
+import com.coroptis.index.sorteddatafile.SortedDataFileReader;
+import com.coroptis.index.sorteddatafile.SortedDataFileStreamer;
 import com.coroptis.index.type.ConvertorFromBytes;
 import com.coroptis.index.type.OperationType;
 import com.coroptis.index.type.TypeConvertors;
@@ -79,7 +80,7 @@ public class IndexSearcher<K, V> {
     }
 
     private void loadMetaIndex() {
-	try (final SortedDataFileReader<K, Integer> sir = new SortedDataFileReader<>(
+	try (final SortedDataFileStreamer<K, Integer> sir = new SortedDataFileStreamer<>(
 		directory.getFileReader(IndexWriter.INDEX_META_FILE), keyConvertorToBytes,
 		integerTypeDescriptor.getReader(), keyComparator)) {
 	    sir.stream(indexDesc.getWrittenBlockCount()).forEach(pair -> metaIndex.add(pair));
