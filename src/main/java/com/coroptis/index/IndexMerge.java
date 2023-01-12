@@ -7,21 +7,21 @@ import java.util.stream.StreamSupport;
 import com.coroptis.index.directory.Directory;
 import com.coroptis.index.type.OperationType;
 import com.coroptis.index.type.TypeConvertors;
-import com.coroptis.index.unsorteddatafile.Merger;
+import com.coroptis.index.unsorteddatafile.ValueMerger;
 
 public class IndexMerge<K, V> {
 
     private final Directory directory1;
     private final Directory directory2;
     private final Directory output;
-    private final Merger<K, V> merger;
+    private final ValueMerger<K, V> merger;
     private final Class<?> keyClass;
     private final Class<?> valueClass;
     final Comparator<? super K> keyComparator;
     private final int blockSize;
 
     public IndexMerge(final Directory directory1, final Directory directory2, final Directory output,
-	    final Merger<K, V> merger, final Class<?> keyClass, final Class<?> valueClass,
+	    final ValueMerger<K, V> merger, final Class<?> keyClass, final Class<?> valueClass,
 	    final int blockSize) {
 	this.directory1 = Objects.requireNonNull(directory1);
 	this.directory2 = Objects.requireNonNull(directory2);

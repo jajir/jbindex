@@ -12,7 +12,7 @@ import com.coroptis.index.sorteddatafile.Pair;
  * @param <K> key type
  * @param <V> value type
  */
-public interface Merger<K, V> {
+public interface ValueMerger<K, V> {
 
     default Pair<K, V> merge(final Pair<K, V> pair1, final Pair<K, V> pair2) {
 	Objects.requireNonNull(pair1, "First pair for merging can't be null.");

@@ -8,28 +8,20 @@ import com.coroptis.index.directory.Directory;
 import com.coroptis.index.sorteddatafile.Pair;
 import com.coroptis.index.type.OperationType;
 import com.coroptis.index.type.TypeConvertors;
-import com.coroptis.index.unsorteddatafile.Merger;
+import com.coroptis.index.unsorteddatafile.ValueMerger;
 
 public class MergeIndexAndConsumer<K, V> implements CloseableResource {
 
     private final Directory inputDirectory;
     private final IndexReader<K, V> inputIndexReader;
     private final IndexWriter<K, V> finalIndexWriter;
-    private final Directory output;
-    private final Merger<K, V> merger;
-    private final Class<?> keyClass;
-    private final Class<?> valueClass;
+    private final ValueMerger<K, V> merger;
     final Comparator<? super K> keyComparator;
-    private final int blockSize;
 
-    public MergeIndexAndConsumer(final Directory inputIndex, final Directory output, final Merger<K, V> merger,
+    public MergeIndexAndConsumer(final Directory inputIndex, final Directory output, final ValueMerger<K, V> merger,
 	    final Class<?> keyClass, final Class<?> valueClass, final int blockSize) {
 	this.inputDirectory = Objects.requireNonNull(inputIndex);
-	this.output = Objects.requireNonNull(output);
 	this.merger = Objects.requireNonNull(merger);
-	this.keyClass = Objects.requireNonNull(keyClass);
-	this.valueClass = Objects.requireNonNull(valueClass);
-	this.blockSize = Objects.requireNonNull(blockSize);
 	final TypeConvertors tc = TypeConvertors.getInstance();
 	this.keyComparator = tc.get(keyClass, OperationType.COMPARATOR);
 	final IndexIterator<K, V> inputIterator = new IndexSearcher<K, V>(inputDirectory, keyClass, valueClass)

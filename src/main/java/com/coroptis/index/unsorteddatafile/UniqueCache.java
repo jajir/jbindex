@@ -11,9 +11,9 @@ import com.coroptis.index.sorteddatafile.Pair;
 public class UniqueCache<K, V> {
 
     private final Map<K, V> map = new HashMap<>();
-    private final Merger<K, V> merger;
+    private final ValueMerger<K, V> merger;
 
-    UniqueCache(final Merger<K, V> merger) {
+    UniqueCache(final ValueMerger<K, V> merger) {
 	this.merger = Objects.requireNonNull(merger);
     }
 

@@ -6,7 +6,7 @@ import java.util.Spliterator;
 import java.util.function.Consumer;
 
 import com.coroptis.index.sorteddatafile.Pair;
-import com.coroptis.index.unsorteddatafile.Merger;
+import com.coroptis.index.unsorteddatafile.ValueMerger;
 
 public class MergeIndexSpliterator<K, V> implements Spliterator<Pair<K, V>> {
 
@@ -16,10 +16,10 @@ public class MergeIndexSpliterator<K, V> implements Spliterator<Pair<K, V>> {
 
     private final Comparator<? super K> keyComparator;
 
-    private final Merger<K, V> merger;
+    private final ValueMerger<K, V> merger;
 
     MergeIndexSpliterator(final IndexReader<K, V> reader1, final IndexReader<K, V> reader2,
-	    final Comparator<? super K> keyComparator, final Merger<K, V> merger) {
+	    final Comparator<? super K> keyComparator, final ValueMerger<K, V> merger) {
 	this.reader1 = Objects.requireNonNull(reader1);
 	this.reader2 = Objects.requireNonNull(reader2);
 	this.keyComparator = Objects.requireNonNull(keyComparator);

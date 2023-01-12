@@ -32,20 +32,20 @@ import com.coroptis.index.type.TypeWriter;
  * @param <K>
  * @param <V>
  */
-public class StoreSorter<K, V> {
+public class UnsortedDataFileSorter<K, V> {
 
     private final static String ROUND_NAME = "round";
     private final static String ROUND_SEPARTOR = "-";
     private final static int HOW_MANY_FILES_TO_MERGE_AT_ONCE = 50;
 
     private final Directory directory;
-    private final Merger<K, V> merger;
+    private final ValueMerger<K, V> merger;
     private final TypeWriter<V> valueWriter;
     private final Comparator<? super K> keyComparator;
     private final Integer howManySortInMemory;
     private final IndexConfiguration<K, V> indexConfiguration;
 
-    public StoreSorter(final Directory directory, final Merger<K, V> merger, final Class<?> keyClass,
+    public UnsortedDataFileSorter(final Directory directory, final ValueMerger<K, V> merger, final Class<?> keyClass,
 	    final Class<?> valueClass, final Integer howManySortInMemory, final Integer blockSize,
 	    final IndexConfiguration<K, V> indexConfiguration) {
 	this.directory = Objects.requireNonNull(directory);

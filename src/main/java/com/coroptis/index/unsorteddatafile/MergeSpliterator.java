@@ -19,10 +19,10 @@ public class MergeSpliterator<K, V> implements Spliterator<Pair<K, V>> {
 
     private final Comparator<? super K> keyComparator;
 
-    private final Merger<K, V> merger;
+    private final ValueMerger<K, V> merger;
 
     MergeSpliterator(final List<SortedDataFileReader<K, V>> readers, final Comparator<? super K> keyComparator,
-	    final Merger<K, V> merger) {
+	    final ValueMerger<K, V> merger) {
 	this.readers = readers.stream().map(
 		sortedDataFileReader -> new SortedDataFileIterator<K, V>(Objects.requireNonNull(sortedDataFileReader)))
 		.collect(Collectors.toList());
