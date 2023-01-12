@@ -7,6 +7,7 @@ import java.util.stream.StreamSupport;
 
 import com.coroptis.index.CloseableResource;
 import com.coroptis.index.PairComparator;
+import com.coroptis.index.directory.Directory;
 import com.coroptis.index.directory.FileReader;
 import com.coroptis.index.type.ConvertorFromBytes;
 import com.coroptis.index.type.TypeReader;
@@ -17,10 +18,12 @@ public class SortedDataFileStreamer<K, V> implements CloseableResource {
     private final PairComparator<K, V> pairComparator;
     private final PairReader<K, V> pairReader;
 
-    public SortedDataFileStreamer(final FileReader fileReader, final ConvertorFromBytes<K> keyConvertorToBytes,
+    public SortedDataFileStreamer(final Directory directory, final String fileName, final ConvertorFromBytes<K> keyConvertorFromBytes,
 	    final TypeReader<V> valueReader, final Comparator<? super K> keyComparator) {
-	this.fileReader = Objects.requireNonNull(fileReader);
-	final DiffKeyReader<K> diffKeyReader = new DiffKeyReader<K>(keyConvertorToBytes);
+	Objects.requireNonNull(directory);
+	Objects.requireNonNull(fileName);
+	this.fileReader = directory.getFileReader(fileName);
+	final DiffKeyReader<K> diffKeyReader = new DiffKeyReader<K>(keyConvertorFromBytes);
 	pairReader = new PairReader<>(diffKeyReader, valueReader);
 	pairComparator = new PairComparator<>(keyComparator);
     }

@@ -95,7 +95,7 @@ public class StoreSorter<K, V> {
 	final TypeConvertors tc = TypeConvertors.getInstance();
 	final ConvertorToBytes<K> keyConvertor = tc.get(indexConfiguration.getKeyClass(),
 		OperationType.CONVERTOR_TO_BYTES);
-	try (final SortedDataFileWriter<K, V> mainIndex = new SortedDataFileWriter<>(directory.getFileWriter(fileName),
+	try (final SortedDataFileWriter<K, V> mainIndex = new SortedDataFileWriter<>(directory,fileName,
 		keyConvertor, keyComparator, valueWriter)) {
 	    cache.forEach(pair -> mainIndex.put(pair));
 	}
@@ -139,7 +139,7 @@ public class StoreSorter<K, V> {
 		mergeSortedFiles(filesToMergeLocaly, consumer::accept);
 	    } else {
 		try (final SortedDataFileWriter<K, V> indexWriter = new SortedDataFileWriter<>(
-			directory.getFileWriter(makeFileName(roundNo + 1, i)), keyConvertor, keyComparator,
+			directory,makeFileName(roundNo + 1, i), keyConvertor, keyComparator,
 			valueWriter)) {
 		    mergeSortedFiles(filesToMergeLocaly, pair -> indexWriter.put(pair));
 		}
@@ -172,10 +172,8 @@ public class StoreSorter<K, V> {
 		OperationType.CONVERTOR_FROM_BYTES);
 	List<SortedDataFileReader<K, V>> readers = null;
 	try {
-	    readers = filesToMergeLocaly
-		    .stream().map(fileName -> new SortedDataFileReader<K, V>(directory.getFileReader(fileName),
-			    keyConvertor, indexConfiguration.getValueReader(), keyComparator))
-		    .collect(Collectors.toList());
+	    readers = filesToMergeLocaly.stream().map(fileName -> new SortedDataFileReader<K, V>(directory, fileName,
+		    keyConvertor, indexConfiguration.getValueReader(), keyComparator)).collect(Collectors.toList());
 	    final MergeSpliterator<K, V> mergeSpliterator = new MergeSpliterator<K, V>(readers, keyComparator, merger);
 	    final Stream<Pair<K, V>> pairStream = StreamSupport.stream(mergeSpliterator, false);
 	    pairStream.forEach(pair -> consumer.accept(pair));

@@ -37,8 +37,7 @@ public class IndexSearcher<K, V> {
     private final Comparator<? super K> keyComparator;
     private final IndexDesc indexDesc;
 
-    public IndexSearcher(final Directory directory, final Class<?> keyClass,
-	    final Class<?> valueClass) {
+    public IndexSearcher(final Directory directory, final Class<?> keyClass, final Class<?> valueClass) {
 	this.directory = Objects.requireNonNull(directory, "directory must not be null");
 	final TypeConvertors tc = TypeConvertors.getInstance();
 	this.keyConvertorToBytes = tc.get(keyClass, OperationType.CONVERTOR_FROM_BYTES);
@@ -58,8 +57,8 @@ public class IndexSearcher<K, V> {
 	try (final SortedDataFileReader<K, V> mainIndexReader = getMainIndexReader()) {
 	    mainIndexReader.skip(blockId);
 	    final Optional<Pair<K, V>> oVal = mainIndexReader.stream(indexDesc.getWrittenKeyCount())
-		    .limit(indexDesc.getBlockSize())
-		    .filter(pair -> keyComparator.compare(pair.getKey(), key) == 0).findFirst();
+		    .limit(indexDesc.getBlockSize()).filter(pair -> keyComparator.compare(pair.getKey(), key) == 0)
+		    .findFirst();
 	    if (oVal.isPresent()) {
 		return oVal.get().getValue();
 	    }
@@ -69,20 +68,19 @@ public class IndexSearcher<K, V> {
 
     public IndexStreamer<K, V> getStreamer() {
 	final DiffKeyReader<K> diffKeyReader = new DiffKeyReader<K>(keyConvertorToBytes);
-	return new IndexStreamer<>(directory, IndexWriter.INDEX_MAIN_DATA_FILE, diffKeyReader,
-		valueReader, keyComparator, indexDesc.getWrittenKeyCount());
+	return new IndexStreamer<>(directory, IndexWriter.INDEX_MAIN_DATA_FILE, diffKeyReader, valueReader,
+		keyComparator, indexDesc.getWrittenKeyCount());
     }
 
     public IndexIterator<K, V> getIterator() {
 	final DiffKeyReader<K> diffKeyReader = new DiffKeyReader<K>(keyConvertorToBytes);
-	return new IndexIterator<>(directory.getFileReader(IndexWriter.INDEX_MAIN_DATA_FILE),
-		diffKeyReader, valueReader);
+	return new IndexIterator<>(directory.getFileReader(IndexWriter.INDEX_MAIN_DATA_FILE), diffKeyReader,
+		valueReader);
     }
 
     private void loadMetaIndex() {
-	try (final SortedDataFileStreamer<K, Integer> sir = new SortedDataFileStreamer<>(
-		directory.getFileReader(IndexWriter.INDEX_META_FILE), keyConvertorToBytes,
-		integerTypeDescriptor.getReader(), keyComparator)) {
+	try (final SortedDataFileStreamer<K, Integer> sir = new SortedDataFileStreamer<>(directory,
+		IndexWriter.INDEX_META_FILE, keyConvertorToBytes, integerTypeDescriptor.getReader(), keyComparator)) {
 	    sir.stream(indexDesc.getWrittenBlockCount()).forEach(pair -> metaIndex.add(pair));
 	}
     }
@@ -107,7 +105,7 @@ public class IndexSearcher<K, V> {
     }
 
     private SortedDataFileReader<K, V> getMainIndexReader() {
-	return new SortedDataFileReader<>(directory.getFileReader(IndexWriter.INDEX_MAIN_DATA_FILE),
-		keyConvertorToBytes, valueReader, keyComparator);
+	return new SortedDataFileReader<>(directory, IndexWriter.INDEX_MAIN_DATA_FILE, keyConvertorToBytes, valueReader,
+		keyComparator);
     }
 }

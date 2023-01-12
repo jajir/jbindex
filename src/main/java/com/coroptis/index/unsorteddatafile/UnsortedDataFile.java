@@ -10,7 +10,7 @@ public class UnsortedDataFile<K, V> {
 
     private final Directory directory;
 
-    private final String file;
+    private final String fileName;
 
     private final TypeWriter<K> keyWriter;
 
@@ -24,10 +24,10 @@ public class UnsortedDataFile<K, V> {
 	return new UnsortedDataFileBuilder<M, N>();
     }
 
-    public UnsortedDataFile(final Directory directory, final String file, final TypeWriter<K> keyWriter,
+    public UnsortedDataFile(final Directory directory, final String fileName, final TypeWriter<K> keyWriter,
 	    final TypeWriter<V> valueWriter, final TypeReader<K> keyReader, final TypeReader<V> valueReader) {
 	this.directory = Objects.requireNonNull(directory);
-	this.file = Objects.requireNonNull(file);
+	this.fileName = Objects.requireNonNull(fileName);
 	this.keyWriter = Objects.requireNonNull(keyWriter);
 	this.valueWriter = Objects.requireNonNull(valueWriter);
 	this.keyReader = Objects.requireNonNull(keyReader);
@@ -35,19 +35,19 @@ public class UnsortedDataFile<K, V> {
     }
 
     public UnsortedDataFileReader<K, V> openReader() {
-	final UnsortedDataFileReader<K, V> reader = new UnsortedDataFileReader<>(directory, file, keyReader,
+	final UnsortedDataFileReader<K, V> reader = new UnsortedDataFileReader<>(directory, fileName, keyReader,
 		valueReader);
 	return reader;
     }
 
     public UnsortedDataFileWriter<K, V> openWriter() {
-	final UnsortedDataFileWriter<K, V> writer = new UnsortedDataFileWriter<>(directory, file, keyWriter,
+	final UnsortedDataFileWriter<K, V> writer = new UnsortedDataFileWriter<>(directory, fileName, keyWriter,
 		valueWriter);
 	return writer;
     }
 
     public UnsortedDataFileStreamer<K, V> openStreamer() {
-	final UnsortedDataFileStreamer<K, V> streamer = new UnsortedDataFileStreamer<>(directory, file, keyReader,
+	final UnsortedDataFileStreamer<K, V> streamer = new UnsortedDataFileStreamer<>(directory, fileName, keyReader,
 		valueReader);
 	return streamer;
     }
