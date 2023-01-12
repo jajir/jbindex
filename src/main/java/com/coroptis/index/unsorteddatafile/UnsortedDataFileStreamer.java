@@ -16,7 +16,7 @@ public class UnsortedDataFileStreamer<K, V> implements CloseableResource {
     private final FileReader fileReader;
     private final PairReader<K, V> pairReader;
 
-    public UnsortedDataFileStreamer(final Directory directory, final String fileName, final TypeReader<K> keyReader,
+    UnsortedDataFileStreamer(final Directory directory, final String fileName, final TypeReader<K> keyReader,
 	    final TypeReader<V> valueReader) {
 	Objects.requireNonNull(directory);
 	Objects.requireNonNull(fileName);

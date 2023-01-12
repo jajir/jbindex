@@ -50,12 +50,12 @@ public class SortedDataFileBuilder<K, V> {
 	return this;
     }
 
-    public SortedDataFileBuilder<K, V> withConvertorFromBytes(final ConvertorFromBytes<K> keyConvertorFromBytes) {
+    public SortedDataFileBuilder<K, V> withKeyConvertorFromBytes(final ConvertorFromBytes<K> keyConvertorFromBytes) {
 	this.keyConvertorFromBytes = Objects.requireNonNull(keyConvertorFromBytes);
 	return this;
     }
 
-    public SortedDataFileBuilder<K, V> withConvertorToBytes(final ConvertorToBytes<K> keyConvertorToBytes) {
+    public SortedDataFileBuilder<K, V> withKeyConvertorToBytes(final ConvertorToBytes<K> keyConvertorToBytes) {
 	this.keyConvertorToBytes = Objects.requireNonNull(keyConvertorToBytes);
 	return this;
     }
