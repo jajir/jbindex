@@ -32,7 +32,7 @@ import com.coroptis.index.unsorteddatafile.ValueMerger;
  * @param <K>
  * @param <V>
  */
-public class UnsortedDataFileSorter<K, V> {
+class UnsortedDataFileSorter<K, V> {
 
     private final static String ROUND_NAME = "round";
     private final static String ROUND_SEPARTOR = "-";

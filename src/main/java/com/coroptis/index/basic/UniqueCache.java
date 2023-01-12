@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 import com.coroptis.index.sorteddatafile.Pair;
 import com.coroptis.index.unsorteddatafile.ValueMerger;
 
-public class UniqueCache<K, V> {
+class UniqueCache<K, V> {
 
     private final Map<K, V> map = new HashMap<>();
     private final ValueMerger<K, V> merger;
