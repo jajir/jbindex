@@ -13,6 +13,7 @@ import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Test;
 
+import com.coroptis.index.basic.MergeSpliterator;
 import com.coroptis.index.sorteddatafile.Pair;
 import com.coroptis.index.sorteddatafile.PairReader;
 import com.coroptis.index.sorteddatafile.SortedDataFileReader;

@@ -1,4 +1,4 @@
-package com.coroptis.index.unsorteddatafile;
+package com.coroptis.index.basic;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -10,17 +10,17 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-import com.coroptis.index.IndexConfiguration;
-import com.coroptis.index.IndexWriter;
 import com.coroptis.index.directory.Directory;
 import com.coroptis.index.sorteddatafile.Pair;
+import com.coroptis.index.sorteddatafile.SortedDataFile;
 import com.coroptis.index.sorteddatafile.SortedDataFileReader;
 import com.coroptis.index.sorteddatafile.SortedDataFileWriter;
-import com.coroptis.index.type.ConvertorFromBytes;
-import com.coroptis.index.type.ConvertorToBytes;
 import com.coroptis.index.type.OperationType;
 import com.coroptis.index.type.TypeConvertors;
-import com.coroptis.index.type.TypeWriter;
+import com.coroptis.index.unsorteddatafile.UnsortedDataFile;
+import com.coroptis.index.unsorteddatafile.UnsortedDataFileReader;
+import com.coroptis.index.unsorteddatafile.UnsortedDataFileWriter;
+import com.coroptis.index.unsorteddatafile.ValueMerger;
 
 /**
  * 1. merge two indexes into one.
@@ -39,22 +39,24 @@ public class UnsortedDataFileSorter<K, V> {
     private final static int HOW_MANY_FILES_TO_MERGE_AT_ONCE = 50;
 
     private final Directory directory;
+    private final String fileNameToSort;
     private final ValueMerger<K, V> merger;
-    private final TypeWriter<V> valueWriter;
     private final Comparator<? super K> keyComparator;
     private final Integer howManySortInMemory;
-    private final IndexConfiguration<K, V> indexConfiguration;
+    private final BasicIndex<K, V> basicIndex;
 
-    public UnsortedDataFileSorter(final Directory directory, final ValueMerger<K, V> merger, final Class<?> keyClass,
-	    final Class<?> valueClass, final Integer howManySortInMemory, final Integer blockSize,
-	    final IndexConfiguration<K, V> indexConfiguration) {
+    public UnsortedDataFileSorter(final Directory directory, final String fileNameToSort,
+	    final ValueMerger<K, V> merger, final Class<?> keyClass, final Class<?> valueClass,
+	    final Integer howManySortInMemory, final Integer blockSize,
+	     final BasicIndex<K, V> basicIndex) {
 	this.directory = Objects.requireNonNull(directory);
+	this.fileNameToSort = Objects.requireNonNull(fileNameToSort);
 	this.merger = Objects.requireNonNull(merger);
 	this.howManySortInMemory = Objects.requireNonNull(howManySortInMemory);
-	this.indexConfiguration = Objects.requireNonNull(indexConfiguration);
 	final TypeConvertors tc = TypeConvertors.getInstance();
-	valueWriter = tc.get(valueClass, OperationType.WRITER);
 	keyComparator = tc.get(keyClass, OperationType.COMPARATOR);
+	this.basicIndex = Objects.requireNonNull(basicIndex);
+
     }
 
     public void consumeSortedData(final Consumer<Pair<K, V>> consumer) {
@@ -67,9 +69,8 @@ public class UnsortedDataFileSorter<K, V> {
     }
 
     private void splitIntoSortedIndexes() {
-	try (final UnsortedDataFileReader<K, V> reader = new UnsortedDataFileReader<K, V>(
-		indexConfiguration.getDirectory(), UnsortedDataFileWriter.STORE, indexConfiguration.getKeyReader(),
-		indexConfiguration.getValueReader())) {
+	final UnsortedDataFile<K, V> unsortedFile = basicIndex.getUnsortedFile(fileNameToSort);
+	try (final UnsortedDataFileReader<K, V> reader = unsortedFile.openReader()) {
 	    int cx = 0;
 	    int fileCounter = 0;
 	    final UniqueCache<K, V> cache = new UniqueCache<>(merger);
@@ -91,12 +92,8 @@ public class UnsortedDataFileSorter<K, V> {
     private void writeSortedListToFile(final List<Pair<K, V>> cache, final int fileCounter) {
 	Collections.sort(cache, (pair1, pair2) -> keyComparator.compare(pair1.getKey(), pair2.getKey()));
 	final String fileName = makeFileName(0, fileCounter);
-
-	final TypeConvertors tc = TypeConvertors.getInstance();
-	final ConvertorToBytes<K> keyConvertor = tc.get(indexConfiguration.getKeyClass(),
-		OperationType.CONVERTOR_TO_BYTES);
-	try (final SortedDataFileWriter<K, V> mainIndex = new SortedDataFileWriter<>(directory,fileName,
-		keyConvertor, keyComparator, valueWriter)) {
+	final SortedDataFile<K, V> sortedFile = basicIndex.getSortedDataFile(fileName);
+	try (final SortedDataFileWriter<K, V> mainIndex = sortedFile.openWriter()) {
 	    cache.forEach(pair -> mainIndex.put(pair));
 	}
     }
@@ -112,10 +109,7 @@ public class UnsortedDataFileSorter<K, V> {
 	final List<String> filesToMerge = getFilesInRound(roundNo);
 
 	if (filesToMerge.size() == 0) {
-	    try (final IndexWriter<K, V> indexWriter = new IndexWriter<K, V>(directory, 3,
-		    indexConfiguration.getKeyClass(), indexConfiguration.getValueClass())) {
-		// do nothing, just create empty index.
-	    }
+	    // do nothing
 	    return false;
 	}
 
@@ -131,16 +125,11 @@ public class UnsortedDataFileSorter<K, V> {
 		    filesToMergeLocaly.add(fileName);
 		}
 	    }
-	    final TypeConvertors tc = TypeConvertors.getInstance();
-	    final ConvertorToBytes<K> keyConvertor = tc.get(indexConfiguration.getKeyClass(),
-		    OperationType.CONVERTOR_TO_BYTES);
-
 	    if (isFinalMergingRound) {
 		mergeSortedFiles(filesToMergeLocaly, consumer::accept);
 	    } else {
-		try (final SortedDataFileWriter<K, V> indexWriter = new SortedDataFileWriter<>(
-			directory,makeFileName(roundNo + 1, i), keyConvertor, keyComparator,
-			valueWriter)) {
+		final SortedDataFile<K, V> sortedFile = basicIndex.getSortedDataFile(makeFileName(roundNo + 1, i));
+		try (final SortedDataFileWriter<K, V> indexWriter = sortedFile.openWriter()) {
 		    mergeSortedFiles(filesToMergeLocaly, pair -> indexWriter.put(pair));
 		}
 	    }
@@ -167,13 +156,10 @@ public class UnsortedDataFileSorter<K, V> {
     };
 
     private void mergeSortedFiles(final List<String> filesToMergeLocaly, final Consumer<Pair<K, V>> consumer) {
-	final TypeConvertors tc = TypeConvertors.getInstance();
-	final ConvertorFromBytes<K> keyConvertor = tc.get(indexConfiguration.getKeyClass(),
-		OperationType.CONVERTOR_FROM_BYTES);
 	List<SortedDataFileReader<K, V>> readers = null;
 	try {
-	    readers = filesToMergeLocaly.stream().map(fileName -> new SortedDataFileReader<K, V>(directory, fileName,
-		    keyConvertor, indexConfiguration.getValueReader(), keyComparator)).collect(Collectors.toList());
+	    readers = filesToMergeLocaly.stream().map(fileName -> basicIndex.getSortedDataFile(fileName).openReader())
+		    .collect(Collectors.toList());
 	    final MergeSpliterator<K, V> mergeSpliterator = new MergeSpliterator<K, V>(readers, keyComparator, merger);
 	    final Stream<Pair<K, V>> pairStream = StreamSupport.stream(mergeSpliterator, false);
 	    pairStream.forEach(pair -> consumer.accept(pair));

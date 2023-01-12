@@ -1,4 +1,4 @@
-package com.coroptis.index.unsorteddatafile;
+package com.coroptis.index.basic;
 
 import java.util.HashMap;
 import java.util.List;
@@ -7,6 +7,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import com.coroptis.index.sorteddatafile.Pair;
+import com.coroptis.index.unsorteddatafile.ValueMerger;
 
 public class UniqueCache<K, V> {
 

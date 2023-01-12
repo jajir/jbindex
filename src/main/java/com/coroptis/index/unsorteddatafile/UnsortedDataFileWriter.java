@@ -10,6 +10,7 @@ import com.coroptis.index.type.TypeWriter;
 
 public class UnsortedDataFileWriter<K, V> implements CloseableResource {
 
+    // It should be in main index class. 
     public final static String STORE = "unsorted.un";
 
     private final TypeWriter<K> keyWriter;

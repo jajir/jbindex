@@ -1,4 +1,4 @@
-package com.coroptis.index.unsorteddatafile;
+package com.coroptis.index.basic;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 import com.coroptis.index.sorteddatafile.Pair;
 import com.coroptis.index.sorteddatafile.SortedDataFileIterator;
 import com.coroptis.index.sorteddatafile.SortedDataFileReader;
+import com.coroptis.index.unsorteddatafile.ValueMerger;
 
 public class MergeSpliterator<K, V> implements Spliterator<Pair<K, V>> {
 
@@ -20,8 +21,9 @@ public class MergeSpliterator<K, V> implements Spliterator<Pair<K, V>> {
     private final Comparator<? super K> keyComparator;
 
     private final ValueMerger<K, V> merger;
-
-    MergeSpliterator(final List<SortedDataFileReader<K, V>> readers, final Comparator<? super K> keyComparator,
+    
+    //FIXME make constructor protected
+    public MergeSpliterator(final List<SortedDataFileReader<K, V>> readers, final Comparator<? super K> keyComparator,
 	    final ValueMerger<K, V> merger) {
 	this.readers = readers.stream().map(
 		sortedDataFileReader -> new SortedDataFileIterator<K, V>(Objects.requireNonNull(sortedDataFileReader)))
