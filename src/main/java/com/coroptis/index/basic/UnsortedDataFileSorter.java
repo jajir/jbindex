@@ -20,7 +20,6 @@ import com.coroptis.index.type.TypeConvertors;
 import com.coroptis.index.unsorteddatafile.UnsortedDataFile;
 import com.coroptis.index.unsorteddatafile.UnsortedDataFileReader;
 import com.coroptis.index.unsorteddatafile.UnsortedDataFileWriter;
-import com.coroptis.index.unsorteddatafile.ValueMerger;
 
 /**
  * 1. merge two indexes into one.

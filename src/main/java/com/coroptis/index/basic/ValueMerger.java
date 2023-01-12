@@ -1,4 +1,4 @@
-package com.coroptis.index.unsorteddatafile;
+package com.coroptis.index.basic;
 
 import java.util.Objects;
 

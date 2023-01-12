@@ -4,11 +4,11 @@ import java.util.Comparator;
 import java.util.Objects;
 import java.util.function.Consumer;
 
+import com.coroptis.index.basic.ValueMerger;
 import com.coroptis.index.directory.Directory;
 import com.coroptis.index.sorteddatafile.Pair;
 import com.coroptis.index.type.OperationType;
 import com.coroptis.index.type.TypeConvertors;
-import com.coroptis.index.unsorteddatafile.ValueMerger;
 
 public class MergeIndexAndConsumer<K, V> implements CloseableResource {
 

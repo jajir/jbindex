@@ -12,7 +12,6 @@ import java.util.stream.Collectors;
 import com.coroptis.index.sorteddatafile.Pair;
 import com.coroptis.index.sorteddatafile.SortedDataFileIterator;
 import com.coroptis.index.sorteddatafile.SortedDataFileReader;
-import com.coroptis.index.unsorteddatafile.ValueMerger;
 
 public class MergeSpliterator<K, V> implements Spliterator<Pair<K, V>> {
 

@@ -4,10 +4,10 @@ import java.util.Comparator;
 import java.util.Objects;
 import java.util.stream.StreamSupport;
 
+import com.coroptis.index.basic.ValueMerger;
 import com.coroptis.index.directory.Directory;
 import com.coroptis.index.type.OperationType;
 import com.coroptis.index.type.TypeConvertors;
-import com.coroptis.index.unsorteddatafile.ValueMerger;
 
 public class IndexMerge<K, V> {
 

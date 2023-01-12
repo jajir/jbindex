@@ -5,8 +5,8 @@ import java.util.Objects;
 import java.util.Spliterator;
 import java.util.function.Consumer;
 
+import com.coroptis.index.basic.ValueMerger;
 import com.coroptis.index.sorteddatafile.Pair;
-import com.coroptis.index.unsorteddatafile.ValueMerger;
 
 public class MergeIndexSpliterator<K, V> implements Spliterator<Pair<K, V>> {
 

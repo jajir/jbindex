@@ -15,7 +15,6 @@ import com.coroptis.index.type.TypeReader;
 import com.coroptis.index.type.TypeWriter;
 import com.coroptis.index.unsorteddatafile.UnsortedDataFile;
 import com.coroptis.index.unsorteddatafile.UnsortedDataFileWriter;
-import com.coroptis.index.unsorteddatafile.ValueMerger;
 
 public class BasicIndex<K, V> {
 
