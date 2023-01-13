@@ -1,25 +1,30 @@
-package com.coroptis.index.sorteddatafile;
+package com.coroptis.index;
 
 import java.util.Objects;
 
-import com.coroptis.index.CloseableResource;
 import com.coroptis.index.directory.Directory;
 import com.coroptis.index.directory.FileReader;
-import com.coroptis.index.type.ConvertorFromBytes;
-import com.coroptis.index.type.TypeReader;
+import com.coroptis.index.sorteddatafile.Pair;
+import com.coroptis.index.sorteddatafile.PairReader;
 
-public class SortedDataFileReader<K, V> implements CloseableResource {
+/**
+ * Allows to sequentially read key value pairs from data file.
+ * 
+ * @author Honza
+ *
+ * @param<K> key type
+ * @param <V> value type
+ */
+public class DataFileReader<K, V> implements CloseableResource {
 
     private final FileReader fileReader;
     private final PairReader<K, V> pairReader;
 
-    public SortedDataFileReader(final Directory directory, final String fileName,
-	    final ConvertorFromBytes<K> keyConvertorToBytes, final TypeReader<V> valueReader) {
+    public DataFileReader(final Directory directory, final String fileName, final PairReader<K, V> pairReader) {
 	Objects.requireNonNull(directory);
 	Objects.requireNonNull(fileName);
 	this.fileReader = directory.getFileReader(fileName);
-	final DiffKeyReader<K> diffKeyReader = new DiffKeyReader<K>(keyConvertorToBytes);
-	pairReader = new PairReader<>(diffKeyReader, valueReader);
+	this.pairReader = Objects.requireNonNull(pairReader);
     }
 
     /**
@@ -32,7 +37,7 @@ public class SortedDataFileReader<K, V> implements CloseableResource {
 	return pairReader.read(fileReader);
     }
 
-    public void skip(final int position) {
+    public void skip(final long position) {
 	fileReader.skip(position);
     }
 

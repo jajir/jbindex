@@ -7,7 +7,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.zip.ZipOutputStream;
 
-import com.coroptis.index.IndexException;
+import com.coroptis.index.jbindex.IndexException;
 
 public class FsZipFileWriterStream implements FileWriter {
 

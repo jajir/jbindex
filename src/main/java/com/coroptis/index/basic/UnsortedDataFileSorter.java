@@ -10,10 +10,10 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
+import com.coroptis.index.DataFileIterator;
 import com.coroptis.index.directory.Directory;
 import com.coroptis.index.sorteddatafile.Pair;
 import com.coroptis.index.sorteddatafile.SortedDataFile;
-import com.coroptis.index.sorteddatafile.SortedDataFileReader;
 import com.coroptis.index.sorteddatafile.SortedDataFileWriter;
 import com.coroptis.index.type.OperationType;
 import com.coroptis.index.type.TypeConvertors;
@@ -155,9 +155,9 @@ class UnsortedDataFileSorter<K, V> {
     };
 
     private void mergeSortedFiles(final List<String> filesToMergeLocaly, final Consumer<Pair<K, V>> consumer) {
-	List<SortedDataFileReader<K, V>> readers = null;
+	List<DataFileIterator<K, V>> readers = null;
 	try {
-	    readers = filesToMergeLocaly.stream().map(fileName -> basicIndex.getSortedDataFile(fileName).openReader())
+	    readers = filesToMergeLocaly.stream().map(fileName -> basicIndex.getSortedDataFile(fileName).openIterator())
 		    .collect(Collectors.toList());
 	    final MergeSpliterator<K, V> mergeSpliterator = new MergeSpliterator<K, V>(readers, keyComparator, merger);
 	    final Stream<Pair<K, V>> pairStream = StreamSupport.stream(mergeSpliterator, false);

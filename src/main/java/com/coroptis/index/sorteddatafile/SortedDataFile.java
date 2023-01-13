@@ -3,6 +3,8 @@ package com.coroptis.index.sorteddatafile;
 import java.util.Comparator;
 import java.util.Objects;
 
+import com.coroptis.index.DataFileIterator;
+import com.coroptis.index.DataFileReader;
 import com.coroptis.index.directory.Directory;
 import com.coroptis.index.type.ConvertorFromBytes;
 import com.coroptis.index.type.ConvertorToBytes;
@@ -53,10 +55,18 @@ public class SortedDataFile<K, V> {
 	return streamer;
     }
 
-    public SortedDataFileReader<K, V> openReader() {
-	final SortedDataFileReader<K, V> reader = new SortedDataFileReader<>(directory, fileName, keyConvertorFromBytes,
-		valueReader);
+    public DataFileReader<K, V> openReader() {
+	final DiffKeyReader<K> diffKeyReader = new DiffKeyReader<K>(keyConvertorFromBytes);
+	final PairReader<K, V> pairReader = new PairReader<>(diffKeyReader, valueReader);
+	final DataFileReader<K, V> reader = new DataFileReader<>(directory, fileName, pairReader);
 	return reader;
+    }
+
+    public DataFileIterator<K, V> openIterator() {
+	final DiffKeyReader<K> diffKeyReader = new DiffKeyReader<K>(keyConvertorFromBytes);
+	final PairReader<K, V> pairReader = new PairReader<>(diffKeyReader, valueReader);
+	final DataFileIterator<K, V> iterator = new DataFileIterator<>(directory, fileName, pairReader);
+	return iterator;
     }
 
     public SortedDataFileWriter<K, V> openWriter() {

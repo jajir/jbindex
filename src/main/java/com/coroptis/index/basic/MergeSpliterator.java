@@ -9,23 +9,20 @@ import java.util.Spliterator;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import com.coroptis.index.DataFileIterator;
 import com.coroptis.index.sorteddatafile.Pair;
-import com.coroptis.index.sorteddatafile.SortedDataFileIterator;
-import com.coroptis.index.sorteddatafile.SortedDataFileReader;
 
 public class MergeSpliterator<K, V> implements Spliterator<Pair<K, V>> {
 
-    private final List<SortedDataFileIterator<K, V>> readers;
+    private final List<DataFileIterator<K, V>> readers;
 
     private final Comparator<? super K> keyComparator;
 
     private final ValueMerger<K, V> merger;
-    
-    MergeSpliterator(final List<SortedDataFileReader<K, V>> readers, final Comparator<? super K> keyComparator,
+
+    MergeSpliterator(final List<DataFileIterator<K, V>> readers, final Comparator<? super K> keyComparator,
 	    final ValueMerger<K, V> merger) {
-	this.readers = readers.stream().map(
-		sortedDataFileReader -> new SortedDataFileIterator<K, V>(Objects.requireNonNull(sortedDataFileReader)))
-		.collect(Collectors.toList());
+	this.readers = Objects.requireNonNull(readers);
 	this.keyComparator = Objects.requireNonNull(keyComparator);
 	this.merger = Objects.requireNonNull(merger);
     }
@@ -45,14 +42,14 @@ public class MergeSpliterator<K, V> implements Spliterator<Pair<K, V>> {
 
     @Override
     public boolean tryAdvance(final Consumer<? super Pair<K, V>> consumer) {
-	final List<SortedDataFileIterator<K, V>> iteratorsWithBiggerKey = getIteratorsWithSmallerValue();
+	final List<DataFileIterator<K, V>> iteratorsWithBiggerKey = getIteratorsWithSmallerValue();
 	if (iteratorsWithBiggerKey.isEmpty()) {
 	    // there are no more items to read
 	    return false;
 	}
 
 	Pair<K, V> out = null;
-	for (final SortedDataFileIterator<K, V> reader : iteratorsWithBiggerKey) {
+	for (final DataFileIterator<K, V> reader : iteratorsWithBiggerKey) {
 	    final Pair<K, V> readed = reader.readCurrent().get();
 	    if (out == null) {
 		out = readed;
@@ -70,7 +67,7 @@ public class MergeSpliterator<K, V> implements Spliterator<Pair<K, V>> {
      * 
      * @return
      */
-    private List<SortedDataFileIterator<K, V>> getIteratorsWithSmallerValue() {
+    private List<DataFileIterator<K, V>> getIteratorsWithSmallerValue() {
 	final Optional<K> maxValue = readers.stream().filter(reader -> reader.readCurrent().isPresent())
 		.map(reader -> reader.readCurrent().get().getKey()).min(keyComparator);
 	if (maxValue.isEmpty()) {

@@ -7,7 +7,7 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import com.coroptis.index.IndexException;
+import com.coroptis.index.jbindex.IndexException;
 import com.google.common.base.MoreObjects;
 
 public class FsFileReaderStream implements FileReader {
