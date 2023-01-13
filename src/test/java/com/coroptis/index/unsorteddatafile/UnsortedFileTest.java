@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import org.junit.jupiter.api.Test;
 
+import com.coroptis.index.DataFileIterator;
 import com.coroptis.index.directory.Directory;
 import com.coroptis.index.directory.MemDirectory;
 import com.coroptis.index.jbindex.IndexConfiguration;
@@ -27,10 +28,10 @@ public class UnsortedFileTest {
 	    writer.put(Pair.of(98, "go"));
 	}
 
-	try (final UnsortedDataFileReader<Integer, String> reader = unsorted.openReader()) {
-	    while (reader.readCurrent().isPresent()) {
+	try (final DataFileIterator<Integer, String> reader = unsorted.openIterator()) {
+	    while (reader.hasNext()) {
 		System.out.println(reader.readCurrent().get());
-		reader.moveToNext();
+		reader.next();
 	    }
 	}
 

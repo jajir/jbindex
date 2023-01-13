@@ -18,7 +18,6 @@ import com.coroptis.index.sorteddatafile.SortedDataFileWriter;
 import com.coroptis.index.type.OperationType;
 import com.coroptis.index.type.TypeConvertors;
 import com.coroptis.index.unsorteddatafile.UnsortedDataFile;
-import com.coroptis.index.unsorteddatafile.UnsortedDataFileReader;
 import com.coroptis.index.unsorteddatafile.UnsortedDataFileWriter;
 
 /**
@@ -69,13 +68,13 @@ class UnsortedDataFileSorter<K, V> {
 
     private void splitIntoSortedIndexes() {
 	final UnsortedDataFile<K, V> unsortedFile = basicIndex.getUnsortedFile(fileNameToSort);
-	try (final UnsortedDataFileReader<K, V> reader = unsortedFile.openReader()) {
+	try (final DataFileIterator<K, V> reader = unsortedFile.openIterator()) {
 	    int cx = 0;
 	    int fileCounter = 0;
 	    final UniqueCache<K, V> cache = new UniqueCache<>(merger);
-	    while (reader.readCurrent().isPresent()) {
+	    while (reader.hasNext()) {
 		cache.add(reader.readCurrent().get());
-		reader.moveToNext();
+		reader.next();
 		cx++;
 		if (cx % howManySortInMemory == 0) {
 		    writeSortedListToFile(cache.toList(), fileCounter);
