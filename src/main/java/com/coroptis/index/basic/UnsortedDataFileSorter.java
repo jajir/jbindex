@@ -11,12 +11,9 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import com.coroptis.index.DataFileIterator;
-import com.coroptis.index.directory.Directory;
 import com.coroptis.index.sorteddatafile.Pair;
 import com.coroptis.index.sorteddatafile.SortedDataFile;
 import com.coroptis.index.sorteddatafile.SortedDataFileWriter;
-import com.coroptis.index.type.OperationType;
-import com.coroptis.index.type.TypeConvertors;
 import com.coroptis.index.unsorteddatafile.UnsortedDataFile;
 import com.coroptis.index.unsorteddatafile.UnsortedDataFileWriter;
 
@@ -36,25 +33,20 @@ class UnsortedDataFileSorter<K, V> {
     private final static String ROUND_SEPARTOR = "-";
     private final static int HOW_MANY_FILES_TO_MERGE_AT_ONCE = 50;
 
-    private final Directory directory;
     private final String fileNameToSort;
     private final ValueMerger<K, V> merger;
     private final Comparator<? super K> keyComparator;
     private final Integer howManySortInMemory;
     private final BasicIndex<K, V> basicIndex;
 
-    public UnsortedDataFileSorter(final Directory directory, final String fileNameToSort,
-	    final ValueMerger<K, V> merger, final Class<?> keyClass, final Class<?> valueClass,
-	    final Integer howManySortInMemory, final Integer blockSize,
-	     final BasicIndex<K, V> basicIndex) {
-	this.directory = Objects.requireNonNull(directory);
+    UnsortedDataFileSorter(final String fileNameToSort, final ValueMerger<K, V> merger,
+	    final Comparator<? super K> keyComparator, final Integer howManySortInMemory,
+	    final BasicIndex<K, V> basicIndex) {
 	this.fileNameToSort = Objects.requireNonNull(fileNameToSort);
 	this.merger = Objects.requireNonNull(merger);
 	this.howManySortInMemory = Objects.requireNonNull(howManySortInMemory);
-	final TypeConvertors tc = TypeConvertors.getInstance();
-	keyComparator = tc.get(keyClass, OperationType.COMPARATOR);
 	this.basicIndex = Objects.requireNonNull(basicIndex);
-
+	this.keyComparator = Objects.requireNonNull(keyComparator);
     }
 
     public void consumeSortedData(final Consumer<Pair<K, V>> consumer) {
@@ -84,7 +76,7 @@ class UnsortedDataFileSorter<K, V> {
 	    }
 	    writeSortedListToFile(cache.toList(), fileCounter);
 	}
-	directory.deleteFile(UnsortedDataFileWriter.STORE);
+	basicIndex.deleteFile(UnsortedDataFileWriter.STORE);
     }
 
     private void writeSortedListToFile(final List<Pair<K, V>> cache, final int fileCounter) {
@@ -131,7 +123,7 @@ class UnsortedDataFileSorter<K, V> {
 		    mergeSortedFiles(filesToMergeLocaly, pair -> indexWriter.put(pair));
 		}
 	    }
-	    filesToMergeLocaly.forEach(fileName -> directory.deleteFile(fileName));
+	    filesToMergeLocaly.forEach(fileName -> basicIndex.deleteFile(fileName));
 	}
 
 	return !isFinalMergingRound;
@@ -149,9 +141,9 @@ class UnsortedDataFileSorter<K, V> {
     }
 
     private List<String> getFilesInRound(final int roundNo) {
-	return directory.getFileNames().filter(fileName -> isFileInRound(roundNo, fileName))
+	return basicIndex.getFileNames().filter(fileName -> isFileInRound(roundNo, fileName))
 		.collect(Collectors.toList());
-    };
+    }
 
     private void mergeSortedFiles(final List<String> filesToMergeLocaly, final Consumer<Pair<K, V>> consumer) {
 	List<DataFileIterator<K, V>> readers = null;

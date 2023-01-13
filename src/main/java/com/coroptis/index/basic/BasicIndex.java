@@ -3,6 +3,7 @@ package com.coroptis.index.basic;
 import java.util.Comparator;
 import java.util.Objects;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 import com.coroptis.index.directory.Directory;
 import com.coroptis.index.sorteddatafile.Pair;
@@ -16,6 +17,14 @@ import com.coroptis.index.type.TypeWriter;
 import com.coroptis.index.unsorteddatafile.UnsortedDataFile;
 import com.coroptis.index.unsorteddatafile.UnsortedDataFileWriter;
 
+/**
+ * Allows to create data files in directory and support further work with them.
+ * 
+ * @author honza
+ *
+ * @param <K>
+ * @param <V>
+ */
 public class BasicIndex<K, V> {
 
     private final Directory directory;
@@ -110,12 +119,18 @@ public class BasicIndex<K, V> {
      *                         consumer.
      */
     public void consumeSortedData(final String unsortedFileName, final Consumer<Pair<K, V>> consumer,
-	    final ValueMerger<K, V> merger, final Integer howManySortInMemory, final Integer blockSize) {
-	// FIXME - block size and howManySortInMemory should be placed into
-	// configuration.
-	final UnsortedDataFileSorter<K, V> sorter = new UnsortedDataFileSorter<>(directory,
-		UnsortedDataFileWriter.STORE, merger, keyClass, valueClass, howManySortInMemory, blockSize, this);
+	    final ValueMerger<K, V> merger, final Integer howManySortInMemory) {
+	final UnsortedDataFileSorter<K, V> sorter = new UnsortedDataFileSorter<>(UnsortedDataFileWriter.STORE, merger,
+		getKeyComparator(), howManySortInMemory, this);
 	sorter.consumeSortedData(consumer);
+    }
+
+    public boolean deleteFile(final String fileName) {
+	return directory.deleteFile(fileName);
+    }
+
+    public Stream<String> getFileNames() {
+	return directory.getFileNames();
     }
 
 }

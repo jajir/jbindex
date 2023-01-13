@@ -1,4 +1,4 @@
-package com.coroptis.index.jbindex;
+package com.coroptis.index;
 
 public class IndexException extends RuntimeException {
 
