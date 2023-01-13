@@ -1,10 +1,11 @@
-package com.coroptis.index;
+package com.coroptis.index.jbindex;
 
 import java.util.Comparator;
 import java.util.Objects;
 import java.util.Spliterator;
 import java.util.function.Consumer;
 
+import com.coroptis.index.PairComparator;
 import com.coroptis.index.directory.FileReader;
 import com.coroptis.index.sorteddatafile.Pair;
 import com.coroptis.index.sorteddatafile.PairReader;

@@ -1,4 +1,4 @@
-package com.coroptis.index;
+package com.coroptis.index.jbindex;
 
 public class OptionBuilder {
 

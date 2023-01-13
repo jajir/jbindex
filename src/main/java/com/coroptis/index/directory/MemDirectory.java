@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Stream;
 
-import com.coroptis.index.IndexException;
+import com.coroptis.index.jbindex.IndexException;
 
 public class MemDirectory implements Directory {
 

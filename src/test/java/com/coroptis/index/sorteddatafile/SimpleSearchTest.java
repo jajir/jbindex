@@ -7,12 +7,12 @@ import java.io.File;
 
 import org.junit.jupiter.api.Test;
 
-import com.coroptis.index.IndexSearcher;
-import com.coroptis.index.IndexWriter;
 import com.coroptis.index.basic.BasicIndex;
 import com.coroptis.index.directory.Directory;
 import com.coroptis.index.directory.FsDirectory;
 import com.coroptis.index.directory.MemDirectory;
+import com.coroptis.index.jbindex.IndexSearcher;
+import com.coroptis.index.jbindex.IndexWriter;
 
 public class SimpleSearchTest {
 

@@ -4,7 +4,7 @@ import java.io.File;
 import java.util.Objects;
 import java.util.stream.Stream;
 
-import com.coroptis.index.IndexException;
+import com.coroptis.index.jbindex.IndexException;
 import com.google.common.collect.Lists;
 
 public class FsDirectory implements Directory {

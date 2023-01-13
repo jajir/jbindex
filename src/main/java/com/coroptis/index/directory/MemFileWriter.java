@@ -3,7 +3,7 @@ package com.coroptis.index.directory;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
-import com.coroptis.index.IndexException;
+import com.coroptis.index.jbindex.IndexException;
 
 public class MemFileWriter implements FileWriter {
 

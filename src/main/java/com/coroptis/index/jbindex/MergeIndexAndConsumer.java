@@ -1,9 +1,10 @@
-package com.coroptis.index;
+package com.coroptis.index.jbindex;
 
 import java.util.Comparator;
 import java.util.Objects;
 import java.util.function.Consumer;
 
+import com.coroptis.index.CloseableResource;
 import com.coroptis.index.basic.BasicIndex;
 import com.coroptis.index.basic.ValueMerger;
 import com.coroptis.index.directory.Directory;

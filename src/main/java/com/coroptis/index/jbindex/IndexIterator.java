@@ -1,8 +1,9 @@
-package com.coroptis.index;
+package com.coroptis.index.jbindex;
 
 import java.util.Iterator;
 import java.util.Objects;
 
+import com.coroptis.index.CloseableResource;
 import com.coroptis.index.directory.FileReader;
 import com.coroptis.index.sorteddatafile.Pair;
 import com.coroptis.index.sorteddatafile.PairReader;
