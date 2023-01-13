@@ -2,6 +2,8 @@ package com.coroptis.index.jbindex;
 
 import java.util.Objects;
 
+import com.coroptis.index.IndexException;
+
 public class JbIndex<K, V> {
 
     public static enum State {
