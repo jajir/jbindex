@@ -18,8 +18,9 @@ public class SortedDataFileStreamer<K, V> implements CloseableResource {
     private final PairComparator<K, V> pairComparator;
     private final PairReader<K, V> pairReader;
 
-    public SortedDataFileStreamer(final Directory directory, final String fileName, final ConvertorFromBytes<K> keyConvertorFromBytes,
-	    final TypeReader<V> valueReader, final Comparator<? super K> keyComparator) {
+    public SortedDataFileStreamer(final Directory directory, final String fileName,
+	    final ConvertorFromBytes<K> keyConvertorFromBytes, final TypeReader<V> valueReader,
+	    final Comparator<? super K> keyComparator) {
 	Objects.requireNonNull(directory);
 	Objects.requireNonNull(fileName);
 	this.fileReader = directory.getFileReader(fileName);
@@ -28,9 +29,30 @@ public class SortedDataFileStreamer<K, V> implements CloseableResource {
 	pairComparator = new PairComparator<>(keyComparator);
     }
 
+    /**
+     * Allows to initialize object and skip some initial bytes.
+     * 
+     * @param directory
+     * @param fileName
+     * @param keyConvertorFromBytes
+     * @param valueReader
+     * @param keyComparator
+     * @param streamFromPosition
+     */
+    public SortedDataFileStreamer(final Directory directory, final String fileName,
+	    final ConvertorFromBytes<K> keyConvertorFromBytes, final TypeReader<V> valueReader,
+	    final Comparator<? super K> keyComparator, final long streamFromPosition) {
+	this(directory, fileName, keyConvertorFromBytes, valueReader, keyComparator);
+	fileReader.skip(streamFromPosition);
+    }
+
+    public Stream<Pair<K, V>> stream() {
+	return StreamSupport.stream(new SortedDataFileSpliterator<>(pairReader, fileReader, pairComparator), false);
+    }
+
     public Stream<Pair<K, V>> stream(final long estimateSize) {
-	return StreamSupport
-		.stream(new SortedDataFileSpliterator<>(pairReader, fileReader, pairComparator, estimateSize), false);
+	return StreamSupport.stream(
+		new SortedDataFileSpliteratorSized<>(pairReader, fileReader, pairComparator, estimateSize), false);
     }
 
     @Override

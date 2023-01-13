@@ -52,7 +52,7 @@ public class FsZipFileReaderStream implements FileReader {
     }
 
     @Override
-    public void skip(int position) {
+    public void skip(long position) {
 	try {
 	    bis.skip(position);
 	} catch (IOException e) {

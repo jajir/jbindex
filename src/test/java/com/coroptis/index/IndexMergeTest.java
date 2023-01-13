@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
+import com.coroptis.index.basic.BasicIndex;
 import com.coroptis.index.directory.Directory;
 import com.coroptis.index.directory.MemDirectory;
 
@@ -38,8 +39,10 @@ public class IndexMergeTest {
 		Integer.class, 1);
 	merger.merge();
 	
+	final BasicIndex<Integer,Integer> basicIndex = new BasicIndex<>(directoryOut, Integer.class,
+		Integer.class);
 	final IndexSearcher<Integer, Integer> search = new IndexSearcher<>(directoryOut,
-		Integer.class, Integer.class);
+		Integer.class, Integer.class,basicIndex);
 	assertEquals(1, search.get(1));
 	assertEquals(2, search.get(2));
 	assertEquals(3, search.get(3));

@@ -55,7 +55,7 @@ public class FsFileReaderStream implements FileReader {
     }
 
     @Override
-    public void skip(int position) {
+    public void skip(long position) {
 	try {
 	    bis.skip(position);
 	} catch (IOException e) {

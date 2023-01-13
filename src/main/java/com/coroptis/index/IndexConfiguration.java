@@ -13,7 +13,6 @@ import com.coroptis.index.type.TypeReader;
 import com.coroptis.index.type.TypeWriter;
 import com.coroptis.index.unsorteddatafile.UnsortedDataFile;
 
-@Deprecated
 public class IndexConfiguration<K, V> {
 
     private final Directory directory;
@@ -38,13 +37,13 @@ public class IndexConfiguration<K, V> {
 	return valueClass;
     }
 
-    public TypeReader<K> getKeyReader() {
+    TypeReader<K> getKeyReader() {
 	final TypeConvertors tc = TypeConvertors.getInstance();
 	final TypeReader<K> keyReader = tc.get(Objects.requireNonNull(getKeyClass()), OperationType.READER);
 	return keyReader;
     }
 
-    public TypeReader<V> getValueReader() {
+    TypeReader<V> getValueReader() {
 	final TypeConvertors tc = TypeConvertors.getInstance();
 	final TypeReader<V> keyReader = tc.get(Objects.requireNonNull(getValueClass()), OperationType.READER);
 	return keyReader;

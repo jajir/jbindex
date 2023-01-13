@@ -47,9 +47,15 @@ public class SortedDataFile<K, V> {
 	return streamer;
     }
 
+    public SortedDataFileStreamer<K, V> openStreamer(final long skipInitialBytes) {
+	final SortedDataFileStreamer<K, V> streamer = new SortedDataFileStreamer<>(directory, fileName,
+		keyConvertorFromBytes, valueReader, keyComparator, skipInitialBytes);
+	return streamer;
+    }
+
     public SortedDataFileReader<K, V> openReader() {
 	final SortedDataFileReader<K, V> reader = new SortedDataFileReader<>(directory, fileName, keyConvertorFromBytes,
-		valueReader, keyComparator);
+		valueReader);
 	return reader;
     }
 

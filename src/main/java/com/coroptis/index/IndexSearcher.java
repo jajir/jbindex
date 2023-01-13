@@ -6,10 +6,11 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+import com.coroptis.index.basic.BasicIndex;
 import com.coroptis.index.directory.Directory;
 import com.coroptis.index.sorteddatafile.DiffKeyReader;
 import com.coroptis.index.sorteddatafile.Pair;
-import com.coroptis.index.sorteddatafile.SortedDataFileReader;
+import com.coroptis.index.sorteddatafile.SortedDataFile;
 import com.coroptis.index.sorteddatafile.SortedDataFileStreamer;
 import com.coroptis.index.type.ConvertorFromBytes;
 import com.coroptis.index.type.OperationType;
@@ -31,16 +32,18 @@ public class IndexSearcher<K, V> {
 
     private final List<Pair<K, Integer>> metaIndex = new ArrayList<>();
     private final Directory directory;
-    private final ConvertorFromBytes<K> keyConvertorToBytes;
+    private final ConvertorFromBytes<K> keyConvertorFromBytes;
     private final TypeReader<V> valueReader;
     private final TypeDescriptorInteger integerTypeDescriptor = new TypeDescriptorInteger();
     private final Comparator<? super K> keyComparator;
     private final IndexDesc indexDesc;
+    private final BasicIndex<K, V> basicIndex;
 
-    public IndexSearcher(final Directory directory, final Class<?> keyClass, final Class<?> valueClass) {
+    public IndexSearcher(final Directory directory, final Class<?> keyClass, final Class<?> valueClass, final BasicIndex<K, V> basicIndex) {
 	this.directory = Objects.requireNonNull(directory, "directory must not be null");
+	this.basicIndex = Objects.requireNonNull(basicIndex, "basic index must not be null");
 	final TypeConvertors tc = TypeConvertors.getInstance();
-	this.keyConvertorToBytes = tc.get(keyClass, OperationType.CONVERTOR_FROM_BYTES);
+	this.keyConvertorFromBytes = tc.get(keyClass, OperationType.CONVERTOR_FROM_BYTES);
 	this.valueReader = tc.get(valueClass, OperationType.READER);
 	this.indexDesc = IndexDesc.load(directory);
 	this.keyComparator = Objects.requireNonNull(tc.get(keyClass, OperationType.COMPARATOR),
@@ -54,33 +57,33 @@ public class IndexSearcher<K, V> {
 	if (blockId < 0) {
 	    return null;
 	}
-	try (final SortedDataFileReader<K, V> mainIndexReader = getMainIndexReader()) {
-	    mainIndexReader.skip(blockId);
-	    final Optional<Pair<K, V>> oVal = mainIndexReader.stream(indexDesc.getWrittenKeyCount())
+	final SortedDataFile<K, V> sortedDataFile =  basicIndex.getSortedDataFile(IndexWriter.INDEX_MAIN_DATA_FILE);
+	try (final SortedDataFileStreamer<K, V> streamer = sortedDataFile.openStreamer(blockId)){
+	    final Optional<Pair<K, V>> oVal = streamer.stream(indexDesc.getBlockSize())
 		    .limit(indexDesc.getBlockSize()).filter(pair -> keyComparator.compare(pair.getKey(), key) == 0)
 		    .findFirst();
 	    if (oVal.isPresent()) {
 		return oVal.get().getValue();
-	    }
+	    }	    
 	}
 	return null;
     }
 
     public IndexStreamer<K, V> getStreamer() {
-	final DiffKeyReader<K> diffKeyReader = new DiffKeyReader<K>(keyConvertorToBytes);
+	final DiffKeyReader<K> diffKeyReader = new DiffKeyReader<K>(keyConvertorFromBytes);
 	return new IndexStreamer<>(directory, IndexWriter.INDEX_MAIN_DATA_FILE, diffKeyReader, valueReader,
 		keyComparator, indexDesc.getWrittenKeyCount());
     }
 
     public IndexIterator<K, V> getIterator() {
-	final DiffKeyReader<K> diffKeyReader = new DiffKeyReader<K>(keyConvertorToBytes);
+	final DiffKeyReader<K> diffKeyReader = new DiffKeyReader<K>(keyConvertorFromBytes);
 	return new IndexIterator<>(directory.getFileReader(IndexWriter.INDEX_MAIN_DATA_FILE), diffKeyReader,
 		valueReader);
     }
 
     private void loadMetaIndex() {
 	try (final SortedDataFileStreamer<K, Integer> sir = new SortedDataFileStreamer<>(directory,
-		IndexWriter.INDEX_META_FILE, keyConvertorToBytes, integerTypeDescriptor.getReader(), keyComparator)) {
+		IndexWriter.INDEX_META_FILE, keyConvertorFromBytes, integerTypeDescriptor.getReader(), keyComparator)) {
 	    sir.stream(indexDesc.getWrittenBlockCount()).forEach(pair -> metaIndex.add(pair));
 	}
     }
@@ -104,8 +107,4 @@ public class IndexSearcher<K, V> {
 	return previousPair == null ? INVALID_BLOCK_ID : previousPair.getValue();
     }
 
-    private SortedDataFileReader<K, V> getMainIndexReader() {
-	return new SortedDataFileReader<>(directory, IndexWriter.INDEX_MAIN_DATA_FILE, keyConvertorToBytes, valueReader,
-		keyComparator);
-    }
 }

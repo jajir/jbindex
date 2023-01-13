@@ -4,6 +4,7 @@ import java.util.Comparator;
 import java.util.Objects;
 import java.util.function.Consumer;
 
+import com.coroptis.index.basic.BasicIndex;
 import com.coroptis.index.basic.ValueMerger;
 import com.coroptis.index.directory.Directory;
 import com.coroptis.index.sorteddatafile.Pair;
@@ -24,7 +25,8 @@ public class MergeIndexAndConsumer<K, V> implements CloseableResource {
 	this.merger = Objects.requireNonNull(merger);
 	final TypeConvertors tc = TypeConvertors.getInstance();
 	this.keyComparator = tc.get(keyClass, OperationType.COMPARATOR);
-	final IndexIterator<K, V> inputIterator = new IndexSearcher<K, V>(inputDirectory, keyClass, valueClass)
+	final BasicIndex<K, V> basicIndexInput = new BasicIndex<>(inputIndex, keyClass, valueClass);
+	final IndexIterator<K, V> inputIterator = new IndexSearcher<K, V>(inputDirectory, keyClass, valueClass, basicIndexInput)
 		.getIterator();
 	inputIndexReader = new IndexReader<>(inputIterator);
 	finalIndexWriter = new IndexWriter<>(output, blockSize, keyClass, valueClass);

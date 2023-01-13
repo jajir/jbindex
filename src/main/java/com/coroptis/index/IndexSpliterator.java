@@ -1,14 +1,15 @@
-package com.coroptis.index.sorteddatafile;
+package com.coroptis.index;
 
 import java.util.Comparator;
 import java.util.Objects;
 import java.util.Spliterator;
 import java.util.function.Consumer;
 
-import com.coroptis.index.PairComparator;
 import com.coroptis.index.directory.FileReader;
+import com.coroptis.index.sorteddatafile.Pair;
+import com.coroptis.index.sorteddatafile.PairReader;
 
-public class SortedDataFileSpliterator<K, V> implements Spliterator<Pair<K, V>> {
+public class IndexSpliterator<K, V> implements Spliterator<Pair<K, V>> {
 
     private final PairReader<K, V> pairReader;
 
@@ -16,12 +17,15 @@ public class SortedDataFileSpliterator<K, V> implements Spliterator<Pair<K, V>> 
 
     private final PairComparator<K, V> pairComparator;
 
-    public SortedDataFileSpliterator(final PairReader<K, V> pairReader, final FileReader fileReader,
-	    final PairComparator<K, V> pairComparator) {
+    private final long estimateSize;
+
+    public IndexSpliterator(final PairReader<K, V> pairReader, final FileReader fileReader,
+	    final PairComparator<K, V> pairComparator, final long estimateSize) {
 	this.pairReader = Objects.requireNonNull(pairReader);
 	this.fileReader = Objects.requireNonNull(fileReader);
 	this.pairComparator = Objects.requireNonNull(pairComparator,
 		"pair comparator must not be null");
+	this.estimateSize = estimateSize;
     }
 
     @Override
@@ -51,15 +55,16 @@ public class SortedDataFileSpliterator<K, V> implements Spliterator<Pair<K, V>> 
     @Override
     public long estimateSize() {
 	/*
-	 * Stream is not sized.
+	 * Stream is not sized. It's not possible to determine stream size.
 	 */
-	return Integer.MAX_VALUE;
+	//FIXME tak proc tu hodnotu vracim?
+	return estimateSize;
     }
 
     @Override
     public int characteristics() {
 	return Spliterator.DISTINCT | Spliterator.IMMUTABLE | Spliterator.NONNULL
-		| Spliterator.SORTED ;
+		| Spliterator.SORTED | Spliterator.SIZED;
     }
 
 }

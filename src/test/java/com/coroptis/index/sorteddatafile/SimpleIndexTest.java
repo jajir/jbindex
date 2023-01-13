@@ -56,8 +56,7 @@ public class SimpleIndexTest {
 	}
 
 	try (final SortedDataFileReader<String, Byte> sir = new SortedDataFileReader<>(
-		directory,FILE_NAME, stringTd.getConvertorFromBytes(), byteTd.getReader(),
-		Comparator.naturalOrder())) {
+		directory,FILE_NAME, stringTd.getConvertorFromBytes(), byteTd.getReader())) {
 	    final Pair<String, Byte> p1 = sir.read();
 	    final Pair<String, Byte> p2 = sir.read();
 	    final Pair<String, Byte> p3 = sir.read();

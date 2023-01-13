@@ -4,6 +4,7 @@ import java.util.Comparator;
 import java.util.Objects;
 import java.util.stream.StreamSupport;
 
+import com.coroptis.index.basic.BasicIndex;
 import com.coroptis.index.basic.ValueMerger;
 import com.coroptis.index.directory.Directory;
 import com.coroptis.index.type.OperationType;
@@ -36,10 +37,12 @@ public class IndexMerge<K, V> {
     }
 
     public void merge() {
+	final BasicIndex<K, V> basicIndex1 = new BasicIndex<>(directory1, keyClass, valueClass);
+	final BasicIndex<K, V> basicIndex2 = new BasicIndex<>(directory1, keyClass, valueClass);
 	try (final IndexIterator<K, V> iterator1 = new IndexSearcher<K, V>(directory1, keyClass,
-		valueClass).getIterator()) {
+		valueClass, basicIndex1).getIterator()) {
 	    try (final IndexIterator<K, V> iterator2 = new IndexSearcher<K, V>(directory2, keyClass,
-		    valueClass).getIterator()) {
+		    valueClass, basicIndex2).getIterator()) {
 		final IndexReader<K, V> indexReader1 = new IndexReader<>(iterator1);
 		final IndexReader<K, V> indexReader2 = new IndexReader<>(iterator2);
 
