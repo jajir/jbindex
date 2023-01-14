@@ -15,10 +15,10 @@ import com.coroptis.index.type.TypeConvertors;
 import com.coroptis.index.type.TypeReader;
 import com.coroptis.index.type.TypeWriter;
 import com.coroptis.index.unsorteddatafile.UnsortedDataFile;
-import com.coroptis.index.unsorteddatafile.UnsortedDataFileWriter;
 
 /**
  * Allows to create data files in directory and support further work with them.
+ * It support work with individual files.
  * 
  * @author honza
  *
@@ -120,7 +120,7 @@ public class BasicIndex<K, V> {
      */
     public void consumeSortedData(final String unsortedFileName, final Consumer<Pair<K, V>> consumer,
 	    final ValueMerger<K, V> merger, final Integer howManySortInMemory) {
-	final UnsortedDataFileSorter<K, V> sorter = new UnsortedDataFileSorter<>(UnsortedDataFileWriter.STORE, merger,
+	final UnsortedDataFileSorter<K, V> sorter = new UnsortedDataFileSorter<>(unsortedFileName, merger,
 		getKeyComparator(), howManySortInMemory, this);
 	sorter.consumeSortedData(consumer);
     }
