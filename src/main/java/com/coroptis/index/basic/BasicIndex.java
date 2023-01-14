@@ -37,7 +37,7 @@ public class BasicIndex<K, V> {
 	this.valueClass = Objects.requireNonNull(valueClass);
     }
 
-    Directory getDirectory() {
+    public Directory getDirectory() {
 	return directory;
     }
 

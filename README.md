@@ -15,3 +15,11 @@ Index could be in following states:
 ![Index states](./src/images/index-state-diagram.png)
 
 Interruption of process of writing data to index could lead to corruption of entire index.
+
+## Development 
+
+Mockito requires reflective access to non-public parts in a Java module. It could be manually open by passing following parameter as jvm parameter:
+
+```
+--add-opens=java.base/java.lang=ALL-UNNAMED
+```

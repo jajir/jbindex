@@ -2,9 +2,9 @@ package com.coroptis.index.directory;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import com.coroptis.index.IndexException;
@@ -20,7 +20,8 @@ public class FsZipFileWriterStream implements FileWriter {
 	    this.fio = new ZipOutputStream(new BufferedOutputStream(new FileOutputStream(file), BUFFER_SIZE));
 	    fio.setMethod(ZipOutputStream.DEFLATED);
 	    fio.setLevel(9);
-	} catch (FileNotFoundException e) {
+	    fio.putNextEntry(new ZipEntry("default.dat"));
+	} catch (IOException e) {
 	    throw new IndexException(e.getMessage(), e);
 	}
     }
@@ -28,6 +29,7 @@ public class FsZipFileWriterStream implements FileWriter {
     @Override
     public void close() {
 	try {
+	    fio.closeEntry();
 	    fio.close();
 	} catch (IOException e) {
 	    throw new IndexException(e.getMessage(), e);
