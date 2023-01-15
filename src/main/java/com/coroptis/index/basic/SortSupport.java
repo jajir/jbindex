@@ -15,16 +15,17 @@ import com.coroptis.index.sorteddatafile.SortedDataFileWriter;
 
 public class SortSupport<K, V> {
 
-    private final static String ROUND_NAME = "round";
     private final static String ROUND_SEPARTOR = "-";
 
     private final Directory directory;
     private final BasicIndex<K, V> basicIndex;
     private final ValueMerger<K, V> merger;
+    private final String fileName;
 
-    SortSupport(final BasicIndex<K, V> basicIndex, final ValueMerger<K, V> merger) {
+    SortSupport(final BasicIndex<K, V> basicIndex, final ValueMerger<K, V> merger, final String fileName) {
 	this.basicIndex = Objects.requireNonNull(basicIndex);
 	this.merger = Objects.requireNonNull(merger);
+	this.fileName = Objects.requireNonNull(fileName);
 	this.directory = basicIndex.getDirectory();
     }
 
@@ -44,7 +45,14 @@ public class SortSupport<K, V> {
     }
 
     String makeFileName(final int roundNo, final int no) {
-	return ROUND_NAME + ROUND_SEPARTOR + roundNo + ROUND_SEPARTOR + no;
+	final int positionOfDot = fileName.lastIndexOf(".");
+	if (positionOfDot > 0) {
+	    final String extension = fileName.substring(positionOfDot);
+	    final String firstPart = fileName.substring(0, positionOfDot);
+	    return firstPart + ROUND_SEPARTOR + roundNo + ROUND_SEPARTOR + no + extension;
+	} else {
+	    return fileName + ROUND_SEPARTOR + roundNo + ROUND_SEPARTOR + no;
+	}
     }
 
     void mergeSortedFiles(final List<String> filesToMergeLocaly, final String producedFile) {

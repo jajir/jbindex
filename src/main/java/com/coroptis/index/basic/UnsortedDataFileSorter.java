@@ -29,7 +29,7 @@ class UnsortedDataFileSorter<K, V> {
     /**
      * Unsorted data file name.
      */
-    private final String fileName;
+    private final String unsortedFileName;
     private final ValueMerger<K, V> merger;
     private final Comparator<? super K> keyComparator;
     private final Integer howManySortInMemory;
@@ -40,12 +40,12 @@ class UnsortedDataFileSorter<K, V> {
     UnsortedDataFileSorter(final String unsortedFileName, final ValueMerger<K, V> merger,
 	    final Comparator<? super K> keyComparator, final Integer howManySortInMemory,
 	    final BasicIndex<K, V> basicIndex) {
-	this.fileName = Objects.requireNonNull(unsortedFileName);
+	this.unsortedFileName = Objects.requireNonNull(unsortedFileName);
 	this.merger = Objects.requireNonNull(merger);
 	this.howManySortInMemory = Objects.requireNonNull(howManySortInMemory);
 	this.basicIndex = Objects.requireNonNull(basicIndex);
 	this.keyComparator = Objects.requireNonNull(keyComparator);
-	this.sortSupport = new SortSupport<>(basicIndex, merger);
+	this.sortSupport = new SortSupport<>(basicIndex, merger, unsortedFileName);
 	this.roundSorter = new RoundSorted<>(basicIndex, sortSupport, HOW_MANY_FILES_TO_MERGE_AT_ONCE);
     }
 
@@ -59,7 +59,7 @@ class UnsortedDataFileSorter<K, V> {
     }
 
     private void splitIntoSortedIndexes() {
-	final UnsortedDataFile<K, V> unsortedFile = basicIndex.getUnsortedFile(fileName);
+	final UnsortedDataFile<K, V> unsortedFile = basicIndex.getUnsortedFile(unsortedFileName);
 	try (final DataFileIterator<K, V> reader = unsortedFile.openIterator()) {
 	    int cx = 0;
 	    int fileCounter = 0;
@@ -76,7 +76,7 @@ class UnsortedDataFileSorter<K, V> {
 	    }
 	    writeSortedListToFile(cache.toList(), fileCounter);
 	}
-	basicIndex.deleteFile(fileName);
+	basicIndex.deleteFile(unsortedFileName);
     }
 
     private void writeSortedListToFile(final List<Pair<K, V>> cache, final int fileCounter) {
