@@ -7,6 +7,7 @@ import com.coroptis.index.CloseableResource;
 import com.coroptis.index.directory.FileReader;
 import com.coroptis.index.sorteddatafile.Pair;
 import com.coroptis.index.sorteddatafile.PairReader;
+import com.coroptis.index.sorteddatafile.PairReaderImpl;
 import com.coroptis.index.type.TypeReader;
 
 public class IndexIterator<K, V> implements Iterator<Pair<K, V>>, CloseableResource {
@@ -20,7 +21,7 @@ public class IndexIterator<K, V> implements Iterator<Pair<K, V>>, CloseableResou
 	this.reader = Objects.requireNonNull(reader);
 	Objects.requireNonNull(keyReader);
 	Objects.requireNonNull(valueReader);
-	pairReader = new PairReader<>(keyReader, valueReader);
+	pairReader = new PairReaderImpl<>(keyReader, valueReader);
 	tryReadNext();
     }
 

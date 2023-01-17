@@ -32,7 +32,6 @@ public class JbIndex<K, V> {
 
     public void close() {
 	checkRequiredState(State.SEARCHING);
-	// FIXME do close
     }
 
     private void checkRequiredState(final State requiredState) {

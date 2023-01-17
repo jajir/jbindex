@@ -6,6 +6,7 @@ import com.coroptis.index.DataFileIterator;
 import com.coroptis.index.DataFileReader;
 import com.coroptis.index.directory.Directory;
 import com.coroptis.index.sorteddatafile.PairReader;
+import com.coroptis.index.sorteddatafile.PairReaderImpl;
 import com.coroptis.index.type.TypeReader;
 import com.coroptis.index.type.TypeWriter;
 
@@ -38,13 +39,13 @@ public class UnsortedDataFile<K, V> {
     }
 
     public DataFileReader<K, V> openReader() {
-	final PairReader<K, V> pairReader = new PairReader<>(keyReader, valueReader);
+	final PairReader<K, V> pairReader = new PairReaderImpl<>(keyReader, valueReader);
 	final DataFileReader<K, V> reader = new DataFileReader<>(directory, fileName, pairReader);
 	return reader;
     }
 
     public DataFileIterator<K, V> openIterator() {
-	final PairReader<K, V> pairReader = new PairReader<>(keyReader, valueReader);
+	final PairReader<K, V> pairReader = new PairReaderImpl<>(keyReader, valueReader);
 	final DataFileIterator<K, V> iterator = new DataFileIterator<>(directory, fileName, pairReader);
 	return iterator;
     }

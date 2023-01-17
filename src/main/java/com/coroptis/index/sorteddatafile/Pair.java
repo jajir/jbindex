@@ -1,5 +1,7 @@
 package com.coroptis.index.sorteddatafile;
 
+import java.util.Objects;
+
 import com.google.common.base.MoreObjects;
 
 /**
@@ -36,6 +38,24 @@ public class Pair<K, V> {
 
     public V getValue() {
 	return value;
+    }
+
+    @Override
+    public int hashCode() {
+	return Objects.hash(key, value);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public boolean equals(final Object obj) {
+	if (this == obj)
+	    return true;
+	if (obj == null)
+	    return false;
+	if (getClass() != obj.getClass())
+	    return false;
+	Pair<K, V> other = (Pair<K, V>) obj;
+	return Objects.equals(key, other.key) && Objects.equals(value, other.value);
     }
 
 }

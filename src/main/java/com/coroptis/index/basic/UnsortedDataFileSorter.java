@@ -1,15 +1,12 @@
 package com.coroptis.index.basic;
 
-import java.util.Collections;
 import java.util.Comparator;
-import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
 
 import com.coroptis.index.DataFileIterator;
+import com.coroptis.index.partiallysorteddatafile.PartiallySortedDataFileWriter;
 import com.coroptis.index.sorteddatafile.Pair;
-import com.coroptis.index.sorteddatafile.SortedDataFile;
-import com.coroptis.index.sorteddatafile.SortedDataFileWriter;
 import com.coroptis.index.unsorteddatafile.UnsortedDataFile;
 
 /**
@@ -49,9 +46,13 @@ class UnsortedDataFileSorter<K, V> {
 	this.roundSorter = new RoundSorted<>(basicIndex, sortSupport, HOW_MANY_FILES_TO_MERGE_AT_ONCE);
     }
 
-    public void consumeSortedData(final Consumer<Pair<K, V>> consumer) {
-	Objects.requireNonNull(consumer);
+    void consumeSortedData(final Consumer<Pair<K, V>> consumer) {
 	splitIntoSortedIndexes();
+	consumePreSortedData(consumer);
+    }
+
+    void consumePreSortedData(final Consumer<Pair<K, V>> consumer) {
+	Objects.requireNonNull(consumer);
 	int roundNo = 0;
 	while (roundSorter.mergeRound(roundNo, consumer)) {
 	    roundNo++;
@@ -59,33 +60,16 @@ class UnsortedDataFileSorter<K, V> {
     }
 
     private void splitIntoSortedIndexes() {
+	final PartiallySortedDataFileWriter<K, V> writer = new PartiallySortedDataFileWriter<>(basicIndex.getDirectory(),
+		unsortedFileName, merger, howManySortInMemory, basicIndex, keyComparator);
 	final UnsortedDataFile<K, V> unsortedFile = basicIndex.getUnsortedFile(unsortedFileName);
 	try (final DataFileIterator<K, V> reader = unsortedFile.openIterator()) {
-	    int cx = 0;
-	    int fileCounter = 0;
-	    final UniqueCache<K, V> cache = new UniqueCache<>(merger);
 	    while (reader.hasNext()) {
-		cache.add(reader.readCurrent().get());
-		reader.next();
-		cx++;
-		if (cx % howManySortInMemory == 0) {
-		    writeSortedListToFile(cache.toList(), fileCounter);
-		    cache.clear();
-		    fileCounter++;
-		}
+		final Pair<K, V> pair = reader.readCurrent().get();
+		writer.put(pair);
 	    }
-	    writeSortedListToFile(cache.toList(), fileCounter);
 	}
 	basicIndex.deleteFile(unsortedFileName);
-    }
-
-    private void writeSortedListToFile(final List<Pair<K, V>> cache, final int fileCounter) {
-	Collections.sort(cache, (pair1, pair2) -> keyComparator.compare(pair1.getKey(), pair2.getKey()));
-	final String fileName = sortSupport.makeFileName(0, fileCounter);
-	final SortedDataFile<K, V> sortedFile = basicIndex.getSortedDataFile(fileName);
-	try (final SortedDataFileWriter<K, V> mainIndex = sortedFile.openWriter()) {
-	    cache.forEach(pair -> mainIndex.put(pair));
-	}
     }
 
 }

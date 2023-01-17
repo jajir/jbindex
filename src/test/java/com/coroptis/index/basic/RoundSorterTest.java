@@ -33,6 +33,12 @@ public class RoundSorterTest {
 
 	verify(sortSupport).mergeSortedFiles(filesToMerge0, "round-0-0");
 	verify(sortSupport).mergeSortedFiles(filesToMerge1, "round-0-1");
+	
+	verify(basicIndex).deleteFile("round-0-0");
+	verify(basicIndex).deleteFile("round-0-1");
+	verify(basicIndex).deleteFile("round-0-2");
+	verify(basicIndex).deleteFile("round-0-3");
+	verify(basicIndex).deleteFile("round-0-4");
     }
 
 }

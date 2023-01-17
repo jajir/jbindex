@@ -26,7 +26,7 @@ public class MergeIndexAndConsumer<K, V> implements CloseableResource {
 	this.merger = Objects.requireNonNull(merger);
 	final TypeConvertors tc = TypeConvertors.getInstance();
 	this.keyComparator = tc.get(keyClass, OperationType.COMPARATOR);
-	final BasicIndex<K, V> basicIndexInput = new BasicIndex<>(inputIndex, keyClass, valueClass);
+	final BasicIndex<K, V> basicIndexInput = new BasicIndex<>(inputIndex, keyClass, valueClass, null);
 	final IndexIterator<K, V> inputIterator = new IndexSearcher<K, V>(inputDirectory, keyClass, valueClass, basicIndexInput)
 		.getIterator();
 	inputIndexReader = new IndexReader<>(inputIterator);

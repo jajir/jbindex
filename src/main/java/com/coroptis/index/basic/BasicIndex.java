@@ -5,7 +5,9 @@ import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
+import com.coroptis.index.IndexException;
 import com.coroptis.index.directory.Directory;
+import com.coroptis.index.partiallysorteddatafile.PartiallySortedDataFile;
 import com.coroptis.index.sorteddatafile.Pair;
 import com.coroptis.index.sorteddatafile.SortedDataFile;
 import com.coroptis.index.type.ConvertorFromBytes;
@@ -30,11 +32,18 @@ public class BasicIndex<K, V> {
     private final Directory directory;
     private final Class<?> keyClass;
     private final Class<?> valueClass;
+    private final ValueMerger<K, V> valueMerger;
 
     public BasicIndex(final Directory directory, final Class<?> keyClass, final Class<?> valueClass) {
+	this(directory, keyClass, valueClass, new DefaultValueMerger<>());
+    }
+
+    public BasicIndex(final Directory directory, final Class<?> keyClass, final Class<?> valueClass,
+	    final ValueMerger<K, V> valueMerger) {
 	this.directory = Objects.requireNonNull(directory);
 	this.keyClass = Objects.requireNonNull(keyClass);
 	this.valueClass = Objects.requireNonNull(valueClass);
+	this.valueMerger = Objects.requireNonNull(valueMerger);
     }
 
     public Directory getDirectory() {
@@ -109,6 +118,13 @@ public class BasicIndex<K, V> {
 	return out;
     }
 
+    public PartiallySortedDataFile<K, V> getPartiallySortedDataFile(final String fileName) {
+	final PartiallySortedDataFile<K, V> out = PartiallySortedDataFile.<K, V>builder().withDirectory(getDirectory())
+		.withFileName(fileName).withKeyComparator(getKeyComparator()).withBasicIndex(this)
+		.withValueMerger(valueMerger).build();
+	return out;
+    }
+
     /**
      * When it's called sorting of given file starts. For each record in correct
      * order will be called given consumer. When method call returns than there are
@@ -119,13 +135,24 @@ public class BasicIndex<K, V> {
      *                         consumer.
      */
     public void consumeSortedData(final String unsortedFileName, final Consumer<Pair<K, V>> consumer,
-	    final ValueMerger<K, V> merger, final Integer howManySortInMemory) {
-	final UnsortedDataFileSorter<K, V> sorter = new UnsortedDataFileSorter<>(unsortedFileName, merger,
+	    final Integer howManySortInMemory) {
+	final UnsortedDataFileSorter<K, V> sorter = new UnsortedDataFileSorter<>(unsortedFileName, valueMerger,
 		getKeyComparator(), howManySortInMemory, this);
 	sorter.consumeSortedData(consumer);
     }
 
+    public void consumeSortedDataFromPartialySortedDataFile(final String partialySortedFileName,
+	    final Consumer<Pair<K, V>> consumer, final Integer howManySortInMemory) {
+	final UnsortedDataFileSorter<K, V> sorter = new UnsortedDataFileSorter<>(partialySortedFileName, valueMerger,
+		getKeyComparator(), howManySortInMemory, this);
+	sorter.consumePreSortedData(consumer);
+    }
+
     public boolean deleteFile(final String fileName) {
+	if (!directory.deleteFile(fileName)) {
+	    throw new IndexException(
+		    String.format("Unable to delte file '%s' in directory %s", fileName, directory.toString()));
+	}
 	return directory.deleteFile(fileName);
     }
 

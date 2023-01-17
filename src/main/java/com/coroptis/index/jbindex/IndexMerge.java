@@ -37,8 +37,8 @@ public class IndexMerge<K, V> {
     }
 
     public void merge() {
-	final BasicIndex<K, V> basicIndex1 = new BasicIndex<>(directory1, keyClass, valueClass);
-	final BasicIndex<K, V> basicIndex2 = new BasicIndex<>(directory1, keyClass, valueClass);
+	final BasicIndex<K, V> basicIndex1 = new BasicIndex<>(directory1, keyClass, valueClass, null);
+	final BasicIndex<K, V> basicIndex2 = new BasicIndex<>(directory1, keyClass, valueClass, null);
 	try (final IndexIterator<K, V> iterator1 = new IndexSearcher<K, V>(directory1, keyClass,
 		valueClass, basicIndex1).getIterator()) {
 	    try (final IndexIterator<K, V> iterator2 = new IndexSearcher<K, V>(directory2, keyClass,

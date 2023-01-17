@@ -57,14 +57,14 @@ public class SortedDataFile<K, V> {
 
     public DataFileReader<K, V> openReader() {
 	final DiffKeyReader<K> diffKeyReader = new DiffKeyReader<K>(keyConvertorFromBytes);
-	final PairReader<K, V> pairReader = new PairReader<>(diffKeyReader, valueReader);
+	final PairReader<K, V> pairReader = new PairReaderImpl<>(diffKeyReader, valueReader);
 	final DataFileReader<K, V> reader = new DataFileReader<>(directory, fileName, pairReader);
 	return reader;
     }
 
     public DataFileIterator<K, V> openIterator() {
 	final DiffKeyReader<K> diffKeyReader = new DiffKeyReader<K>(keyConvertorFromBytes);
-	final PairReader<K, V> pairReader = new PairReader<>(diffKeyReader, valueReader);
+	final PairReader<K, V> pairReader = new PairReaderImpl<>(diffKeyReader, valueReader);
 	final DataFileIterator<K, V> iterator = new DataFileIterator<>(directory, fileName, pairReader);
 	return iterator;
     }

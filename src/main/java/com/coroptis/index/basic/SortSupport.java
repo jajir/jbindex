@@ -1,5 +1,6 @@
 package com.coroptis.index.basic;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -22,16 +23,16 @@ public class SortSupport<K, V> {
     private final ValueMerger<K, V> merger;
     private final String fileName;
 
-    SortSupport(final BasicIndex<K, V> basicIndex, final ValueMerger<K, V> merger, final String fileName) {
+    public SortSupport(final BasicIndex<K, V> basicIndex, final ValueMerger<K, V> merger, final String fileName) {
 	this.basicIndex = Objects.requireNonNull(basicIndex);
 	this.merger = Objects.requireNonNull(merger);
 	this.fileName = Objects.requireNonNull(fileName);
 	this.directory = basicIndex.getDirectory();
     }
 
-    List<String> getFilesInRound(final int roundNo) {
-	return directory.getFileNames().filter(fileName -> isFileInRound(roundNo, fileName))
-		.collect(Collectors.toList());
+    public List<String> getFilesInRound(final int roundNo) {
+	return directory.getFileNames().filter(fileName -> isFileInRound(roundNo, fileName)).sorted()
+		.collect(Collectors.toCollection(()->new ArrayList<>()));
     }
 
     private boolean isFileInRound(final int roundNo, final String fileName) {
@@ -44,7 +45,7 @@ public class SortSupport<K, V> {
 	}
     }
 
-    String makeFileName(final int roundNo, final int no) {
+    public String makeFileName(final int roundNo, final int no) {
 	final int positionOfDot = fileName.lastIndexOf(".");
 	if (positionOfDot > 0) {
 	    final String extension = fileName.substring(positionOfDot);

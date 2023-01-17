@@ -11,6 +11,7 @@ import com.coroptis.index.directory.Directory;
 import com.coroptis.index.directory.FileReader;
 import com.coroptis.index.sorteddatafile.Pair;
 import com.coroptis.index.sorteddatafile.PairReader;
+import com.coroptis.index.sorteddatafile.PairReaderImpl;
 import com.coroptis.index.sorteddatafile.SortedDataFileSpliteratorSized;
 import com.coroptis.index.type.TypeReader;
 
@@ -29,7 +30,7 @@ public class IndexStreamer<K, V> implements CloseableResource {
 	Objects.requireNonNull(valueReader, "Value reader is null");
 	pairComparator = new PairComparator<>(keyComparator);
 	this.estimateSize = estimateSize;
-	pairReader = new PairReader<>(keyReader, valueReader);
+	pairReader = new PairReaderImpl<>(keyReader, valueReader);
 	fileReader = directory.getFileReader(fileName);
     }
 

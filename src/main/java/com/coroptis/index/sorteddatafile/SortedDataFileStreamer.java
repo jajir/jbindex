@@ -25,7 +25,7 @@ public class SortedDataFileStreamer<K, V> implements CloseableResource {
 	Objects.requireNonNull(fileName);
 	this.fileReader = directory.getFileReader(fileName);
 	final DiffKeyReader<K> diffKeyReader = new DiffKeyReader<K>(keyConvertorFromBytes);
-	pairReader = new PairReader<>(diffKeyReader, valueReader);
+	pairReader = new PairReaderImpl<>(diffKeyReader, valueReader);
 	pairComparator = new PairComparator<>(keyComparator);
     }
 

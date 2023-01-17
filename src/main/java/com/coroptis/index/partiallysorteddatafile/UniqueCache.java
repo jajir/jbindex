@@ -1,4 +1,4 @@
-package com.coroptis.index.basic;
+package com.coroptis.index.partiallysorteddatafile;
 
 import java.util.HashMap;
 import java.util.List;
@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import com.coroptis.index.basic.ValueMerger;
 import com.coroptis.index.sorteddatafile.Pair;
 
 class UniqueCache<K, V> {
@@ -18,17 +19,19 @@ class UniqueCache<K, V> {
     }
 
     void add(final Pair<K, V> pair) {
-	map.merge(pair.getKey(), pair.getValue(),
-		(oldVal, newVal) -> merger.merge(pair.getKey(), oldVal, newVal));
+	map.merge(pair.getKey(), pair.getValue(), (oldVal, newVal) -> merger.merge(pair.getKey(), oldVal, newVal));
     }
 
     void clear() {
 	map.clear();
     }
 
+    public int size() {
+	return map.size();
+    }
+
     List<Pair<K, V>> toList() {
-	return map.entrySet().stream()
-		.map(entry -> new Pair<K, V>(entry.getKey(), entry.getValue()))
+	return map.entrySet().stream().map(entry -> new Pair<K, V>(entry.getKey(), entry.getValue()))
 		.collect(Collectors.toList());
     }
 
