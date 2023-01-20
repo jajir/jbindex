@@ -9,7 +9,6 @@ import com.coroptis.index.CloseableResource;
 import com.coroptis.index.basic.BasicIndex;
 import com.coroptis.index.basic.SortSupport;
 import com.coroptis.index.basic.ValueMerger;
-import com.coroptis.index.directory.Directory;
 import com.coroptis.index.sorteddatafile.Pair;
 import com.coroptis.index.sorteddatafile.SortedDataFile;
 import com.coroptis.index.sorteddatafile.SortedDataFileWriter;
@@ -25,10 +24,9 @@ public class PartiallySortedDataFileWriter<K, V> implements CloseableResource {
     private int fileCounter = 0;
     private final UniqueCache<K, V> cache;
 
-    public PartiallySortedDataFileWriter(final Directory directory, final String fileName,
-	    final ValueMerger<K, V> merger, final int howManySortInMemory, final BasicIndex<K, V> basicIndex,
+    public PartiallySortedDataFileWriter(final String fileName, final ValueMerger<K, V> merger,
+	    final int howManySortInMemory, final BasicIndex<K, V> basicIndex,
 	    final Comparator<? super K> keyComparator) {
-	Objects.requireNonNull(directory);
 	Objects.requireNonNull(fileName);
 	this.howManySortInMemory = Objects.requireNonNull(howManySortInMemory);
 	this.basicIndex = Objects.requireNonNull(basicIndex);
@@ -44,24 +42,28 @@ public class PartiallySortedDataFileWriter<K, V> implements CloseableResource {
 	cache.add(pair);
 	cx++;
 	if (cx % howManySortInMemory == 0) {
-	    writeSortedListToFile(cache.toList(), fileCounter);
+	    writeCacheToFile(fileCounter);
 	    fileCounter++;
 	}
     }
 
-    private void writeSortedListToFile(final List<Pair<K, V>> cache, final int fileCounter) {
-	Collections.sort(cache, (pair1, pair2) -> keyComparator.compare(pair1.getKey(), pair2.getKey()));
+    private void writeCacheToFile(final int fileCounter) {
+	if (cache.isEmpty()) {
+	    return;
+	}
+	final List<Pair<K, V>> tempCache = cache.toList();
+	cache.clear();
+	Collections.sort(tempCache, (pair1, pair2) -> keyComparator.compare(pair1.getKey(), pair2.getKey()));
 	final String fileName = sortSupport.makeFileName(0, fileCounter);
 	final SortedDataFile<K, V> sortedFile = basicIndex.getSortedDataFile(fileName);
-	try (final SortedDataFileWriter<K, V> mainIndex = sortedFile.openWriter()) {
-	    cache.forEach(pair -> mainIndex.put(pair));
+	try (final SortedDataFileWriter<K, V> writer = sortedFile.openWriter()) {
+	    tempCache.forEach(pair -> writer.put(pair));
 	}
-	cache.clear();
     }
 
     @Override
     public void close() {
-	writeSortedListToFile(cache.toList(), fileCounter);
+	writeCacheToFile(fileCounter);
 	fileCounter = -1;
     }
 }

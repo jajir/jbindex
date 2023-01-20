@@ -37,8 +37,12 @@ public class PartialySortedDataFileReaderTest {
     @SuppressWarnings("unchecked")
     private final DataFileReader<Integer, String> dataFileReader1 = mock(DataFileReader.class);
 
-    final String[] files = new String[] {"file-0","file-1"};
-    
+    final String[] files = new String[] { "file-0", "file-1" };
+
+    /*
+     * Verify that reader correctly read data between files.
+     *
+     */
     @Test
     void test_complex_reading() throws Exception {
 	when(sortSupport.getFilesInRound(0)).thenReturn(new ArrayList<String>(Arrays.asList(files)));

@@ -44,8 +44,8 @@ public class PartiallySortedDataFile<K, V> {
     }
 
     public PartiallySortedDataFileWriter<K, V> openWriter(int howManySortInMemory) {
-	final PartiallySortedDataFileWriter<K, V> writer = new PartiallySortedDataFileWriter<>(directory, fileName,
-		merger, howManySortInMemory, basicIndex, keyComparator);
+	final PartiallySortedDataFileWriter<K, V> writer = new PartiallySortedDataFileWriter<>(fileName, merger,
+		howManySortInMemory, basicIndex, keyComparator);
 	return writer;
     }
 

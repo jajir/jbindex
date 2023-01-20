@@ -30,6 +30,10 @@ class UniqueCache<K, V> {
 	return map.size();
     }
 
+    public boolean isEmpty() {
+	return map.isEmpty();
+    }
+
     List<Pair<K, V>> toList() {
 	return map.entrySet().stream().map(entry -> new Pair<K, V>(entry.getKey(), entry.getValue()))
 		.collect(Collectors.toList());

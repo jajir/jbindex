@@ -60,8 +60,8 @@ class UnsortedDataFileSorter<K, V> {
     }
 
     private void splitIntoSortedIndexes() {
-	final PartiallySortedDataFileWriter<K, V> writer = new PartiallySortedDataFileWriter<>(basicIndex.getDirectory(),
-		unsortedFileName, merger, howManySortInMemory, basicIndex, keyComparator);
+	final PartiallySortedDataFileWriter<K, V> writer = new PartiallySortedDataFileWriter<>(unsortedFileName, merger,
+		howManySortInMemory, basicIndex, keyComparator);
 	final UnsortedDataFile<K, V> unsortedFile = basicIndex.getUnsortedFile(unsortedFileName);
 	try (final DataFileIterator<K, V> reader = unsortedFile.openIterator()) {
 	    while (reader.hasNext()) {
