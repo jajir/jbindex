@@ -1,8 +1,10 @@
 package com.coroptis.index.sorteddatafile;
 
 import java.util.Comparator;
+import java.util.Objects;
 
 import com.coroptis.index.CloseableResource;
+import com.coroptis.index.directory.Directory;
 import com.coroptis.index.directory.FileWriter;
 import com.coroptis.index.type.ConvertorToBytes;
 import com.coroptis.index.type.TypeWriter;
@@ -17,11 +19,14 @@ public class SortedDataFileWriter<K, V> implements CloseableResource {
 
     private int position;
 
-    public SortedDataFileWriter(final FileWriter fileWriter, final ConvertorToBytes<K> keyConvertor,
-	    final Comparator<? super K> keyComparator, final TypeWriter<V> valueWriter) {
-	this.writer = fileWriter;
+    public SortedDataFileWriter(final Directory directory, final String fileName,
+	    final ConvertorToBytes<K> keyConvertorToBytes, final Comparator<? super K> keyComparator,
+	    final TypeWriter<V> valueWriter) {
+	Objects.requireNonNull(directory);
+	Objects.requireNonNull(fileName);
+	this.writer = directory.getFileWriter(fileName);
 	this.valueWriter = valueWriter;
-	diffKeyWriter = new DiffKeyWriter<>(keyConvertor, keyComparator);
+	diffKeyWriter = new DiffKeyWriter<>(keyConvertorToBytes, keyComparator);
 	position = 0;
     }
 

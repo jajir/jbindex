@@ -33,6 +33,6 @@ public interface FileReader extends CloseableResource {
      *
      * @param position
      */
-    void skip(int position);
+    void skip(long position);
 
 }

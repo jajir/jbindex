@@ -43,7 +43,9 @@ public class TypeDescriptorInteger {
     public TypeReader<Integer> getReader() {
 	return fileReader -> {
 	    final byte[] bytes = new byte[4];
-	    fileReader.read(bytes);
+	    if (fileReader.read(bytes) == -1) {
+		return null;
+	    }
 	    return load(bytes, 0);
 	};
     }

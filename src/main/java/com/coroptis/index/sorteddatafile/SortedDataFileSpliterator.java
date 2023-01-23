@@ -16,15 +16,12 @@ public class SortedDataFileSpliterator<K, V> implements Spliterator<Pair<K, V>> 
 
     private final PairComparator<K, V> pairComparator;
 
-    private final long estimateSize;
-
     public SortedDataFileSpliterator(final PairReader<K, V> pairReader, final FileReader fileReader,
-	    final PairComparator<K, V> pairComparator, final long estimateSize) {
+	    final PairComparator<K, V> pairComparator) {
 	this.pairReader = Objects.requireNonNull(pairReader);
 	this.fileReader = Objects.requireNonNull(fileReader);
 	this.pairComparator = Objects.requireNonNull(pairComparator,
 		"pair comparator must not be null");
-	this.estimateSize = estimateSize;
     }
 
     @Override
@@ -54,16 +51,15 @@ public class SortedDataFileSpliterator<K, V> implements Spliterator<Pair<K, V>> 
     @Override
     public long estimateSize() {
 	/*
-	 * Stream is not sized. It's not possible to determine stream size.
+	 * Stream is not sized.
 	 */
-	//FIXME tak proc tu hodnotu vracim?
-	return estimateSize;
+	return Integer.MAX_VALUE;
     }
 
     @Override
     public int characteristics() {
 	return Spliterator.DISTINCT | Spliterator.IMMUTABLE | Spliterator.NONNULL
-		| Spliterator.SORTED | Spliterator.SIZED;
+		| Spliterator.SORTED ;
     }
 
 }

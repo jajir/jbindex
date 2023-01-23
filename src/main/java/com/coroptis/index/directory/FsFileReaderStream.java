@@ -2,8 +2,10 @@ package com.coroptis.index.directory;
 
 import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 import com.coroptis.index.IndexException;
 import com.google.common.base.MoreObjects;
@@ -16,7 +18,8 @@ public class FsFileReaderStream implements FileReader {
 
     FsFileReaderStream(final File file) {
 	try {
-	    FileInputStream fin = new FileInputStream(file);
+	    final Path path = file.toPath();
+	    final InputStream fin = Files.newInputStream(path);
 	    bis = new BufferedInputStream(fin, BUFFER_SIZE);
 	} catch (IOException e) {
 	    throw new IndexException(e.getMessage(), e);
@@ -52,7 +55,7 @@ public class FsFileReaderStream implements FileReader {
     }
 
     @Override
-    public void skip(int position) {
+    public void skip(long position) {
 	try {
 	    bis.skip(position);
 	} catch (IOException e) {

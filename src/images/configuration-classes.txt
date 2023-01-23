@@ -1,0 +1,33 @@
+@startuml
+
+'Configuration objecs
+
+
+class IndexConfiguration {
+  +Directory directory
+  +ItemConfiguration keyConfiguration
+  +ItemConfiguration valueConfiguration
+  +Merger merger
+}
+
+class Directory {
+  createFile()
+}
+
+class FileSystemDirectory{}
+FileSystemDirectory --|> Directory
+class MemoryDirectory{}
+MemoryDirectory --|> Directory
+
+class ItemConfiguration{
+}
+
+class Merger {
+  merge(K,V1, V2) : pair<K,V>
+}
+
+IndexConfiguration --> Directory
+IndexConfiguration --> ItemConfiguration
+IndexConfiguration --> Merger
+
+@enduml

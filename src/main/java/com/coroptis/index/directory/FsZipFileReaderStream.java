@@ -4,7 +4,6 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.zip.ZipInputStream;
 
 import com.coroptis.index.IndexException;
@@ -12,7 +11,7 @@ import com.google.common.base.MoreObjects;
 
 public class FsZipFileReaderStream implements FileReader {
 
-    private final InputStream bis;
+    private final ZipInputStream bis;
 
     FsZipFileReaderStream(final File file) {
 	try {
@@ -52,7 +51,7 @@ public class FsZipFileReaderStream implements FileReader {
     }
 
     @Override
-    public void skip(int position) {
+    public void skip(long position) {
 	try {
 	    bis.skip(position);
 	} catch (IOException e) {

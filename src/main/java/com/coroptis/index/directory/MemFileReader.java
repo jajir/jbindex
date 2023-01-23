@@ -38,7 +38,7 @@ public class MemFileReader implements FileReader {
     }
 
     @Override
-    public void skip(int position) {
-	this.position = position;
+    public void skip(long position) {
+	this.position = (int)position;
     }
 }

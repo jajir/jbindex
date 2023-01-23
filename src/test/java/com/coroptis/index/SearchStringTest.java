@@ -4,8 +4,11 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
 
+import com.coroptis.index.basic.BasicIndex;
 import com.coroptis.index.directory.Directory;
 import com.coroptis.index.directory.MemDirectory;
+import com.coroptis.index.jbindex.IndexSearcher;
+import com.coroptis.index.jbindex.IndexWriter;
 
 public class SearchStringTest {
 
@@ -23,8 +26,10 @@ public class SearchStringTest {
 	final Directory directory = new MemDirectory();
 	writeIndex(directory);
 
-	final IndexSearcher<String, String> search = new IndexSearcher<>(directory, String.class,
+	final BasicIndex<String,String> basicIndex = new BasicIndex<>(directory, String.class,
 		String.class);
+	final IndexSearcher<String, String> search = new IndexSearcher<>(directory, String.class,
+		String.class,basicIndex);
 	search.getStreamer().stream().forEach(pair -> {
 	    System.out.println(pair);
 	    final Integer key = Integer.valueOf(pair.getKey());
@@ -35,8 +40,10 @@ public class SearchStringTest {
     }
 
     private void search_test(final Directory directory) {
-	final IndexSearcher<String, String> search = new IndexSearcher<>(directory, String.class,
+	final BasicIndex<String,String> basicIndex = new BasicIndex<>(directory, String.class,
 		String.class);
+	final IndexSearcher<String, String> search = new IndexSearcher<>(directory, String.class,
+		String.class,basicIndex);
 
 	for (int i = 0; i < COUNT; i++) {
 	    assertEquals("Ahoj", search.get(String.valueOf(i)));

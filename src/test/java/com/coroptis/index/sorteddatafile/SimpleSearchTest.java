@@ -7,11 +7,12 @@ import java.io.File;
 
 import org.junit.jupiter.api.Test;
 
-import com.coroptis.index.IndexSearcher;
-import com.coroptis.index.IndexWriter;
+import com.coroptis.index.basic.BasicIndex;
 import com.coroptis.index.directory.Directory;
 import com.coroptis.index.directory.FsDirectory;
 import com.coroptis.index.directory.MemDirectory;
+import com.coroptis.index.jbindex.IndexSearcher;
+import com.coroptis.index.jbindex.IndexWriter;
 
 public class SimpleSearchTest {
 
@@ -32,8 +33,10 @@ public class SimpleSearchTest {
     }
 
     private void search_test(final Directory directory) {
-	IndexSearcher<String, Byte> search = new IndexSearcher<>(directory, String.class,
+	final BasicIndex<String,Byte> basicIndex = new BasicIndex<>(directory, String.class,
 		Byte.class);
+	IndexSearcher<String, Byte> search = new IndexSearcher<>(directory, String.class,
+		Byte.class, basicIndex);
 
 	assertEquals(Byte.valueOf((byte) 0), search.get("aaa"));
 	assertEquals(Byte.valueOf((byte) 1), search.get("aaabbb"));

@@ -5,8 +5,11 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 
 import org.junit.jupiter.api.Test;
 
+import com.coroptis.index.basic.BasicIndex;
 import com.coroptis.index.directory.Directory;
 import com.coroptis.index.directory.MemDirectory;
+import com.coroptis.index.jbindex.IndexSearcher;
+import com.coroptis.index.jbindex.IndexWriter;
 
 public class SearchIntegersTest {
 
@@ -20,8 +23,10 @@ public class SearchIntegersTest {
     }
 
     private void search_test(final Directory directory) {
-	IndexSearcher<Integer, Integer> search = new IndexSearcher<>(directory, Integer.class,
+	final BasicIndex<Integer,Integer> basicIndex = new BasicIndex<>(directory, Integer.class,
 		Integer.class);
+	IndexSearcher<Integer, Integer> search = new IndexSearcher<>(directory, Integer.class,
+		Integer.class,basicIndex);
 
 	for (int i = 0; i < LIMIT; i++) {
 	    assertEquals(Integer.MAX_VALUE, search.get(i),
