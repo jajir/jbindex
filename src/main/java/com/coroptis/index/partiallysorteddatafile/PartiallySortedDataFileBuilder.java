@@ -5,11 +5,8 @@ import java.util.Objects;
 
 import com.coroptis.index.basic.BasicIndex;
 import com.coroptis.index.basic.ValueMerger;
-import com.coroptis.index.directory.Directory;
 
 public class PartiallySortedDataFileBuilder<K, V> {
-
-    private Directory directory;
 
     private String fileName;
 
@@ -18,11 +15,6 @@ public class PartiallySortedDataFileBuilder<K, V> {
     private BasicIndex<K, V> basicIndex;
 
     private ValueMerger<K, V> merger;
-
-    public PartiallySortedDataFileBuilder<K, V> withDirectory(final Directory directory) {
-        this.directory = Objects.requireNonNull(directory);
-        return this;
-    }
 
     public PartiallySortedDataFileBuilder<K, V> withFileName(final String file) {
         this.fileName = Objects.requireNonNull(file);
@@ -46,8 +38,7 @@ public class PartiallySortedDataFileBuilder<K, V> {
     }
 
     public PartiallySortedDataFile<K, V> build() {
-        return new PartiallySortedDataFile<>(directory, fileName, keyComparator, basicIndex,
-                merger);
+        return new PartiallySortedDataFile<>(fileName, keyComparator, basicIndex, merger);
     }
 
 }

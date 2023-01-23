@@ -14,11 +14,14 @@ public class FsDirectory implements Directory {
     public FsDirectory(final File directory) {
         this.directory = Objects.requireNonNull(directory);
         if (!directory.exists()) {
-            directory.mkdirs();
+            if (!directory.mkdirs()) {
+                throw new IndexException(String.format("Unable to create directory '%s'.",
+                        directory.getAbsolutePath()));
+            }
         }
         if (directory.isFile()) {
-            throw new IndexException(
-                    String.format("There is required directory but '%s' is file."));
+            throw new IndexException(String.format("There is required directory but '%s' is file.",
+                    directory.getAbsolutePath()));
         }
     }
 
@@ -43,7 +46,10 @@ public class FsDirectory implements Directory {
         if (!directory.exists()) {
             throw new IndexException(String.format("File '%s' doesn't exists."));
         }
-        file.renameTo(getFile(newFileName));
+        if (!file.renameTo(getFile(newFileName))) {
+            throw new IndexException(String.format("Unable to rename file '%s' to name '%s'.",
+                    file.getAbsolutePath(), newFileName));
+        }
     }
 
     private File getFile(final String fileName) {

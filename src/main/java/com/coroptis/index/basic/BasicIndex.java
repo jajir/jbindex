@@ -47,61 +47,61 @@ public class BasicIndex<K, V> {
         this.valueMerger = Objects.requireNonNull(valueMerger);
     }
 
-    public Directory getDirectory() {
+    protected Directory getDirectory() {
         return directory;
     }
 
-    Class<?> getKeyClass() {
+    protected Class<?> getKeyClass() {
         return keyClass;
     }
 
-    Class<?> getValueClass() {
+    protected Class<?> getValueClass() {
         return valueClass;
     }
 
-    TypeReader<K> getKeyReader() {
+    protected TypeReader<K> getKeyReader() {
         final TypeConvertors tc = TypeConvertors.getInstance();
         final TypeReader<K> keyReader = tc.get(Objects.requireNonNull(getKeyClass()),
                 OperationType.READER);
         return keyReader;
     }
 
-    TypeReader<V> getValueReader() {
+    protected TypeReader<V> getValueReader() {
         final TypeConvertors tc = TypeConvertors.getInstance();
         final TypeReader<V> keyReader = tc.get(Objects.requireNonNull(getValueClass()),
                 OperationType.READER);
         return keyReader;
     }
 
-    TypeWriter<K> getKeyWriter() {
+    protected TypeWriter<K> getKeyWriter() {
         final TypeConvertors tc = TypeConvertors.getInstance();
         final TypeWriter<K> keyReader = tc.get(Objects.requireNonNull(getKeyClass()),
                 OperationType.WRITER);
         return keyReader;
     }
 
-    TypeWriter<V> getValueWriter() {
+    protected TypeWriter<V> getValueWriter() {
         final TypeConvertors tc = TypeConvertors.getInstance();
         final TypeWriter<V> keyReader = tc.get(Objects.requireNonNull(getValueClass()),
                 OperationType.WRITER);
         return keyReader;
     }
 
-    Comparator<? super K> getKeyComparator() {
+    protected Comparator<? super K> getKeyComparator() {
         final TypeConvertors tc = TypeConvertors.getInstance();
         final Comparator<? super K> keyComparator = tc.get(Objects.requireNonNull(getKeyClass()),
                 OperationType.COMPARATOR);
         return keyComparator;
     };
 
-    ConvertorFromBytes<K> getKeyConvertorFromBytes() {
+    protected ConvertorFromBytes<K> getKeyConvertorFromBytes() {
         final TypeConvertors tc = TypeConvertors.getInstance();
         final ConvertorFromBytes<K> keyConvertorFromBytes = tc
                 .get(Objects.requireNonNull(getKeyClass()), OperationType.CONVERTOR_FROM_BYTES);
         return keyConvertorFromBytes;
     };
 
-    ConvertorToBytes<K> getKeyConvertorToBytes() {
+    protected ConvertorToBytes<K> getKeyConvertorToBytes() {
         final TypeConvertors tc = TypeConvertors.getInstance();
         final ConvertorToBytes<K> keyConvertorToBytes = tc
                 .get(Objects.requireNonNull(getKeyClass()), OperationType.CONVERTOR_TO_BYTES);
@@ -128,8 +128,7 @@ public class BasicIndex<K, V> {
 
     public PartiallySortedDataFile<K, V> getPartiallySortedDataFile(final String fileName) {
         final PartiallySortedDataFile<K, V> out = PartiallySortedDataFile.<K, V>builder()
-                .withDirectory(getDirectory()).withFileName(fileName)
-                .withKeyComparator(getKeyComparator()).withBasicIndex(this)
+                .withFileName(fileName).withKeyComparator(getKeyComparator()).withBasicIndex(this)
                 .withValueMerger(valueMerger).build();
         return out;
     }
