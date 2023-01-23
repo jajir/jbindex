@@ -13,5 +13,6 @@ buildNumber.properties
 *~
 *.dot
 pok.png
+.vscode
 jpf/src/main/java/
 
