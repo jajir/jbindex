@@ -21,10 +21,11 @@ public class PartiallySortedDataFileReader<K, V> implements CloseableResource {
     private DataFileReader<K, V> currentReader;
     private final List<String> fileNames;
 
-    public PartiallySortedDataFileReader(final BasicIndex<K, V> basicIndex, final SortSupport<K, V> sortSupport) {
-	this.basicIndex = Objects.requireNonNull(basicIndex);
-	this.fileNames = sortSupport.getFilesInRound(ROUND_0);
-	moveToNextFileName();
+    public PartiallySortedDataFileReader(final BasicIndex<K, V> basicIndex,
+            final SortSupport<K, V> sortSupport) {
+        this.basicIndex = Objects.requireNonNull(basicIndex);
+        this.fileNames = sortSupport.getFilesInRound(ROUND_0);
+        moveToNextFileName();
     }
 
     /**
@@ -34,45 +35,45 @@ public class PartiallySortedDataFileReader<K, V> implements CloseableResource {
      *         there are no data.
      */
     public Pair<K, V> read() {
-	if (currentReader == null) {
-	    return null;
-	}
-	Pair<K, V> out = currentReader.read();
-	if (out == null) {
-	    moveToNextFileName();
-	    if (currentReader == null) {
-		return null;
-	    }
-	    return read();
-	} else {
-	    return out;
-	}
+        if (currentReader == null) {
+            return null;
+        }
+        Pair<K, V> out = currentReader.read();
+        if (out == null) {
+            moveToNextFileName();
+            if (currentReader == null) {
+                return null;
+            }
+            return read();
+        } else {
+            return out;
+        }
     }
 
     public void skip(final long position) {
-	throw new IllegalStateException();
+        throw new IllegalStateException();
     }
 
     private void moveToNextFileName() {
-	tryToCloseCurrentReader();
-	if (fileNames.isEmpty()) {
-	    return;
-	}
-	final String currentFileName = fileNames.remove(0);
-	final SortedDataFile<K, V> dataFile = basicIndex.getSortedDataFile(currentFileName);
-	currentReader = dataFile.openReader();
+        tryToCloseCurrentReader();
+        if (fileNames.isEmpty()) {
+            return;
+        }
+        final String currentFileName = fileNames.remove(0);
+        final SortedDataFile<K, V> dataFile = basicIndex.getSortedDataFile(currentFileName);
+        currentReader = dataFile.openReader();
     }
 
     @Override
     public void close() {
-	tryToCloseCurrentReader();
+        tryToCloseCurrentReader();
     }
 
     private void tryToCloseCurrentReader() {
-	if (currentReader != null) {
-	    currentReader.close();
-	    currentReader = null;
-	}
+        if (currentReader != null) {
+            currentReader.close();
+            currentReader = null;
+        }
     }
 
 }

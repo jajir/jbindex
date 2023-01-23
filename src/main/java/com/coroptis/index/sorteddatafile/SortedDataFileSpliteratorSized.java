@@ -18,51 +18,52 @@ public class SortedDataFileSpliteratorSized<K, V> implements Spliterator<Pair<K,
 
     private final long estimateSize;
 
-    public SortedDataFileSpliteratorSized(final PairReader<K, V> pairReader, final FileReader fileReader,
-	    final PairComparator<K, V> pairComparator, final long estimateSize) {
-	this.pairReader = Objects.requireNonNull(pairReader);
-	this.fileReader = Objects.requireNonNull(fileReader);
-	this.pairComparator = Objects.requireNonNull(pairComparator,
-		"pair comparator must not be null");
-	this.estimateSize = estimateSize;
+    public SortedDataFileSpliteratorSized(final PairReader<K, V> pairReader,
+            final FileReader fileReader, final PairComparator<K, V> pairComparator,
+            final long estimateSize) {
+        this.pairReader = Objects.requireNonNull(pairReader);
+        this.fileReader = Objects.requireNonNull(fileReader);
+        this.pairComparator = Objects.requireNonNull(pairComparator,
+                "pair comparator must not be null");
+        this.estimateSize = estimateSize;
     }
 
     @Override
     public boolean tryAdvance(final Consumer<? super Pair<K, V>> action) {
-	final Pair<K, V> out = pairReader.read(fileReader);
-	if (out == null) {
-	    return false;
-	} else {
-	    action.accept(out);
-	    return true;
-	}
+        final Pair<K, V> out = pairReader.read(fileReader);
+        if (out == null) {
+            return false;
+        } else {
+            action.accept(out);
+            return true;
+        }
     }
 
     @Override
     public Comparator<? super Pair<K, V>> getComparator() {
-	return pairComparator;
+        return pairComparator;
     }
 
     @Override
     public Spliterator<Pair<K, V>> trySplit() {
-	/*
-	 * It's not supported. So return null.
-	 */
-	return null;
+        /*
+         * It's not supported. So return null.
+         */
+        return null;
     }
 
     @Override
     public long estimateSize() {
-	/*
-	 * Stream is sized.
-	 */
-	return estimateSize;
+        /*
+         * Stream is sized.
+         */
+        return estimateSize;
     }
 
     @Override
     public int characteristics() {
-	return Spliterator.DISTINCT | Spliterator.IMMUTABLE | Spliterator.NONNULL
-		| Spliterator.SORTED | Spliterator.SIZED;
+        return Spliterator.DISTINCT | Spliterator.IMMUTABLE | Spliterator.NONNULL
+                | Spliterator.SORTED | Spliterator.SIZED;
     }
 
 }

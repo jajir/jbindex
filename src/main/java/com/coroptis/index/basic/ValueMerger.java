@@ -15,16 +15,16 @@ import com.coroptis.index.sorteddatafile.Pair;
 public interface ValueMerger<K, V> {
 
     default Pair<K, V> merge(final Pair<K, V> pair1, final Pair<K, V> pair2) {
-	Objects.requireNonNull(pair1, "First pair for merging can't be null.");
-	Objects.requireNonNull(pair2, "Second pair for merging can't be null.");
-	final K key = pair1.getKey();
-	if (!key.equals(pair2.getKey())) {
-	    throw new IllegalArgumentException("Comparing pair with different keys");
-	}
-	final V val = merge(key, pair1.getValue(), pair2.getValue());
-	Objects.requireNonNull(val,
-		() -> String.format("Results of merging values '%s' and '%s' cant't by null.", pair1, pair2));
-	return new Pair<K, V>(key, val);
+        Objects.requireNonNull(pair1, "First pair for merging can't be null.");
+        Objects.requireNonNull(pair2, "Second pair for merging can't be null.");
+        final K key = pair1.getKey();
+        if (!key.equals(pair2.getKey())) {
+            throw new IllegalArgumentException("Comparing pair with different keys");
+        }
+        final V val = merge(key, pair1.getValue(), pair2.getValue());
+        Objects.requireNonNull(val, () -> String
+                .format("Results of merging values '%s' and '%s' cant't by null.", pair1, pair2));
+        return new Pair<K, V>(key, val);
     }
 
     /**

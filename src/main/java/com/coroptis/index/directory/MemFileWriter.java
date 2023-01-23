@@ -14,33 +14,33 @@ public class MemFileWriter implements FileWriter {
     private final MemDirectory memDirectory;
 
     MemFileWriter(final String fileName, final MemDirectory memDirectory) {
-	this.fileName = fileName;
-	this.memDirectory = memDirectory;
-	this.fio = new ByteArrayOutputStream();
+        this.fileName = fileName;
+        this.memDirectory = memDirectory;
+        this.fio = new ByteArrayOutputStream();
     }
 
     @Override
     public void close() {
-	try {
-	    fio.close();
-	} catch (IOException e) {
-	    throw new IndexException(e.getMessage(), e);
-	}
-	memDirectory.addFile(fileName, fio.toByteArray());
+        try {
+            fio.close();
+        } catch (IOException e) {
+            throw new IndexException(e.getMessage(), e);
+        }
+        memDirectory.addFile(fileName, fio.toByteArray());
     }
 
     @Override
     public void write(byte b) {
-	fio.write(b);
+        fio.write(b);
     }
 
     @Override
     public void write(byte[] bytes) {
-	try {
-	    fio.write(bytes);
-	} catch (IOException e) {
-	    throw new IndexException(e.getMessage(), e);
-	}
+        try {
+            fio.write(bytes);
+        } catch (IOException e) {
+            throw new IndexException(e.getMessage(), e);
+        }
     }
 
 }

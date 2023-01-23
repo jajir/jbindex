@@ -12,53 +12,53 @@ public class FsZipDirectory implements Directory {
     private final File directory;
 
     public FsZipDirectory(final File directory) {
-	this.directory = Objects.requireNonNull(directory);
-	if (!directory.exists()) {
-	    directory.mkdirs();
-	}
-	if (directory.isFile()) {
-	    throw new IndexException(
-		    String.format("There is required directory but '%s' is file."));
-	}
+        this.directory = Objects.requireNonNull(directory);
+        if (!directory.exists()) {
+            directory.mkdirs();
+        }
+        if (directory.isFile()) {
+            throw new IndexException(
+                    String.format("There is required directory but '%s' is file."));
+        }
     }
 
     @Override
     public FileReader getFileReader(final String fileName) {
-	final File file = getFile(fileName);
-	if (!directory.exists()) {
-	    throw new IndexException(String.format("File '%s' doesn't exists."));
-	}
-	return new FsZipFileReaderStream(file);
+        final File file = getFile(fileName);
+        if (!directory.exists()) {
+            throw new IndexException(String.format("File '%s' doesn't exists."));
+        }
+        return new FsZipFileReaderStream(file);
     }
 
     @Override
     public FileWriter getFileWriter(final String fileName) {
-	Objects.requireNonNull(fileName);
-	return new FsZipFileWriterStream(getFile(fileName));
+        Objects.requireNonNull(fileName);
+        return new FsZipFileWriterStream(getFile(fileName));
     }
 
     @Override
     public void renameFile(final String currentFileName, final String newFileName) {
-	final File file = getFile(currentFileName);
-	if (!directory.exists()) {
-	    throw new IndexException(String.format("File '%s' doesn't exists."));
-	}
-	file.renameTo(getFile(newFileName));
+        final File file = getFile(currentFileName);
+        if (!directory.exists()) {
+            throw new IndexException(String.format("File '%s' doesn't exists."));
+        }
+        file.renameTo(getFile(newFileName));
     }
 
     private File getFile(final String fileName) {
-	Objects.requireNonNull(fileName);
-	return directory.toPath().resolve(fileName).toFile();
+        Objects.requireNonNull(fileName);
+        return directory.toPath().resolve(fileName).toFile();
     }
 
     @Override
     public boolean deleteFile(final String fileName) {
-	return getFile(fileName).delete();
+        return getFile(fileName).delete();
     }
 
     @Override
     public Stream<String> getFileNames() {
-	return Lists.newArrayList(directory.list()).stream();
+        return Lists.newArrayList(directory.list()).stream();
     }
 
 }

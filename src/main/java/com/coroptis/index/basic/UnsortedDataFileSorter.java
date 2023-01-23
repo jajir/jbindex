@@ -35,41 +35,44 @@ class UnsortedDataFileSorter<K, V> {
     private final RoundSorted<K, V> roundSorter;
 
     UnsortedDataFileSorter(final String unsortedFileName, final ValueMerger<K, V> merger,
-	    final Comparator<? super K> keyComparator, final Integer howManySortInMemory,
-	    final BasicIndex<K, V> basicIndex) {
-	this.unsortedFileName = Objects.requireNonNull(unsortedFileName);
-	this.merger = Objects.requireNonNull(merger);
-	this.howManySortInMemory = Objects.requireNonNull(howManySortInMemory);
-	this.basicIndex = Objects.requireNonNull(basicIndex);
-	this.keyComparator = Objects.requireNonNull(keyComparator);
-	this.sortSupport = new SortSupport<>(basicIndex, merger, unsortedFileName);
-	this.roundSorter = new RoundSorted<>(basicIndex, sortSupport, HOW_MANY_FILES_TO_MERGE_AT_ONCE);
+            final Comparator<? super K> keyComparator, final Integer howManySortInMemory,
+            final BasicIndex<K, V> basicIndex) {
+        this.unsortedFileName = Objects.requireNonNull(unsortedFileName);
+        this.merger = Objects.requireNonNull(merger);
+        this.howManySortInMemory = Objects.requireNonNull(howManySortInMemory);
+        this.basicIndex = Objects.requireNonNull(basicIndex);
+        this.keyComparator = Objects.requireNonNull(keyComparator);
+        this.sortSupport = new SortSupport<>(basicIndex, merger, unsortedFileName);
+        this.roundSorter = new RoundSorted<>(basicIndex, sortSupport,
+                HOW_MANY_FILES_TO_MERGE_AT_ONCE);
     }
 
     void consumeSortedData(final Consumer<Pair<K, V>> consumer) {
-	splitIntoSortedIndexes();
-	consumePreSortedData(consumer);
+        splitIntoSortedIndexes();
+        consumePreSortedData(consumer);
     }
 
     void consumePreSortedData(final Consumer<Pair<K, V>> consumer) {
-	Objects.requireNonNull(consumer);
-	int roundNo = 0;
-	while (roundSorter.mergeRound(roundNo, consumer)) {
-	    roundNo++;
-	}
+        Objects.requireNonNull(consumer);
+        int roundNo = 0;
+        while (roundSorter.mergeRound(roundNo, consumer)) {
+            roundNo++;
+        }
     }
 
     private void splitIntoSortedIndexes() {
-	final PartiallySortedDataFileWriter<K, V> writer = new PartiallySortedDataFileWriter<>(unsortedFileName, merger,
-		howManySortInMemory, basicIndex, keyComparator);
-	final UnsortedDataFile<K, V> unsortedFile = basicIndex.getUnsortedFile(unsortedFileName);
-	try (final DataFileIterator<K, V> reader = unsortedFile.openIterator()) {
-	    while (reader.hasNext()) {
-		final Pair<K, V> pair = reader.readCurrent().get();
-		writer.put(pair);
-	    }
-	}
-	basicIndex.deleteFile(unsortedFileName);
+        try (final PartiallySortedDataFileWriter<K, V> writer = new PartiallySortedDataFileWriter<>(
+                unsortedFileName, merger, howManySortInMemory, basicIndex, keyComparator)) {
+            final UnsortedDataFile<K, V> unsortedFile = basicIndex
+                    .getUnsortedFile(unsortedFileName);
+            try (final DataFileIterator<K, V> reader = unsortedFile.openIterator()) {
+                while (reader.hasNext()) {
+                    final Pair<K, V> pair = reader.readCurrent().get();
+                    writer.put(pair);
+                }
+            }
+            basicIndex.deleteFile(unsortedFileName);
+        }
     }
 
 }

@@ -20,32 +20,34 @@ public class PartiallySortedDataFileBuilder<K, V> {
     private ValueMerger<K, V> merger;
 
     public PartiallySortedDataFileBuilder<K, V> withDirectory(final Directory directory) {
-	this.directory = Objects.requireNonNull(directory);
-	return this;
+        this.directory = Objects.requireNonNull(directory);
+        return this;
     }
 
     public PartiallySortedDataFileBuilder<K, V> withFileName(final String file) {
-	this.fileName = Objects.requireNonNull(file);
-	return this;
+        this.fileName = Objects.requireNonNull(file);
+        return this;
     }
 
-    public PartiallySortedDataFileBuilder<K, V> withKeyComparator(final Comparator<? super K> keyComparator) {
-	this.keyComparator = Objects.requireNonNull(keyComparator);
-	return this;
+    public PartiallySortedDataFileBuilder<K, V> withKeyComparator(
+            final Comparator<? super K> keyComparator) {
+        this.keyComparator = Objects.requireNonNull(keyComparator);
+        return this;
     }
 
     public PartiallySortedDataFileBuilder<K, V> withBasicIndex(final BasicIndex<K, V> basicIndex) {
-	this.basicIndex = Objects.requireNonNull(basicIndex);
-	return this;
+        this.basicIndex = Objects.requireNonNull(basicIndex);
+        return this;
     }
 
     public PartiallySortedDataFileBuilder<K, V> withValueMerger(final ValueMerger<K, V> merger) {
-	this.merger = Objects.requireNonNull(merger);
-	return this;
+        this.merger = Objects.requireNonNull(merger);
+        return this;
     }
 
     public PartiallySortedDataFile<K, V> build() {
-	return new PartiallySortedDataFile<>(directory, fileName, keyComparator, basicIndex, merger);
+        return new PartiallySortedDataFile<>(directory, fileName, keyComparator, basicIndex,
+                merger);
     }
 
 }

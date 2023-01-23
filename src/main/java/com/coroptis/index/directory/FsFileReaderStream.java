@@ -17,55 +17,56 @@ public class FsFileReaderStream implements FileReader {
     private final static int BUFFER_SIZE = 1024 * 1024 * 5;
 
     FsFileReaderStream(final File file) {
-	try {
-	    final Path path = file.toPath();
-	    final InputStream fin = Files.newInputStream(path);
-	    bis = new BufferedInputStream(fin, BUFFER_SIZE);
-	} catch (IOException e) {
-	    throw new IndexException(e.getMessage(), e);
-	}
+        try {
+            final Path path = file.toPath();
+            final InputStream fin = Files.newInputStream(path);
+            bis = new BufferedInputStream(fin, BUFFER_SIZE);
+        } catch (IOException e) {
+            throw new IndexException(e.getMessage(), e);
+        }
     }
 
     @Override
     public void close() {
-	try {
-	    bis.close();
-	} catch (IOException e) {
-	    throw new IndexException(e.getMessage(), e);
-	}
+        try {
+            bis.close();
+        } catch (IOException e) {
+            throw new IndexException(e.getMessage(), e);
+        }
     }
 
     @Override
     public int read() {
-	try {
-	    return bis.read();
-	} catch (IOException e) {
-	    throw new IndexException(e.getMessage(), e);
-	}
+        try {
+            return bis.read();
+        } catch (IOException e) {
+            throw new IndexException(e.getMessage(), e);
+        }
     }
 
     @Override
     public int read(byte[] bytes) {
-	try {
-	    final int readBytes = bis.read(bytes);
-	    return readBytes == bytes.length ? readBytes : -1;
-	} catch (IOException e) {
-	    throw new IndexException(e.getMessage(), e);
-	}
+        try {
+            final int readBytes = bis.read(bytes);
+            return readBytes == bytes.length ? readBytes : -1;
+        } catch (IOException e) {
+            throw new IndexException(e.getMessage(), e);
+        }
     }
 
     @Override
     public void skip(long position) {
-	try {
-	    bis.skip(position);
-	} catch (IOException e) {
-	    throw new IndexException(e.getMessage(), e);
-	}
+        try {
+            bis.skip(position);
+        } catch (IOException e) {
+            throw new IndexException(e.getMessage(), e);
+        }
     }
 
     @Override
     public String toString() {
-	return MoreObjects.toStringHelper(FsFileReaderStream.class).add("bis", bis.toString()).toString();
+        return MoreObjects.toStringHelper(FsFileReaderStream.class).add("bis", bis.toString())
+                .toString();
     }
 
 }

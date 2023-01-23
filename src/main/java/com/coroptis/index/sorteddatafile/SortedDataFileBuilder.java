@@ -26,43 +26,46 @@ public class SortedDataFileBuilder<K, V> {
     private ConvertorToBytes<K> keyConvertorToBytes;
 
     public SortedDataFileBuilder<K, V> withDirectory(final Directory directory) {
-	this.directory = Objects.requireNonNull(directory);
-	return this;
+        this.directory = Objects.requireNonNull(directory);
+        return this;
     }
 
     public SortedDataFileBuilder<K, V> withFileName(final String file) {
-	this.fileName = Objects.requireNonNull(file);
-	return this;
+        this.fileName = Objects.requireNonNull(file);
+        return this;
     }
 
     public SortedDataFileBuilder<K, V> withValueWriter(final TypeWriter<V> valueWriter) {
-	this.valueWriter = Objects.requireNonNull(valueWriter);
-	return this;
+        this.valueWriter = Objects.requireNonNull(valueWriter);
+        return this;
     }
 
     public SortedDataFileBuilder<K, V> withValueReader(final TypeReader<V> valueReader) {
-	this.valueReader = Objects.requireNonNull(valueReader);
-	return this;
+        this.valueReader = Objects.requireNonNull(valueReader);
+        return this;
     }
 
-    public SortedDataFileBuilder<K, V> withKeyComparator(final Comparator<? super K> keyComparator) {
-	this.keyComparator = Objects.requireNonNull(keyComparator);
-	return this;
+    public SortedDataFileBuilder<K, V> withKeyComparator(
+            final Comparator<? super K> keyComparator) {
+        this.keyComparator = Objects.requireNonNull(keyComparator);
+        return this;
     }
 
-    public SortedDataFileBuilder<K, V> withKeyConvertorFromBytes(final ConvertorFromBytes<K> keyConvertorFromBytes) {
-	this.keyConvertorFromBytes = Objects.requireNonNull(keyConvertorFromBytes);
-	return this;
+    public SortedDataFileBuilder<K, V> withKeyConvertorFromBytes(
+            final ConvertorFromBytes<K> keyConvertorFromBytes) {
+        this.keyConvertorFromBytes = Objects.requireNonNull(keyConvertorFromBytes);
+        return this;
     }
 
-    public SortedDataFileBuilder<K, V> withKeyConvertorToBytes(final ConvertorToBytes<K> keyConvertorToBytes) {
-	this.keyConvertorToBytes = Objects.requireNonNull(keyConvertorToBytes);
-	return this;
+    public SortedDataFileBuilder<K, V> withKeyConvertorToBytes(
+            final ConvertorToBytes<K> keyConvertorToBytes) {
+        this.keyConvertorToBytes = Objects.requireNonNull(keyConvertorToBytes);
+        return this;
     }
 
     public SortedDataFile<K, V> build() {
-	return new SortedDataFile<>(directory, fileName, valueWriter, valueReader, keyComparator, keyConvertorFromBytes,
-		keyConvertorToBytes);
+        return new SortedDataFile<>(directory, fileName, valueWriter, valueReader, keyComparator,
+                keyConvertorFromBytes, keyConvertorToBytes);
     }
 
 }

@@ -22,38 +22,38 @@ public class SortSupportTest {
 
     @Test
     void test_getFilesInRound_0_extension() throws Exception {
-	final SortSupport<Integer, String> sortSupport = makeSortSupport_extension("round.dat");
+        final SortSupport<Integer, String> sortSupport = makeSortSupport_extension("round.dat");
 
-	final List<String> fileNames = sortSupport.getFilesInRound(0);
-	assertEquals(5, fileNames.size());
-	assertTrue(fileNames.contains("round-0-6.dat"));
-	assertTrue(fileNames.contains("round-0-7.dat"));
-	assertTrue(fileNames.contains("round-0-8.dat"));
-	assertTrue(fileNames.contains("round-0-58.dat"));
-	assertTrue(fileNames.contains("round-0-59.dat"));
+        final List<String> fileNames = sortSupport.getFilesInRound(0);
+        assertEquals(5, fileNames.size());
+        assertTrue(fileNames.contains("round-0-6.dat"));
+        assertTrue(fileNames.contains("round-0-7.dat"));
+        assertTrue(fileNames.contains("round-0-8.dat"));
+        assertTrue(fileNames.contains("round-0-58.dat"));
+        assertTrue(fileNames.contains("round-0-59.dat"));
     }
 
     @Test
     void test_getFilesInRound_0() throws Exception {
-	final SortSupport<Integer, String> sortSupport = makeSortSupport("round");
+        final SortSupport<Integer, String> sortSupport = makeSortSupport("round");
 
-	final List<String> fileNames = sortSupport.getFilesInRound(0);
-	assertEquals(5, fileNames.size());
-	assertTrue(fileNames.contains("round-0-6"));
-	assertTrue(fileNames.contains("round-0-7"));
-	assertTrue(fileNames.contains("round-0-8"));
-	assertTrue(fileNames.contains("round-0-58"));
-	assertTrue(fileNames.contains("round-0-59"));
+        final List<String> fileNames = sortSupport.getFilesInRound(0);
+        assertEquals(5, fileNames.size());
+        assertTrue(fileNames.contains("round-0-6"));
+        assertTrue(fileNames.contains("round-0-7"));
+        assertTrue(fileNames.contains("round-0-8"));
+        assertTrue(fileNames.contains("round-0-58"));
+        assertTrue(fileNames.contains("round-0-59"));
     }
 
     @Test
     void test_getFilesInRound_1() throws Exception {
-	final SortSupport<Integer, String> sortSupport = makeSortSupport("round");
+        final SortSupport<Integer, String> sortSupport = makeSortSupport("round");
 
-	final List<String> fileNames = sortSupport.getFilesInRound(1);
-	assertEquals(2, fileNames.size());
-	assertTrue(fileNames.contains("round-1-0"));
-	assertTrue(fileNames.contains("round-1-1"));
+        final List<String> fileNames = sortSupport.getFilesInRound(1);
+        assertEquals(2, fileNames.size());
+        assertTrue(fileNames.contains("round-1-0"));
+        assertTrue(fileNames.contains("round-1-1"));
     }
 
     private SortSupport<Integer, String> makeSortSupport(final String unsortedFileName){
@@ -74,13 +74,13 @@ public class SortSupportTest {
 
     @Test
     void test_makeFileName() throws Exception {
-	SortSupport<Integer, String> sortSupport = makeSortSupport("round");
-	assertEquals("round-1-5", sortSupport.makeFileName(1, 5));
-	assertEquals("round-10-5", sortSupport.makeFileName(10, 5));
+        SortSupport<Integer, String> sortSupport = makeSortSupport("round");
+        assertEquals("round-1-5", sortSupport.makeFileName(1, 5));
+        assertEquals("round-10-5", sortSupport.makeFileName(10, 5));
 
-	sortSupport = makeSortSupport("round.dat");
-	assertEquals("round-1-5.dat", sortSupport.makeFileName(1, 5));
-	assertEquals("round-10-5.dat", sortSupport.makeFileName(10, 5));
+        sortSupport = makeSortSupport("round.dat");
+        assertEquals("round-1-5.dat", sortSupport.makeFileName(1, 5));
+        assertEquals("round-10-5.dat", sortSupport.makeFileName(10, 5));
     }
 
 }

@@ -23,27 +23,29 @@ public class RoundSorterTest {
      */
     @Test
     void test_mergeRound() throws Exception {
-	final RoundSorted<Integer, String> roundSorted = new RoundSorted<>(basicIndex, sortSupport, 3);
-	final List<String> filesInRound0 = List.of("round-0-0", "round-0-1", "round-0-2", "round-0-3", "round-0-4");
+        final RoundSorted<Integer, String> roundSorted = new RoundSorted<>(basicIndex, sortSupport,
+                3);
+        final List<String> filesInRound0 = List.of("round-0-0", "round-0-1", "round-0-2",
+                "round-0-3", "round-0-4");
 
-	when(sortSupport.getFilesInRound(0)).thenReturn(filesInRound0);
-	when(sortSupport.makeFileName(1, 0)).thenReturn("round-0-0");
-	when(sortSupport.makeFileName(1, 1)).thenReturn("round-0-1");
+        when(sortSupport.getFilesInRound(0)).thenReturn(filesInRound0);
+        when(sortSupport.makeFileName(1, 0)).thenReturn("round-0-0");
+        when(sortSupport.makeFileName(1, 1)).thenReturn("round-0-1");
 
-	// real method call
-	roundSorted.mergeRound(0, pair -> System.out.println(pair));
+        // real method call
+        roundSorted.mergeRound(0, pair -> System.out.println(pair));
 
-	final List<String> filesToMerge0 = List.of("round-0-0", "round-0-1", "round-0-2");
-	final List<String> filesToMerge1 = List.of("round-0-3", "round-0-4");
+        final List<String> filesToMerge0 = List.of("round-0-0", "round-0-1", "round-0-2");
+        final List<String> filesToMerge1 = List.of("round-0-3", "round-0-4");
 
-	verify(sortSupport).mergeSortedFiles(filesToMerge0, "round-0-0");
-	verify(sortSupport).mergeSortedFiles(filesToMerge1, "round-0-1");
+        verify(sortSupport).mergeSortedFiles(filesToMerge0, "round-0-0");
+        verify(sortSupport).mergeSortedFiles(filesToMerge1, "round-0-1");
 
-	verify(basicIndex).deleteFile("round-0-0");
-	verify(basicIndex).deleteFile("round-0-1");
-	verify(basicIndex).deleteFile("round-0-2");
-	verify(basicIndex).deleteFile("round-0-3");
-	verify(basicIndex).deleteFile("round-0-4");
+        verify(basicIndex).deleteFile("round-0-0");
+        verify(basicIndex).deleteFile("round-0-1");
+        verify(basicIndex).deleteFile("round-0-2");
+        verify(basicIndex).deleteFile("round-0-3");
+        verify(basicIndex).deleteFile("round-0-4");
     }
 
 }

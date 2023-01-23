@@ -50,36 +50,36 @@ public class IndexWriter<K, V> implements CloseableResource {
     private final IndexDesc indexDesc;
 
     public IndexWriter(final Directory directory, final int blockSize, final Class<?> keyClass,
-	    final Class<?> valueClass) {
-	final TypeConvertors tc = TypeConvertors.getInstance();
-	final ConvertorToBytes<K> keyConvertor = tc.get(keyClass, OperationType.CONVERTOR_TO_BYTES);
-	final TypeWriter<V> valueWriter = tc.get(valueClass, OperationType.WRITER);
-	final Comparator<? super K> keyComparator = tc.get(keyClass, OperationType.COMPARATOR);
+            final Class<?> valueClass) {
+        final TypeConvertors tc = TypeConvertors.getInstance();
+        final ConvertorToBytes<K> keyConvertor = tc.get(keyClass, OperationType.CONVERTOR_TO_BYTES);
+        final TypeWriter<V> valueWriter = tc.get(valueClass, OperationType.WRITER);
+        final Comparator<? super K> keyComparator = tc.get(keyClass, OperationType.COMPARATOR);
 
-	this.mainIndex = new SortedDataFileWriter<>(directory,INDEX_MAIN_DATA_FILE,
-		keyConvertor, keyComparator, valueWriter);
-	this.metaIndex = new SortedDataFileWriter<>(directory,INDEX_META_FILE,
-		keyConvertor, keyComparator, integerTypeDescriptor.getWriter());
-	this.indexDesc = IndexDesc.create(directory, blockSize);
+        this.mainIndex = new SortedDataFileWriter<>(directory, INDEX_MAIN_DATA_FILE, keyConvertor,
+                keyComparator, valueWriter);
+        this.metaIndex = new SortedDataFileWriter<>(directory, INDEX_META_FILE, keyConvertor,
+                keyComparator, integerTypeDescriptor.getWriter());
+        this.indexDesc = IndexDesc.create(directory, blockSize);
     }
 
     public void put(final K key, final V value) {
-	Objects.requireNonNull(key);
-	if (indexDesc.isBlockStart()) {
-	    previousPosition = mainIndex.put(new Pair<K, V>(key, value), true);
-	    metaIndex.put(new Pair<K, Integer>(key, previousPosition), false);
-	    indexDesc.incrementBlockCount();
-	} else {
-	    previousPosition = mainIndex.put(new Pair<K, V>(key, value), false);
-	}
-	indexDesc.incrementWrittenKeyCount();
+        Objects.requireNonNull(key);
+        if (indexDesc.isBlockStart()) {
+            previousPosition = mainIndex.put(new Pair<K, V>(key, value), true);
+            metaIndex.put(new Pair<K, Integer>(key, previousPosition), false);
+            indexDesc.incrementBlockCount();
+        } else {
+            previousPosition = mainIndex.put(new Pair<K, V>(key, value), false);
+        }
+        indexDesc.incrementWrittenKeyCount();
     }
 
     @Override
     public void close() {
-	mainIndex.close();
-	metaIndex.close();
-	indexDesc.writeDescriptionFile();
+        mainIndex.close();
+        metaIndex.close();
+        indexDesc.writeDescriptionFile();
     }
 
 }

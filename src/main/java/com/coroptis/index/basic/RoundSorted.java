@@ -13,44 +13,46 @@ public class RoundSorted<K, V> {
     private final BasicIndex<K, V> basicIndex;
     private final int howManyFilesMergeAtOnce;
 
-    RoundSorted(final BasicIndex<K, V> basicIndex, final SortSupport<K, V> sortSupport, final int howManyFilesMergeAtOnce) {
-	this.sortSupport = Objects.requireNonNull(sortSupport);
-	this.basicIndex = Objects.requireNonNull(basicIndex);
-	this.howManyFilesMergeAtOnce = howManyFilesMergeAtOnce;
+    RoundSorted(final BasicIndex<K, V> basicIndex, final SortSupport<K, V> sortSupport,
+            final int howManyFilesMergeAtOnce) {
+        this.sortSupport = Objects.requireNonNull(sortSupport);
+        this.basicIndex = Objects.requireNonNull(basicIndex);
+        this.howManyFilesMergeAtOnce = howManyFilesMergeAtOnce;
     }
 
     boolean mergeRound(final int roundNo, final Consumer<Pair<K, V>> consumer) {
-	final List<String> filesToMerge = sortSupport.getFilesInRound(roundNo);
+        final List<String> filesToMerge = sortSupport.getFilesInRound(roundNo);
 
-	if (filesToMerge.size() == 0) {
-	    // do nothing
-	    return false;
-	}
+        if (filesToMerge.size() == 0) {
+            // do nothing
+            return false;
+        }
 
-	final int howManyFilesShouldBeProduces = howManyFilesShouldBeProduces(filesToMerge.size());
-	final boolean isFinalMergingRound = howManyFilesShouldBeProduces == 1;
+        final int howManyFilesShouldBeProduces = howManyFilesShouldBeProduces(filesToMerge.size());
+        final boolean isFinalMergingRound = howManyFilesShouldBeProduces == 1;
 
-	for (int i = 0; i < howManyFilesShouldBeProduces; i++) {
-	    final List<String> filesToMergeLocaly = new ArrayList<>();
-	    for (int j = 0; j < howManyFilesMergeAtOnce; j++) {
-		final int index = i * howManyFilesMergeAtOnce + j;
-		if (index < filesToMerge.size()) {
-		    final String fileName = filesToMerge.get(index);
-		    filesToMergeLocaly.add(fileName);
-		}
-	    }
-	    if (isFinalMergingRound) {
-		/*
-		 * When it's final merging round data should be send to caller.
-		 */
-		sortSupport.mergeSortedFiles(filesToMergeLocaly, consumer::accept);
-	    } else {
-		sortSupport.mergeSortedFiles(filesToMergeLocaly, sortSupport.makeFileName(roundNo + 1, i));
-	    }
-	    filesToMergeLocaly.forEach(fileName -> basicIndex.deleteFile(fileName));
-	}
+        for (int i = 0; i < howManyFilesShouldBeProduces; i++) {
+            final List<String> filesToMergeLocaly = new ArrayList<>();
+            for (int j = 0; j < howManyFilesMergeAtOnce; j++) {
+                final int index = i * howManyFilesMergeAtOnce + j;
+                if (index < filesToMerge.size()) {
+                    final String fileName = filesToMerge.get(index);
+                    filesToMergeLocaly.add(fileName);
+                }
+            }
+            if (isFinalMergingRound) {
+                /*
+                 * When it's final merging round data should be send to caller.
+                 */
+                sortSupport.mergeSortedFiles(filesToMergeLocaly, consumer::accept);
+            } else {
+                sortSupport.mergeSortedFiles(filesToMergeLocaly,
+                        sortSupport.makeFileName(roundNo + 1, i));
+            }
+            filesToMergeLocaly.forEach(fileName -> basicIndex.deleteFile(fileName));
+        }
 
-	return !isFinalMergingRound;
+        return !isFinalMergingRound;
     }
 
     /**
@@ -61,7 +63,7 @@ public class RoundSorted<K, V> {
      * @return
      */
     private int howManyFilesShouldBeProduces(final int numberOfFiles) {
-	return (int) Math.ceil(((float) numberOfFiles) / ((float) howManyFilesMergeAtOnce));
+        return (int) Math.ceil(((float) numberOfFiles) / ((float) howManyFilesMergeAtOnce));
     }
 
 }

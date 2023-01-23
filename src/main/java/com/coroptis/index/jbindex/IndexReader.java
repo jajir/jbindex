@@ -11,19 +11,19 @@ public class IndexReader<K, V> {
     private Pair<K, V> currentPair;
 
     IndexReader(final IndexIterator<K, V> indexIterator) {
-	this.indexIterator = Objects.requireNonNull(indexIterator);
-	tryToReadNextPair();
+        this.indexIterator = Objects.requireNonNull(indexIterator);
+        tryToReadNextPair();
     }
 
     public Optional<Pair<K, V>> readCurrent() {
-	return Optional.ofNullable(currentPair);
+        return Optional.ofNullable(currentPair);
     }
 
     public void moveToNext() {
-	tryToReadNextPair();
+        tryToReadNextPair();
     }
 
     private void tryToReadNextPair() {
-	currentPair = indexIterator.next();
+        currentPair = indexIterator.next();
     }
 }

@@ -26,22 +26,23 @@ public class IndexStreamer<K, V> implements CloseableResource {
     private final PairReader<K, V> pairReader;
 
     IndexStreamer(final Directory directory, final String fileName, final TypeReader<K> keyReader,
-	    final TypeReader<V> valueReader, final Comparator<? super K> keyComparator, final long estimateSize) {
-	Objects.requireNonNull(valueReader, "Value reader is null");
-	pairComparator = new PairComparator<>(keyComparator);
-	this.estimateSize = estimateSize;
-	pairReader = new PairReaderImpl<>(keyReader, valueReader);
-	fileReader = directory.getFileReader(fileName);
+            final TypeReader<V> valueReader, final Comparator<? super K> keyComparator,
+            final long estimateSize) {
+        Objects.requireNonNull(valueReader, "Value reader is null");
+        pairComparator = new PairComparator<>(keyComparator);
+        this.estimateSize = estimateSize;
+        pairReader = new PairReaderImpl<>(keyReader, valueReader);
+        fileReader = directory.getFileReader(fileName);
     }
 
     public Stream<Pair<K, V>> stream() {
-	return StreamSupport.stream(
-		new SortedDataFileSpliteratorSized<>(pairReader, fileReader, pairComparator, estimateSize), false);
+        return StreamSupport.stream(new SortedDataFileSpliteratorSized<>(pairReader, fileReader,
+                pairComparator, estimateSize), false);
     }
 
     @Override
     public void close() {
-	fileReader.close();
+        fileReader.close();
     }
 
 }

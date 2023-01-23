@@ -20,21 +20,23 @@ public class MergeIndexAndConsumer<K, V> implements CloseableResource {
     private final ValueMerger<K, V> merger;
     final Comparator<? super K> keyComparator;
 
-    public MergeIndexAndConsumer(final Directory inputIndex, final Directory output, final ValueMerger<K, V> merger,
-	    final Class<?> keyClass, final Class<?> valueClass, final int blockSize) {
-	this.inputDirectory = Objects.requireNonNull(inputIndex);
-	this.merger = Objects.requireNonNull(merger);
-	final TypeConvertors tc = TypeConvertors.getInstance();
-	this.keyComparator = tc.get(keyClass, OperationType.COMPARATOR);
-	final BasicIndex<K, V> basicIndexInput = new BasicIndex<>(inputIndex, keyClass, valueClass, null);
-	final IndexIterator<K, V> inputIterator = new IndexSearcher<K, V>(inputDirectory, keyClass, valueClass, basicIndexInput)
-		.getIterator();
-	inputIndexReader = new IndexReader<>(inputIterator);
-	finalIndexWriter = new IndexWriter<>(output, blockSize, keyClass, valueClass);
+    public MergeIndexAndConsumer(final Directory inputIndex, final Directory output,
+            final ValueMerger<K, V> merger, final Class<?> keyClass, final Class<?> valueClass,
+            final int blockSize) {
+        this.inputDirectory = Objects.requireNonNull(inputIndex);
+        this.merger = Objects.requireNonNull(merger);
+        final TypeConvertors tc = TypeConvertors.getInstance();
+        this.keyComparator = tc.get(keyClass, OperationType.COMPARATOR);
+        final BasicIndex<K, V> basicIndexInput = new BasicIndex<>(inputIndex, keyClass, valueClass,
+                null);
+        final IndexIterator<K, V> inputIterator = new IndexSearcher<K, V>(inputDirectory, keyClass,
+                valueClass, basicIndexInput).getIterator();
+        inputIndexReader = new IndexReader<>(inputIterator);
+        finalIndexWriter = new IndexWriter<>(output, blockSize, keyClass, valueClass);
     }
 
     public Consumer<Pair<K, V>> getConsumer() {
-	return pair -> mergePair(pair);
+        return pair -> mergePair(pair);
     }
 
     /**
@@ -43,8 +45,8 @@ public class MergeIndexAndConsumer<K, V> implements CloseableResource {
      * @param pair1 required pair
      */
     private void mergePair(final Pair<K, V> pair1) {
-	while (!mergeOne(pair1))
-	    ;
+        while (!mergeOne(pair1))
+            ;
     }
 
     /**
@@ -53,30 +55,30 @@ public class MergeIndexAndConsumer<K, V> implements CloseableResource {
      * @return return <code>true</code> when given pair was consumed.
      */
     private boolean mergeOne(final Pair<K, V> pair1) {
-	Objects.requireNonNull(pair1);
-	if (inputIndexReader.readCurrent().isPresent()) {
-	    final Pair<K, V> pair2 = inputIndexReader.readCurrent().get();
-	    final int cmp = keyComparator.compare(pair1.getKey(), pair2.getKey());
-	    if (cmp == 0) {
-		// p1 == p2
-		final Pair<K, V> out = merger.merge(pair1, pair2);
-		finalIndexWriter.put(out.getKey(), out.getValue());
-		inputIndexReader.moveToNext();
-		return true;
-	    } else if (cmp < 0) {
-		// p1 < p2
-		finalIndexWriter.put(pair1.getKey(), pair1.getValue());
-		return true;
-	    } else {
-		// p1 > p2
-		finalIndexWriter.put(pair2.getKey(), pair2.getValue());
-		inputIndexReader.moveToNext();
-		return false;
-	    }
-	} else {
-	    finalIndexWriter.put(pair1.getKey(), pair1.getValue());
-	    return true;
-	}
+        Objects.requireNonNull(pair1);
+        if (inputIndexReader.readCurrent().isPresent()) {
+            final Pair<K, V> pair2 = inputIndexReader.readCurrent().get();
+            final int cmp = keyComparator.compare(pair1.getKey(), pair2.getKey());
+            if (cmp == 0) {
+                // p1 == p2
+                final Pair<K, V> out = merger.merge(pair1, pair2);
+                finalIndexWriter.put(out.getKey(), out.getValue());
+                inputIndexReader.moveToNext();
+                return true;
+            } else if (cmp < 0) {
+                // p1 < p2
+                finalIndexWriter.put(pair1.getKey(), pair1.getValue());
+                return true;
+            } else {
+                // p1 > p2
+                finalIndexWriter.put(pair2.getKey(), pair2.getValue());
+                inputIndexReader.moveToNext();
+                return false;
+            }
+        } else {
+            finalIndexWriter.put(pair1.getKey(), pair1.getValue());
+            return true;
+        }
     }
 
     /**
@@ -84,17 +86,17 @@ public class MergeIndexAndConsumer<K, V> implements CloseableResource {
      * input reader have to be copied to output index.
      */
     public void finishMerging() {
-	while (inputIndexReader.readCurrent().isPresent()) {
-	    final Pair<K, V> pair = inputIndexReader.readCurrent().get();
-	    finalIndexWriter.put(pair.getKey(), pair.getValue());
-	    inputIndexReader.moveToNext();
-	}
+        while (inputIndexReader.readCurrent().isPresent()) {
+            final Pair<K, V> pair = inputIndexReader.readCurrent().get();
+            finalIndexWriter.put(pair.getKey(), pair.getValue());
+            inputIndexReader.moveToNext();
+        }
     }
 
     @Override
     public void close() {
-	finishMerging();
-	finalIndexWriter.close();
+        finishMerging();
+        finalIndexWriter.close();
     }
 
 }

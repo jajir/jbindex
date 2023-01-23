@@ -21,40 +21,42 @@ public class IndexMerge<K, V> {
     final Comparator<? super K> keyComparator;
     private final int blockSize;
 
-    public IndexMerge(final Directory directory1, final Directory directory2, final Directory output,
-	    final ValueMerger<K, V> merger, final Class<?> keyClass, final Class<?> valueClass,
-	    final int blockSize) {
-	this.directory1 = Objects.requireNonNull(directory1);
-	this.directory2 = Objects.requireNonNull(directory2);
-	this.output = Objects.requireNonNull(output);
-	this.merger = Objects.requireNonNull(merger);
-	this.keyClass = Objects.requireNonNull(keyClass);
-	this.valueClass = Objects.requireNonNull(valueClass);
-	this.blockSize = Objects.requireNonNull(blockSize);
-	final TypeConvertors tc = TypeConvertors.getInstance();
-	this.keyComparator = tc.get(keyClass, OperationType.COMPARATOR);
+    public IndexMerge(final Directory directory1, final Directory directory2,
+            final Directory output, final ValueMerger<K, V> merger, final Class<?> keyClass,
+            final Class<?> valueClass, final int blockSize) {
+        this.directory1 = Objects.requireNonNull(directory1);
+        this.directory2 = Objects.requireNonNull(directory2);
+        this.output = Objects.requireNonNull(output);
+        this.merger = Objects.requireNonNull(merger);
+        this.keyClass = Objects.requireNonNull(keyClass);
+        this.valueClass = Objects.requireNonNull(valueClass);
+        this.blockSize = Objects.requireNonNull(blockSize);
+        final TypeConvertors tc = TypeConvertors.getInstance();
+        this.keyComparator = tc.get(keyClass, OperationType.COMPARATOR);
 
     }
 
     public void merge() {
-	final BasicIndex<K, V> basicIndex1 = new BasicIndex<>(directory1, keyClass, valueClass, null);
-	final BasicIndex<K, V> basicIndex2 = new BasicIndex<>(directory1, keyClass, valueClass, null);
-	try (final IndexIterator<K, V> iterator1 = new IndexSearcher<K, V>(directory1, keyClass,
-		valueClass, basicIndex1).getIterator()) {
-	    try (final IndexIterator<K, V> iterator2 = new IndexSearcher<K, V>(directory2, keyClass,
-		    valueClass, basicIndex2).getIterator()) {
-		final IndexReader<K, V> indexReader1 = new IndexReader<>(iterator1);
-		final IndexReader<K, V> indexReader2 = new IndexReader<>(iterator2);
+        final BasicIndex<K, V> basicIndex1 = new BasicIndex<>(directory1, keyClass, valueClass,
+                null);
+        final BasicIndex<K, V> basicIndex2 = new BasicIndex<>(directory1, keyClass, valueClass,
+                null);
+        try (final IndexIterator<K, V> iterator1 = new IndexSearcher<K, V>(directory1, keyClass,
+                valueClass, basicIndex1).getIterator()) {
+            try (final IndexIterator<K, V> iterator2 = new IndexSearcher<K, V>(directory2, keyClass,
+                    valueClass, basicIndex2).getIterator()) {
+                final IndexReader<K, V> indexReader1 = new IndexReader<>(iterator1);
+                final IndexReader<K, V> indexReader2 = new IndexReader<>(iterator2);
 
-		try (final IndexWriter<K, V> out = new IndexWriter<>(output, blockSize, keyClass,
-			valueClass)) {
-		    StreamSupport
-			    .stream(new MergeIndexSpliterator<K, V>(indexReader1, indexReader2,
-				    keyComparator, merger), false)
-			    .forEach(pair -> out.put(pair.getKey(), pair.getValue()));
-		}
-	    }
-	}
+                try (final IndexWriter<K, V> out = new IndexWriter<>(output, blockSize, keyClass,
+                        valueClass)) {
+                    StreamSupport
+                            .stream(new MergeIndexSpliterator<K, V>(indexReader1, indexReader2,
+                                    keyComparator, merger), false)
+                            .forEach(pair -> out.put(pair.getKey(), pair.getValue()));
+                }
+            }
+        }
     }
 
 }

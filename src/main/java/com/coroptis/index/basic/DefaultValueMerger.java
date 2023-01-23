@@ -19,7 +19,7 @@ public class DefaultValueMerger<K, V> implements ValueMerger<K, V> {
      */
     @Override
     public V merge(final K key, final V value1, final V value2) {
-	return value2;
+        return value2;
     }
 
 }

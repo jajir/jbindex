@@ -16,55 +16,55 @@ public class FsStorageTest {
 
     @Test
     public void test_read_write_text_fs() throws Exception {
-	Directory dir = new FsDirectory(new File("./target/pok"));
-	test_read_write_text(dir);
+        Directory dir = new FsDirectory(new File("./target/pok"));
+        test_read_write_text(dir);
     }
 
     @Test
     public void test_read_write_text_mem() throws Exception {
-	Directory dir = new MemDirectory();
-	test_read_write_text(dir);
+        Directory dir = new MemDirectory();
+        test_read_write_text(dir);
     }
 
     private void test_read_write_text(final Directory dir) {
-	try (final FileWriter fw = dir.getFileWriter(FILE_NAME)) {
-	    fw.write(TEXT.getBytes());
-	}
+        try (final FileWriter fw = dir.getFileWriter(FILE_NAME)) {
+            fw.write(TEXT.getBytes());
+        }
 
-	try (final FileReader fr = dir.getFileReader(FILE_NAME)) {
-	    byte[] bytes = new byte[TEXT.getBytes().length];
-	    final int loadedBytes = fr.read(bytes);
+        try (final FileReader fr = dir.getFileReader(FILE_NAME)) {
+            byte[] bytes = new byte[TEXT.getBytes().length];
+            final int loadedBytes = fr.read(bytes);
 
-	    String pok = new String(bytes);
-	    assertEquals(TEXT, pok);
-	    assertEquals(TEXT.getBytes().length, loadedBytes);
-	}
+            String pok = new String(bytes);
+            assertEquals(TEXT, pok);
+            assertEquals(TEXT.getBytes().length, loadedBytes);
+        }
 
     }
 
     @Test
     public void test_read_write_end_of_file_reached_mem() throws Exception {
-	Directory dir = new MemDirectory();
-	test_read_long_bytes(dir);
+        Directory dir = new MemDirectory();
+        test_read_long_bytes(dir);
     }
 
     @Test
     public void test_read_write_end_of_file_reached_fs() throws Exception {
-	Directory dir = new FsDirectory(new File("./target/pok"));
-	test_read_long_bytes(dir);
+        Directory dir = new FsDirectory(new File("./target/pok"));
+        test_read_long_bytes(dir);
     }
 
     private void test_read_long_bytes(final Directory dir) {
-	try (final FileWriter fw = dir.getFileWriter(FILE_NAME)) {
-	    fw.write(TEXT.getBytes());
-	}
+        try (final FileWriter fw = dir.getFileWriter(FILE_NAME)) {
+            fw.write(TEXT.getBytes());
+        }
 
-	try (final FileReader fr = dir.getFileReader(FILE_NAME)) {
-	    byte[] bytes = new byte[TEXT_LONG.getBytes().length];
+        try (final FileReader fr = dir.getFileReader(FILE_NAME)) {
+            byte[] bytes = new byte[TEXT_LONG.getBytes().length];
 
-	    final int loadedBytes = fr.read(bytes);
-	    assertEquals(-1, loadedBytes);
-	}
+            final int loadedBytes = fr.read(bytes);
+            assertEquals(-1, loadedBytes);
+        }
     }
 
 }

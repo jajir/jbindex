@@ -17,49 +17,49 @@ public class SortedDataFileSpliterator<K, V> implements Spliterator<Pair<K, V>> 
     private final PairComparator<K, V> pairComparator;
 
     public SortedDataFileSpliterator(final PairReader<K, V> pairReader, final FileReader fileReader,
-	    final PairComparator<K, V> pairComparator) {
-	this.pairReader = Objects.requireNonNull(pairReader);
-	this.fileReader = Objects.requireNonNull(fileReader);
-	this.pairComparator = Objects.requireNonNull(pairComparator,
-		"pair comparator must not be null");
+            final PairComparator<K, V> pairComparator) {
+        this.pairReader = Objects.requireNonNull(pairReader);
+        this.fileReader = Objects.requireNonNull(fileReader);
+        this.pairComparator = Objects.requireNonNull(pairComparator,
+                "pair comparator must not be null");
     }
 
     @Override
     public boolean tryAdvance(final Consumer<? super Pair<K, V>> action) {
-	final Pair<K, V> out = pairReader.read(fileReader);
-	if (out == null) {
-	    return false;
-	} else {
-	    action.accept(out);
-	    return true;
-	}
+        final Pair<K, V> out = pairReader.read(fileReader);
+        if (out == null) {
+            return false;
+        } else {
+            action.accept(out);
+            return true;
+        }
     }
 
     @Override
     public Comparator<? super Pair<K, V>> getComparator() {
-	return pairComparator;
+        return pairComparator;
     }
 
     @Override
     public Spliterator<Pair<K, V>> trySplit() {
-	/*
-	 * It's not supported. So return null.
-	 */
-	return null;
+        /*
+         * It's not supported. So return null.
+         */
+        return null;
     }
 
     @Override
     public long estimateSize() {
-	/*
-	 * Stream is not sized.
-	 */
-	return Integer.MAX_VALUE;
+        /*
+         * Stream is not sized.
+         */
+        return Integer.MAX_VALUE;
     }
 
     @Override
     public int characteristics() {
-	return Spliterator.DISTINCT | Spliterator.IMMUTABLE | Spliterator.NONNULL
-		| Spliterator.SORTED ;
+        return Spliterator.DISTINCT | Spliterator.IMMUTABLE | Spliterator.NONNULL
+                | Spliterator.SORTED;
     }
 
 }

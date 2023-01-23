@@ -14,32 +14,32 @@ public class UnsortedFileTest {
 
     @Test
     public void test_in_mem_unsorted_index() throws Exception {
-	final Directory dir = new MemDirectory();
+        final Directory dir = new MemDirectory();
 
-	final IndexConfiguration<Integer, String> configuration = new IndexConfiguration<>(dir, Integer.class,
-		String.class);
+        final IndexConfiguration<Integer, String> configuration = new IndexConfiguration<>(dir,
+                Integer.class, String.class);
 
-	final UnsortedDataFile<Integer, String> unsorted = configuration.getUnsortedFile("duck");
-	assertNotNull(unsorted);
+        final UnsortedDataFile<Integer, String> unsorted = configuration.getUnsortedFile("duck");
+        assertNotNull(unsorted);
 
-	try (final UnsortedDataFileWriter<Integer, String> writer = unsorted.openWriter()) {
-	    writer.put(Pair.of(4, "here"));
-	    writer.put(Pair.of(-12, "we"));
-	    writer.put(Pair.of(98, "go"));
-	}
+        try (final UnsortedDataFileWriter<Integer, String> writer = unsorted.openWriter()) {
+            writer.put(Pair.of(4, "here"));
+            writer.put(Pair.of(-12, "we"));
+            writer.put(Pair.of(98, "go"));
+        }
 
-	try (final DataFileIterator<Integer, String> reader = unsorted.openIterator()) {
-	    while (reader.hasNext()) {
-		System.out.println(reader.readCurrent().get());
-		reader.next();
-	    }
-	}
+        try (final DataFileIterator<Integer, String> reader = unsorted.openIterator()) {
+            while (reader.hasNext()) {
+                System.out.println(reader.readCurrent().get());
+                reader.next();
+            }
+        }
 
-	try (final UnsortedDataFileStreamer<Integer, String> streamer = unsorted.openStreamer()) {
-	    streamer.stream().forEach(pair -> {
-		System.out.println(pair);
-	    });
-	}
+        try (final UnsortedDataFileStreamer<Integer, String> streamer = unsorted.openStreamer()) {
+            streamer.stream().forEach(pair -> {
+                System.out.println(pair);
+            });
+        }
 
     }
 

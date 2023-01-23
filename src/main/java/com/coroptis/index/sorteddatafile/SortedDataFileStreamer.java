@@ -19,14 +19,14 @@ public class SortedDataFileStreamer<K, V> implements CloseableResource {
     private final PairReader<K, V> pairReader;
 
     public SortedDataFileStreamer(final Directory directory, final String fileName,
-	    final ConvertorFromBytes<K> keyConvertorFromBytes, final TypeReader<V> valueReader,
-	    final Comparator<? super K> keyComparator) {
-	Objects.requireNonNull(directory);
-	Objects.requireNonNull(fileName);
-	this.fileReader = directory.getFileReader(fileName);
-	final DiffKeyReader<K> diffKeyReader = new DiffKeyReader<K>(keyConvertorFromBytes);
-	pairReader = new PairReaderImpl<>(diffKeyReader, valueReader);
-	pairComparator = new PairComparator<>(keyComparator);
+            final ConvertorFromBytes<K> keyConvertorFromBytes, final TypeReader<V> valueReader,
+            final Comparator<? super K> keyComparator) {
+        Objects.requireNonNull(directory);
+        Objects.requireNonNull(fileName);
+        this.fileReader = directory.getFileReader(fileName);
+        final DiffKeyReader<K> diffKeyReader = new DiffKeyReader<K>(keyConvertorFromBytes);
+        pairReader = new PairReaderImpl<>(diffKeyReader, valueReader);
+        pairComparator = new PairComparator<>(keyComparator);
     }
 
     /**
@@ -40,24 +40,25 @@ public class SortedDataFileStreamer<K, V> implements CloseableResource {
      * @param streamFromPosition
      */
     public SortedDataFileStreamer(final Directory directory, final String fileName,
-	    final ConvertorFromBytes<K> keyConvertorFromBytes, final TypeReader<V> valueReader,
-	    final Comparator<? super K> keyComparator, final long streamFromPosition) {
-	this(directory, fileName, keyConvertorFromBytes, valueReader, keyComparator);
-	fileReader.skip(streamFromPosition);
+            final ConvertorFromBytes<K> keyConvertorFromBytes, final TypeReader<V> valueReader,
+            final Comparator<? super K> keyComparator, final long streamFromPosition) {
+        this(directory, fileName, keyConvertorFromBytes, valueReader, keyComparator);
+        fileReader.skip(streamFromPosition);
     }
 
     public Stream<Pair<K, V>> stream() {
-	return StreamSupport.stream(new SortedDataFileSpliterator<>(pairReader, fileReader, pairComparator), false);
+        return StreamSupport.stream(
+                new SortedDataFileSpliterator<>(pairReader, fileReader, pairComparator), false);
     }
 
     public Stream<Pair<K, V>> stream(final long estimateSize) {
-	return StreamSupport.stream(
-		new SortedDataFileSpliteratorSized<>(pairReader, fileReader, pairComparator, estimateSize), false);
+        return StreamSupport.stream(new SortedDataFileSpliteratorSized<>(pairReader, fileReader,
+                pairComparator, estimateSize), false);
     }
 
     @Override
     public void close() {
-	fileReader.close();
+        fileReader.close();
     }
 
 }

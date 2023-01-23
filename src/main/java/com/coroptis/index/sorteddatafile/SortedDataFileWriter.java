@@ -20,14 +20,14 @@ public class SortedDataFileWriter<K, V> implements CloseableResource {
     private int position;
 
     public SortedDataFileWriter(final Directory directory, final String fileName,
-	    final ConvertorToBytes<K> keyConvertorToBytes, final Comparator<? super K> keyComparator,
-	    final TypeWriter<V> valueWriter) {
-	Objects.requireNonNull(directory);
-	Objects.requireNonNull(fileName);
-	this.writer = directory.getFileWriter(fileName);
-	this.valueWriter = valueWriter;
-	diffKeyWriter = new DiffKeyWriter<>(keyConvertorToBytes, keyComparator);
-	position = 0;
+            final ConvertorToBytes<K> keyConvertorToBytes,
+            final Comparator<? super K> keyComparator, final TypeWriter<V> valueWriter) {
+        Objects.requireNonNull(directory);
+        Objects.requireNonNull(fileName);
+        this.writer = directory.getFileWriter(fileName);
+        this.valueWriter = valueWriter;
+        diffKeyWriter = new DiffKeyWriter<>(keyConvertorToBytes, keyComparator);
+        position = 0;
     }
 
     /**
@@ -39,22 +39,22 @@ public class SortedDataFileWriter<K, V> implements CloseableResource {
      * @return position of end of record.
      */
     public int put(final Pair<K, V> pair, final boolean fullWrite) {
-	final int diffKeyLength = diffKeyWriter.write(writer, pair.getKey(), fullWrite);
+        final int diffKeyLength = diffKeyWriter.write(writer, pair.getKey(), fullWrite);
 
-	final int writenBytesInValue = valueWriter.write(writer, pair.getValue());
+        final int writenBytesInValue = valueWriter.write(writer, pair.getValue());
 
-	int lastPosition = position;
-	position = position + diffKeyLength + writenBytesInValue;
-	return lastPosition;
+        int lastPosition = position;
+        position = position + diffKeyLength + writenBytesInValue;
+        return lastPosition;
     }
 
     public int put(final Pair<K, V> pair) {
-	return put(pair, false);
+        return put(pair, false);
     }
 
     @Override
     public void close() {
-	writer.close();
+        writer.close();
     }
 
 }

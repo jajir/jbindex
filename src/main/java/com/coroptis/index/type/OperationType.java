@@ -9,7 +9,7 @@ public enum OperationType {
     WRITER,
 
     READER,
-    
+
     COMPARATOR;
 
 }

@@ -12,36 +12,36 @@ public class MemDirectory implements Directory {
 
     @Override
     public FileReader getFileReader(final String fileName) {
-	if (!data.containsKey(fileName)) {
-	    throw new IndexException(String.format("There is no file '%s'", fileName));
-	}
-	return new MemFileReader(data.get(fileName));
+        if (!data.containsKey(fileName)) {
+            throw new IndexException(String.format("There is no file '%s'", fileName));
+        }
+        return new MemFileReader(data.get(fileName));
     }
 
     @Override
     public FileWriter getFileWriter(final String fileName) {
-	return new MemFileWriter(fileName, this);
+        return new MemFileWriter(fileName, this);
     }
 
     @Override
     public void renameFile(final String currentFileName, final String newFileName) {
-	if (data.containsKey(currentFileName)) {
-	    final byte[] tmp = data.remove(currentFileName);
-	    data.put(newFileName, tmp);
-	}
+        if (data.containsKey(currentFileName)) {
+            final byte[] tmp = data.remove(currentFileName);
+            data.put(newFileName, tmp);
+        }
     }
 
     void addFile(final String fileName, final byte bytes[]) {
-	data.put(fileName, bytes);
+        data.put(fileName, bytes);
     }
 
     @Override
     public boolean deleteFile(final String fileName) {
-	return data.remove(fileName) != null;
+        return data.remove(fileName) != null;
     }
 
     @Override
     public Stream<String> getFileNames() {
-	return data.keySet().stream();
+        return data.keySet().stream();
     }
 }

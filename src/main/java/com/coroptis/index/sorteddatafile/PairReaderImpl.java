@@ -20,19 +20,19 @@ public class PairReaderImpl<K, V> implements PairReader<K, V> {
     private final TypeReader<V> valueReader;
 
     public PairReaderImpl(final TypeReader<K> keyReader, final TypeReader<V> valueReader) {
-	this.keyReader = Objects.requireNonNull(keyReader);
-	this.valueReader = Objects.requireNonNull(valueReader);
+        this.keyReader = Objects.requireNonNull(keyReader);
+        this.valueReader = Objects.requireNonNull(valueReader);
     }
 
     @Override
     public Pair<K, V> read(final FileReader reader) {
-	final K key = keyReader.read(reader);
-	if (key == null) {
-	    return null;
-	} else {
-	    final V value = valueReader.read(reader);
-	    return new Pair<K, V>(key, value);
-	}
+        final K key = keyReader.read(reader);
+        if (key == null) {
+            return null;
+        } else {
+            final V value = valueReader.read(reader);
+            return new Pair<K, V>(key, value);
+        }
     }
 
 }

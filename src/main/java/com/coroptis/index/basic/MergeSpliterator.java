@@ -20,46 +20,47 @@ public class MergeSpliterator<K, V> implements Spliterator<Pair<K, V>> {
 
     private final ValueMerger<K, V> merger;
 
-    MergeSpliterator(final List<DataFileIterator<K, V>> readers, final Comparator<? super K> keyComparator,
-	    final ValueMerger<K, V> merger) {
-	this.readers = Objects.requireNonNull(readers);
-	this.keyComparator = Objects.requireNonNull(keyComparator);
-	this.merger = Objects.requireNonNull(merger);
+    MergeSpliterator(final List<DataFileIterator<K, V>> readers,
+            final Comparator<? super K> keyComparator, final ValueMerger<K, V> merger) {
+        this.readers = Objects.requireNonNull(readers);
+        this.keyComparator = Objects.requireNonNull(keyComparator);
+        this.merger = Objects.requireNonNull(merger);
     }
 
     @Override
     public int characteristics() {
-	return Spliterator.SORTED | Spliterator.NONNULL | Spliterator.DISTINCT | Spliterator.IMMUTABLE;
+        return Spliterator.SORTED | Spliterator.NONNULL | Spliterator.DISTINCT
+                | Spliterator.IMMUTABLE;
     }
 
     @Override
     public long estimateSize() {
-	/*
-	 * Size is not known.
-	 */
-	return Long.MAX_VALUE;
+        /*
+         * Size is not known.
+         */
+        return Long.MAX_VALUE;
     }
 
     @Override
     public boolean tryAdvance(final Consumer<? super Pair<K, V>> consumer) {
-	final List<DataFileIterator<K, V>> iteratorsWithBiggerKey = getIteratorsWithSmallerValue();
-	if (iteratorsWithBiggerKey.isEmpty()) {
-	    // there are no more items to read
-	    return false;
-	}
+        final List<DataFileIterator<K, V>> iteratorsWithBiggerKey = getIteratorsWithSmallerValue();
+        if (iteratorsWithBiggerKey.isEmpty()) {
+            // there are no more items to read
+            return false;
+        }
 
-	Pair<K, V> out = null;
-	for (final DataFileIterator<K, V> reader : iteratorsWithBiggerKey) {
-	    final Pair<K, V> readed = reader.readCurrent().get();
-	    if (out == null) {
-		out = readed;
-	    } else {
-		out = merger.merge(out, readed);
-	    }
-	    reader.next();
-	}
-	consumer.accept(out);
-	return true;
+        Pair<K, V> out = null;
+        for (final DataFileIterator<K, V> reader : iteratorsWithBiggerKey) {
+            final Pair<K, V> readed = reader.readCurrent().get();
+            if (out == null) {
+                out = readed;
+            } else {
+                out = merger.merge(out, readed);
+            }
+            reader.next();
+        }
+        consumer.accept(out);
+        return true;
     }
 
     /**
@@ -68,24 +69,26 @@ public class MergeSpliterator<K, V> implements Spliterator<Pair<K, V>> {
      * @return
      */
     private List<DataFileIterator<K, V>> getIteratorsWithSmallerValue() {
-	final Optional<K> maxValue = readers.stream().filter(reader -> reader.readCurrent().isPresent())
-		.map(reader -> reader.readCurrent().get().getKey()).min(keyComparator);
-	if (maxValue.isEmpty()) {
-	    return Collections.emptyList();
-	}
-	return readers.stream().filter(reader -> reader.readCurrent().isPresent()).filter(reader -> {
-	    final K key = reader.readCurrent().get().getKey();
-	    return keyComparator.compare(key, maxValue.get()) == 0;
-	}).collect(Collectors.toList());
+        final Optional<K> maxValue = readers.stream()
+                .filter(reader -> reader.readCurrent().isPresent())
+                .map(reader -> reader.readCurrent().get().getKey()).min(keyComparator);
+        if (maxValue.isEmpty()) {
+            return Collections.emptyList();
+        }
+        return readers.stream().filter(reader -> reader.readCurrent().isPresent())
+                .filter(reader -> {
+                    final K key = reader.readCurrent().get().getKey();
+                    return keyComparator.compare(key, maxValue.get()) == 0;
+                }).collect(Collectors.toList());
     }
 
     @Override
     public Comparator<? super Pair<K, V>> getComparator() {
-	return (pair1, pair2) -> keyComparator.compare(pair1.getKey(), pair2.getKey());
+        return (pair1, pair2) -> keyComparator.compare(pair1.getKey(), pair2.getKey());
     }
 
     @Override
     public Spliterator<Pair<K, V>> trySplit() {
-	return null;
+        return null;
     }
 }

@@ -9,18 +9,18 @@ public class TypeDescriptorString {
     private final static Charset CHARSET_ENCODING = Charset.forName(CHARSET_ENCODING_NAME);
 
     public ConvertorFromBytes<String> getConvertorFromBytes() {
-	return array -> new String(array, CHARSET_ENCODING);
+        return array -> new String(array, CHARSET_ENCODING);
     }
 
     public ConvertorToBytes<String> getConvertorToBytes() {
-	return string -> string.getBytes(CHARSET_ENCODING);
+        return string -> string.getBytes(CHARSET_ENCODING);
     }
 
     public VarLengthWriter<String> getVarLenghtWriter() {
-	return new VarLengthWriter<String>(getConvertorToBytes());
+        return new VarLengthWriter<String>(getConvertorToBytes());
     }
 
     public VarLengthReader<String> getVarLengthReader() {
-	return new VarLengthReader<String>(getConvertorFromBytes());
+        return new VarLengthReader<String>(getConvertorFromBytes());
     }
 }

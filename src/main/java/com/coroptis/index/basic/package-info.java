@@ -2,7 +2,7 @@
  * Related for simple index where caller is responsible for all index file
  * manipulation.
  * 
- * This could be 
+ * This could be
  * 
  * 
  * @author jan

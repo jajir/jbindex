@@ -14,24 +14,24 @@ public class UnsortedDataFileWriter<K, V> implements CloseableResource {
     private final TypeWriter<V> valueWriter;
     private final FileWriter fileWriter;
 
-    UnsortedDataFileWriter(final Directory directory, final String fileName, final TypeWriter<K> keyWriter,
-	    final TypeWriter<V> valueWriter) {
-	this.keyWriter = Objects.requireNonNull(keyWriter);
-	this.valueWriter = Objects.requireNonNull(valueWriter);
-	Objects.requireNonNull(directory);
-	Objects.requireNonNull(fileName);
-	fileWriter = directory.getFileWriter(fileName);
+    UnsortedDataFileWriter(final Directory directory, final String fileName,
+            final TypeWriter<K> keyWriter, final TypeWriter<V> valueWriter) {
+        this.keyWriter = Objects.requireNonNull(keyWriter);
+        this.valueWriter = Objects.requireNonNull(valueWriter);
+        Objects.requireNonNull(directory);
+        Objects.requireNonNull(fileName);
+        fileWriter = directory.getFileWriter(fileName);
     }
 
     public void put(final Pair<K, V> pair) {
-	Objects.requireNonNull(pair.getKey());
-	Objects.requireNonNull(pair.getValue());
-	keyWriter.write(fileWriter, pair.getKey());
-	valueWriter.write(fileWriter, pair.getValue());
+        Objects.requireNonNull(pair.getKey());
+        Objects.requireNonNull(pair.getValue());
+        keyWriter.write(fileWriter, pair.getKey());
+        valueWriter.write(fileWriter, pair.getValue());
     }
 
     @Override
     public void close() {
-	fileWriter.close();
+        fileWriter.close();
     }
 }

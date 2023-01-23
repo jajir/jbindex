@@ -20,11 +20,12 @@ public class DataFileReader<K, V> implements CloseableResource {
     private final FileReader fileReader;
     private final PairReader<K, V> pairReader;
 
-    public DataFileReader(final Directory directory, final String fileName, final PairReader<K, V> pairReader) {
-	Objects.requireNonNull(directory);
-	Objects.requireNonNull(fileName);
-	this.fileReader = directory.getFileReader(fileName);
-	this.pairReader = Objects.requireNonNull(pairReader);
+    public DataFileReader(final Directory directory, final String fileName,
+            final PairReader<K, V> pairReader) {
+        Objects.requireNonNull(directory);
+        Objects.requireNonNull(fileName);
+        this.fileReader = directory.getFileReader(fileName);
+        this.pairReader = Objects.requireNonNull(pairReader);
     }
 
     /**
@@ -34,16 +35,16 @@ public class DataFileReader<K, V> implements CloseableResource {
      *         there are no data.
      */
     public Pair<K, V> read() {
-	return pairReader.read(fileReader);
+        return pairReader.read(fileReader);
     }
 
     public void skip(final long position) {
-	fileReader.skip(position);
+        fileReader.skip(position);
     }
 
     @Override
     public void close() {
-	fileReader.close();
+        fileReader.close();
     }
 
 }
