@@ -19,8 +19,10 @@ import com.coroptis.index.type.TypeWriter;
 import com.coroptis.index.unsorteddatafile.UnsortedDataFile;
 
 /**
- * Allows to create data files in directory and support further work with them.
- * It support work with individual files.
+ * 
+ * Represents directory with particular index files. Allows to create data files
+ * in directory and support further work with them. It support work with
+ * individual files.
  * 
  * @author honza
  *

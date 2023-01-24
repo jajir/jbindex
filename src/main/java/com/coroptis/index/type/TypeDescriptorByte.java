@@ -1,7 +1,10 @@
 package com.coroptis.index.type;
 
-public class TypeDescriptorByte {
+import java.util.Comparator;
 
+public class TypeDescriptorByte implements TypeDescriptor<Byte> {
+
+    @Override
     public ConvertorToBytes<Byte> getConvertorToBytes() {
         return b -> {
             final byte[] out = new byte[1];
@@ -10,19 +13,27 @@ public class TypeDescriptorByte {
         };
     }
 
+    @Override
     public ConvertorFromBytes<Byte> getConvertorFromBytes() {
         return bytes -> bytes[0];
     }
 
-    public TypeReader<Byte> getReader() {
+    @Override
+    public TypeReader<Byte> getTypeReader() {
         return inputStream -> (byte) inputStream.read();
     }
 
-    public TypeWriter<Byte> getWriter() {
+    @Override
+    public TypeWriter<Byte> getTypeWriter() {
         return (fileWriter, b) -> {
             fileWriter.write(b);
             return 1;
         };
+    }
+
+    @Override
+    public Comparator<Byte> getComparator() {
+        return (i1, i2) -> i2 - i1;
     }
 
 }

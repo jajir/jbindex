@@ -59,7 +59,7 @@ public class IndexWriter<K, V> implements CloseableResource {
         this.mainIndex = new SortedDataFileWriter<>(directory, INDEX_MAIN_DATA_FILE, keyConvertor,
                 keyComparator, valueWriter);
         this.metaIndex = new SortedDataFileWriter<>(directory, INDEX_META_FILE, keyConvertor,
-                keyComparator, integerTypeDescriptor.getWriter());
+                keyComparator, integerTypeDescriptor.getTypeWriter());
         this.indexDesc = IndexDesc.create(directory, blockSize);
     }
 

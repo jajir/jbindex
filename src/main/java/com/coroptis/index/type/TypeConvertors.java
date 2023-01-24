@@ -1,6 +1,5 @@
 package com.coroptis.index.type;
 
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
@@ -15,10 +14,12 @@ public class TypeConvertors {
             final TypeDescriptorInteger tdi = new TypeDescriptorInteger();
             final Comparator<Integer> c1 = (i1, i2) -> i1 - i2;
             instance.add(Integer.class, OperationType.COMPARATOR, c1);
-            instance.add(Integer.class, OperationType.CONVERTOR_FROM_BYTES, tdi.getConvertorFrom());
-            instance.add(Integer.class, OperationType.CONVERTOR_TO_BYTES, tdi.getConvertorTo());
-            instance.add(Integer.class, OperationType.READER, tdi.getReader());
-            instance.add(Integer.class, OperationType.WRITER, tdi.getWriter());
+            instance.add(Integer.class, OperationType.CONVERTOR_FROM_BYTES,
+                    tdi.getConvertorFromBytes());
+            instance.add(Integer.class, OperationType.CONVERTOR_TO_BYTES,
+                    tdi.getConvertorToBytes());
+            instance.add(Integer.class, OperationType.READER, tdi.getTypeReader());
+            instance.add(Integer.class, OperationType.WRITER, tdi.getTypeWriter());
         }
         {
             final TypeDescriptorString tds = new TypeDescriptorString();
@@ -27,8 +28,8 @@ public class TypeConvertors {
             instance.add(String.class, OperationType.CONVERTOR_FROM_BYTES,
                     tds.getConvertorFromBytes());
             instance.add(String.class, OperationType.CONVERTOR_TO_BYTES, tds.getConvertorToBytes());
-            instance.add(String.class, OperationType.READER, tds.getVarLengthReader());
-            instance.add(String.class, OperationType.WRITER, tds.getVarLenghtWriter());
+            instance.add(String.class, OperationType.READER, tds.getTypeReader());
+            instance.add(String.class, OperationType.WRITER, tds.getTypeWriter());
         }
         {
             final TypeDescriptorByte tds = new TypeDescriptorByte();
@@ -37,17 +38,8 @@ public class TypeConvertors {
             instance.add(Byte.class, OperationType.CONVERTOR_FROM_BYTES,
                     tds.getConvertorFromBytes());
             instance.add(Byte.class, OperationType.CONVERTOR_TO_BYTES, tds.getConvertorToBytes());
-            instance.add(Byte.class, OperationType.READER, tds.getReader());
-            instance.add(Byte.class, OperationType.WRITER, tds.getWriter());
-        }
-        {
-            final TypeDescriptorBytes tds = new TypeDescriptorBytes();
-            final Comparator<byte[]> c2 = (s1, s2) -> Arrays.compare(s1, s2);
-            instance.add(byte[].class, OperationType.COMPARATOR, c2);
-            instance.add(byte[].class, OperationType.CONVERTOR_FROM_BYTES, tds.getConvertorFrom());
-            instance.add(byte[].class, OperationType.CONVERTOR_TO_BYTES, tds.getConvertorTo());
-            instance.add(byte[].class, OperationType.READER, tds.getReader());
-            instance.add(byte[].class, OperationType.WRITER, tds.getWriter());
+            instance.add(Byte.class, OperationType.READER, tds.getTypeReader());
+            instance.add(Byte.class, OperationType.WRITER, tds.getTypeWriter());
         }
     }
 

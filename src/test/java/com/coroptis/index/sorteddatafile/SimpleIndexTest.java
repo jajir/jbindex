@@ -39,7 +39,7 @@ public class SimpleIndexTest {
         final Directory directory = new MemDirectory();
         try (final SortedDataFileWriter<String, Byte> siw = new SortedDataFileWriter<>(directory,
                 FILE_NAME, stringTd.getConvertorToBytes(), Comparator.naturalOrder(),
-                byteTd.getWriter())) {
+                byteTd.getTypeWriter())) {
             assertEquals(0, siw.put(new Pair<String, Byte>("aaabbb", (byte) 1)));
             assertThrows(IllegalArgumentException.class, () -> {
                 siw.put(new Pair<String, Byte>("aaa", (byte) 0), false);
@@ -79,7 +79,7 @@ public class SimpleIndexTest {
     public void test_invalidOrder() throws Exception {
         try (final SortedDataFileWriter<String, Byte> siw = new SortedDataFileWriter<>(
                 new MemDirectory(), FILE_NAME, stringTd.getConvertorToBytes(),
-                Comparator.naturalOrder(), byteTd.getWriter())) {
+                Comparator.naturalOrder(), byteTd.getTypeWriter())) {
             siw.put(new Pair<String, Byte>("aaa", (byte) 0));
             siw.put(new Pair<String, Byte>("abbb", (byte) 1));
             assertThrows(IllegalArgumentException.class,
@@ -91,7 +91,7 @@ public class SimpleIndexTest {
     public void test_duplicatedValue() throws Exception {
         try (final SortedDataFileWriter<String, Byte> siw = new SortedDataFileWriter<>(
                 new MemDirectory(), FILE_NAME, stringTd.getConvertorToBytes(),
-                Comparator.naturalOrder(), byteTd.getWriter())) {
+                Comparator.naturalOrder(), byteTd.getTypeWriter())) {
             siw.put(new Pair<String, Byte>("aaa", (byte) 0));
             siw.put(new Pair<String, Byte>("abbb", (byte) 1));
             assertThrows(IllegalArgumentException.class,
@@ -103,7 +103,7 @@ public class SimpleIndexTest {
     public void test_null_key() throws Exception {
         try (final SortedDataFileWriter<String, Byte> siw = new SortedDataFileWriter<>(
                 new MemDirectory(), FILE_NAME, stringTd.getConvertorToBytes(),
-                Comparator.naturalOrder(), byteTd.getWriter())) {
+                Comparator.naturalOrder(), byteTd.getTypeWriter())) {
 
             assertThrows(NullPointerException.class,
                     () -> siw.put(new Pair<String, Byte>(null, (byte) 0)));

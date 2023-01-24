@@ -86,7 +86,7 @@ public class IndexSearcher<K, V> {
     private void loadMetaIndex() {
         try (final SortedDataFileStreamer<K, Integer> sir = new SortedDataFileStreamer<>(directory,
                 IndexWriter.INDEX_META_FILE, keyConvertorFromBytes,
-                integerTypeDescriptor.getReader(), keyComparator)) {
+                integerTypeDescriptor.getTypeReader(), keyComparator)) {
             sir.stream(indexDesc.getWrittenBlockCount()).forEach(pair -> metaIndex.add(pair));
         }
     }

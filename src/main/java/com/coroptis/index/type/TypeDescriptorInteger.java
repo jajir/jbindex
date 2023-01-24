@@ -1,6 +1,8 @@
 package com.coroptis.index.type;
 
-public class TypeDescriptorInteger {
+import java.util.Comparator;
+
+public class TypeDescriptorInteger implements TypeDescriptor<Integer> {
 
     /**
      * How many bytes is required to store Integer.
@@ -32,15 +34,18 @@ public class TypeDescriptorInteger {
      */
     private static final int BYTE_SHIFT_24 = 24;
 
-    public ConvertorToBytes<Integer> getConvertorTo() {
+    @Override
+    public ConvertorToBytes<Integer> getConvertorToBytes() {
         return object -> getBytes(object);
     }
 
-    public ConvertorFromBytes<Integer> getConvertorFrom() {
+    @Override
+    public ConvertorFromBytes<Integer> getConvertorFromBytes() {
         return bytes -> load(bytes, 0);
     }
 
-    public TypeReader<Integer> getReader() {
+    @Override
+    public TypeReader<Integer> getTypeReader() {
         return fileReader -> {
             final byte[] bytes = new byte[4];
             if (fileReader.read(bytes) == -1) {
@@ -50,7 +55,8 @@ public class TypeDescriptorInteger {
         };
     }
 
-    public TypeWriter<Integer> getWriter() {
+    @Override
+    public TypeWriter<Integer> getTypeWriter() {
         return (writer, object) -> {
             writer.write(getBytes(object));
             return 4;
@@ -72,6 +78,11 @@ public class TypeDescriptorInteger {
         int pos = from;
         return data[pos++] << BYTE_SHIFT_24 | (data[pos++] & BYTE_MASK) << BYTE_SHIFT_16
                 | (data[pos++] & BYTE_MASK) << BYTE_SHIFT_8 | (data[pos] & BYTE_MASK);
+    }
+
+    @Override
+    public Comparator<Integer> getComparator() {
+        return (i1, i2) -> i2 - i1;
     }
 
 }
