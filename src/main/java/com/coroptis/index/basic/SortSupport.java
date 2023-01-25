@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -17,6 +18,8 @@ import com.coroptis.index.sorteddatafile.SortedDataFileWriter;
 public class SortSupport<K, V> {
 
     private final static String ROUND_SEPARTOR = "-";
+
+    private static final Logger LOGGER = Logger.getLogger(SortSupport.class.getName());
 
     private final Directory directory;
     private final BasicIndex<K, V> basicIndex;
@@ -82,6 +85,8 @@ public class SortSupport<K, V> {
                         reader.close();
                     } catch (Exception e) {
                         // Just closing all readers, when exceptions occurs I don't care.
+                        LOGGER.info(() -> String.format("Unable to close DataFileIterator '%s'. "
+                                + "This doesn't have to be error.", reader));
                     }
                 });
             }

@@ -8,7 +8,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 import com.coroptis.index.IndexException;
-import com.google.common.base.MoreObjects;
 
 public class FsFileReaderStream implements FileReader {
 
@@ -69,8 +68,7 @@ public class FsFileReaderStream implements FileReader {
 
     @Override
     public String toString() {
-        return MoreObjects.toStringHelper(FsFileReaderStream.class).add("bis", bis.toString())
-                .toString();
+        return String.format("FsFileReaderStream[bis='%s']", bis.toString());
     }
 
 }

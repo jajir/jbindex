@@ -2,8 +2,6 @@ package com.coroptis.index.sorteddatafile;
 
 import java.util.Objects;
 
-import com.google.common.base.MoreObjects;
-
 /**
  * Key,value pair object. Pairs are stored in index.
  * 
@@ -29,8 +27,7 @@ public class Pair<K, V> {
 
     @Override
     public String toString() {
-        return MoreObjects.toStringHelper(Pair.class).add("key", key).add("value", value)
-                .toString();
+        return String.format("Pair[key='%s',value='%s']", key, value);
     }
 
     public K getKey() {

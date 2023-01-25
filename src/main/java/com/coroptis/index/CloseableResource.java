@@ -11,6 +11,6 @@ import java.io.Closeable;
 public interface CloseableResource extends Closeable {
 
     @Override
-    public void close();
+    void close();
 
 }

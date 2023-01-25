@@ -1,11 +1,11 @@
 package com.coroptis.index.directory;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.Objects;
 import java.util.stream.Stream;
 
 import com.coroptis.index.IndexException;
-import com.google.common.collect.Lists;
 
 public class FsZipDirectory implements Directory {
 
@@ -13,11 +13,9 @@ public class FsZipDirectory implements Directory {
 
     public FsZipDirectory(final File directory) {
         this.directory = Objects.requireNonNull(directory);
-        if (!directory.exists()) {
-            if (!directory.mkdirs()) {
-                throw new IndexException(String.format("Unable to create directory '%s.",
-                        directory.getAbsoluteFile()));
-            }
+        if (!directory.exists() && !directory.mkdirs()) {
+            throw new IndexException(
+                    String.format("Unable to create directory '%s.", directory.getAbsoluteFile()));
         }
         if (directory.isFile()) {
             throw new IndexException(
@@ -64,7 +62,7 @@ public class FsZipDirectory implements Directory {
 
     @Override
     public Stream<String> getFileNames() {
-        return Lists.newArrayList(directory.list()).stream();
+        return Arrays.stream(directory.list());
     }
 
 }

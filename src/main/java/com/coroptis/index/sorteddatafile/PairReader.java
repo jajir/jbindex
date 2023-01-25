@@ -18,6 +18,6 @@ public interface PairReader<K, V> extends TypeReader<Pair<K, V>> {
      * Define reading as reading of key value pair.
      */
     @Override
-    public Pair<K, V> read(final FileReader reader);
+    Pair<K, V> read(final FileReader reader);
 
 }

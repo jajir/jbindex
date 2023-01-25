@@ -15,7 +15,6 @@ import com.coroptis.index.basic.BasicIndex;
 import com.coroptis.index.basic.SortSupport;
 import com.coroptis.index.sorteddatafile.Pair;
 import com.coroptis.index.sorteddatafile.SortedDataFile;
-import com.google.common.collect.Lists;
 
 public class PartialySortedDataFileReaderTest {
 
@@ -70,7 +69,7 @@ public class PartialySortedDataFileReaderTest {
 
     @Test
     void test_complex_reading_noFiles() throws Exception {
-	when(sortSupport.getFilesInRound(0)).thenReturn(Lists.<String>newLinkedList());
+	when(sortSupport.getFilesInRound(0)).thenReturn(new ArrayList<String>());
 	
 	// prepare index file 0
 	try(final PartiallySortedDataFileReader<Integer, String> reader = new PartiallySortedDataFileReader<Integer, String>(

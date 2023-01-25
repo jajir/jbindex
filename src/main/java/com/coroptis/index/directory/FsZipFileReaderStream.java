@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.util.zip.ZipInputStream;
 
 import com.coroptis.index.IndexException;
-import com.google.common.base.MoreObjects;
 
 public class FsZipFileReaderStream implements FileReader {
 
@@ -58,7 +57,7 @@ public class FsZipFileReaderStream implements FileReader {
                 throw new IndexException(String.format("In file should be '%s' bytes skipped but "
                         + "actually was skipped '%s' bytes.", bytesToSkip, skippedBytes));
             }
-            
+
         } catch (IOException e) {
             throw new IndexException(e.getMessage(), e);
         }
@@ -66,8 +65,7 @@ public class FsZipFileReaderStream implements FileReader {
 
     @Override
     public String toString() {
-        return MoreObjects.toStringHelper(FsZipFileReaderStream.class).add("bis", bis.toString())
-                .toString();
+        return String.format("FsZipFileReaderStream[bis='%s']", bis.toString());
     }
 
 }
