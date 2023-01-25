@@ -45,7 +45,7 @@ public class FsFileReaderStream implements FileReader {
     }
 
     @Override
-    public int read(byte[] bytes) {
+    public int read(final byte[] bytes) {
         try {
             final int readBytes = bis.read(bytes);
             return readBytes == bytes.length ? readBytes : -1;
@@ -55,9 +55,13 @@ public class FsFileReaderStream implements FileReader {
     }
 
     @Override
-    public void skip(long position) {
+    public void skip(final long bytesToSkip) {
         try {
-            bis.skip(position);
+            long skippedBytes = bis.skip(bytesToSkip);
+            if (skippedBytes != bytesToSkip) {
+                throw new IndexException(String.format("In file should be '%s' bytes skipped but "
+                        + "actually was skipped '%s' bytes.", bytesToSkip, skippedBytes));
+            }
         } catch (IOException e) {
             throw new IndexException(e.getMessage(), e);
         }

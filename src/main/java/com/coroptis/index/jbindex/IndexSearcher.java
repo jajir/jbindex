@@ -13,8 +13,6 @@ import com.coroptis.index.sorteddatafile.Pair;
 import com.coroptis.index.sorteddatafile.SortedDataFile;
 import com.coroptis.index.sorteddatafile.SortedDataFileStreamer;
 import com.coroptis.index.type.ConvertorFromBytes;
-import com.coroptis.index.type.OperationType;
-import com.coroptis.index.type.TypeConvertors;
 import com.coroptis.index.type.TypeDescriptorInteger;
 import com.coroptis.index.type.TypeReader;
 
@@ -43,11 +41,10 @@ public class IndexSearcher<K, V> {
             final Class<?> valueClass, final BasicIndex<K, V> basicIndex) {
         this.directory = Objects.requireNonNull(directory, "directory must not be null");
         this.basicIndex = Objects.requireNonNull(basicIndex, "basic index must not be null");
-        final TypeConvertors tc = TypeConvertors.getInstance();
-        this.keyConvertorFromBytes = tc.get(keyClass, OperationType.CONVERTOR_FROM_BYTES);
-        this.valueReader = tc.get(valueClass, OperationType.READER);
+        this.keyConvertorFromBytes = null;
+        this.valueReader = null;
         this.indexDesc = IndexDesc.load(directory);
-        this.keyComparator = Objects.requireNonNull(tc.get(keyClass, OperationType.COMPARATOR),
+        this.keyComparator = Objects.requireNonNull(null,
                 "keyComparator must not be null");
         loadMetaIndex();
     }

@@ -7,8 +7,6 @@ import com.coroptis.index.directory.Directory;
 import com.coroptis.index.sorteddatafile.SortedDataFile;
 import com.coroptis.index.type.ConvertorFromBytes;
 import com.coroptis.index.type.ConvertorToBytes;
-import com.coroptis.index.type.OperationType;
-import com.coroptis.index.type.TypeConvertors;
 import com.coroptis.index.type.TypeReader;
 import com.coroptis.index.type.TypeWriter;
 import com.coroptis.index.unsorteddatafile.UnsortedDataFile;
@@ -39,52 +37,31 @@ public class IndexConfiguration<K, V> {
     }
 
     TypeReader<K> getKeyReader() {
-        final TypeConvertors tc = TypeConvertors.getInstance();
-        final TypeReader<K> keyReader = tc.get(Objects.requireNonNull(getKeyClass()),
-                OperationType.READER);
-        return keyReader;
+        return null;
     }
 
     TypeReader<V> getValueReader() {
-        final TypeConvertors tc = TypeConvertors.getInstance();
-        final TypeReader<V> keyReader = tc.get(Objects.requireNonNull(getValueClass()),
-                OperationType.READER);
-        return keyReader;
+        return null;
     }
 
     TypeWriter<K> getKeyWriter() {
-        final TypeConvertors tc = TypeConvertors.getInstance();
-        final TypeWriter<K> keyReader = tc.get(Objects.requireNonNull(getKeyClass()),
-                OperationType.WRITER);
-        return keyReader;
+        return null;
     }
 
     TypeWriter<V> getValueWriter() {
-        final TypeConvertors tc = TypeConvertors.getInstance();
-        final TypeWriter<V> keyReader = tc.get(Objects.requireNonNull(getValueClass()),
-                OperationType.WRITER);
-        return keyReader;
+        return null;
     }
 
     Comparator<? super K> getKeyComparator() {
-        final TypeConvertors tc = TypeConvertors.getInstance();
-        final Comparator<? super K> keyComparator = tc.get(Objects.requireNonNull(getKeyClass()),
-                OperationType.COMPARATOR);
-        return keyComparator;
+        return null;
     };
 
     ConvertorFromBytes<K> getKeyConvertorFromBytes() {
-        final TypeConvertors tc = TypeConvertors.getInstance();
-        final ConvertorFromBytes<K> keyConvertorFromBytes = tc
-                .get(Objects.requireNonNull(getKeyClass()), OperationType.CONVERTOR_FROM_BYTES);
-        return keyConvertorFromBytes;
+        return null;
     };
 
     ConvertorToBytes<K> getKeyConvertorToBytes() {
-        final TypeConvertors tc = TypeConvertors.getInstance();
-        final ConvertorToBytes<K> keyConvertorToBytes = tc
-                .get(Objects.requireNonNull(getKeyClass()), OperationType.CONVERTOR_TO_BYTES);
-        return keyConvertorToBytes;
+        return null;
     };
 
     public UnsortedDataFile<K, V> getUnsortedFile(final String fileName) {

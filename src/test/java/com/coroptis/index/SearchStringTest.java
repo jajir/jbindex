@@ -9,6 +9,7 @@ import com.coroptis.index.directory.Directory;
 import com.coroptis.index.directory.MemDirectory;
 import com.coroptis.index.jbindex.IndexSearcher;
 import com.coroptis.index.jbindex.IndexWriter;
+import com.coroptis.index.type.TypeDescriptorString;
 
 public class SearchStringTest {
 
@@ -26,8 +27,8 @@ public class SearchStringTest {
         final Directory directory = new MemDirectory();
         writeIndex(directory);
 
-        final BasicIndex<String, String> basicIndex = new BasicIndex<>(directory, String.class,
-                String.class);
+        final BasicIndex<String, String> basicIndex = new BasicIndex<>(directory,
+                new TypeDescriptorString(), new TypeDescriptorString());
         final IndexSearcher<String, String> search = new IndexSearcher<>(directory, String.class,
                 String.class, basicIndex);
         search.getStreamer().stream().forEach(pair -> {
@@ -40,8 +41,8 @@ public class SearchStringTest {
     }
 
     private void search_test(final Directory directory) {
-        final BasicIndex<String, String> basicIndex = new BasicIndex<>(directory, String.class,
-                String.class);
+        final BasicIndex<String, String> basicIndex = new BasicIndex<>(directory,
+                new TypeDescriptorString(), new TypeDescriptorString());
         final IndexSearcher<String, String> search = new IndexSearcher<>(directory, String.class,
                 String.class, basicIndex);
 

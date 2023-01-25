@@ -14,7 +14,10 @@ public class FsZipDirectory implements Directory {
     public FsZipDirectory(final File directory) {
         this.directory = Objects.requireNonNull(directory);
         if (!directory.exists()) {
-            directory.mkdirs();
+            if (!directory.mkdirs()) {
+                throw new IndexException(String.format("Unable to create directory '%s.",
+                        directory.getAbsoluteFile()));
+            }
         }
         if (directory.isFile()) {
             throw new IndexException(
@@ -43,7 +46,10 @@ public class FsZipDirectory implements Directory {
         if (!directory.exists()) {
             throw new IndexException(String.format("File '%s' doesn't exists."));
         }
-        file.renameTo(getFile(newFileName));
+        if (!file.renameTo(getFile(newFileName))) {
+            throw new IndexException(String.format("Unable to rename file '%s' to '%s'.",
+                    currentFileName, newFileName));
+        }
     }
 
     private File getFile(final String fileName) {

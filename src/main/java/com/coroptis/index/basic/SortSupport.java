@@ -39,7 +39,7 @@ public class SortSupport<K, V> {
     private boolean isFileInRound(final int roundNo, final String fileName) {
         final String[] parts = fileName.split(ROUND_SEPARTOR);
         if (parts.length == 3) {
-            int currentRoundNo = Integer.valueOf(parts[1]).intValue();
+            int currentRoundNo = Integer.parseInt(parts[1]);
             return roundNo == currentRoundNo;
         } else {
             return false;

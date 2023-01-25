@@ -8,8 +8,6 @@ import com.coroptis.index.directory.Directory;
 import com.coroptis.index.sorteddatafile.Pair;
 import com.coroptis.index.sorteddatafile.SortedDataFileWriter;
 import com.coroptis.index.type.ConvertorToBytes;
-import com.coroptis.index.type.OperationType;
-import com.coroptis.index.type.TypeConvertors;
 import com.coroptis.index.type.TypeDescriptorInteger;
 import com.coroptis.index.type.TypeWriter;
 
@@ -51,10 +49,9 @@ public class IndexWriter<K, V> implements CloseableResource {
 
     public IndexWriter(final Directory directory, final int blockSize, final Class<?> keyClass,
             final Class<?> valueClass) {
-        final TypeConvertors tc = TypeConvertors.getInstance();
-        final ConvertorToBytes<K> keyConvertor = tc.get(keyClass, OperationType.CONVERTOR_TO_BYTES);
-        final TypeWriter<V> valueWriter = tc.get(valueClass, OperationType.WRITER);
-        final Comparator<? super K> keyComparator = tc.get(keyClass, OperationType.COMPARATOR);
+        final ConvertorToBytes<K> keyConvertor = null;
+        final TypeWriter<V> valueWriter = null;
+        final Comparator<? super K> keyComparator = null;
 
         this.mainIndex = new SortedDataFileWriter<>(directory, INDEX_MAIN_DATA_FILE, keyConvertor,
                 keyComparator, valueWriter);

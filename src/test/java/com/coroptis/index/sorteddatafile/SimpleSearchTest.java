@@ -13,6 +13,8 @@ import com.coroptis.index.directory.FsDirectory;
 import com.coroptis.index.directory.MemDirectory;
 import com.coroptis.index.jbindex.IndexSearcher;
 import com.coroptis.index.jbindex.IndexWriter;
+import com.coroptis.index.type.TypeDescriptorByte;
+import com.coroptis.index.type.TypeDescriptorString;
 
 public class SimpleSearchTest {
 
@@ -33,8 +35,8 @@ public class SimpleSearchTest {
     }
 
     private void search_test(final Directory directory) {
-        final BasicIndex<String, Byte> basicIndex = new BasicIndex<>(directory, String.class,
-                Byte.class);
+        final BasicIndex<String, Byte> basicIndex = new BasicIndex<>(directory,
+                new TypeDescriptorString(), new TypeDescriptorByte());
         IndexSearcher<String, Byte> search = new IndexSearcher<>(directory, String.class,
                 Byte.class, basicIndex);
 

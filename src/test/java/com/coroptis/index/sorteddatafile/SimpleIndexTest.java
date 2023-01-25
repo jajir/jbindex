@@ -48,8 +48,8 @@ public class SimpleIndexTest {
     }
 
     private void test_read_write(final Directory directory) {
-        final BasicIndex<String, Byte> index = new BasicIndex<>(directory, String.class,
-                Byte.class);
+        final BasicIndex<String, Byte> index = new BasicIndex<>(directory,
+                new TypeDescriptorString(), new TypeDescriptorByte());
         final SortedDataFile<String, Byte> sortedFile = index.getSortedDataFile(FILE_NAME);
         try (final SortedDataFileWriter<String, Byte> siw = sortedFile.openWriter()) {
             assertEquals(0, siw.put(new Pair<String, Byte>("aaa", (byte) 0), false));

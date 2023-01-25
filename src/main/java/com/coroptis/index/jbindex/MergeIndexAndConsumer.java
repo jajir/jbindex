@@ -9,8 +9,6 @@ import com.coroptis.index.basic.BasicIndex;
 import com.coroptis.index.basic.ValueMerger;
 import com.coroptis.index.directory.Directory;
 import com.coroptis.index.sorteddatafile.Pair;
-import com.coroptis.index.type.OperationType;
-import com.coroptis.index.type.TypeConvertors;
 
 public class MergeIndexAndConsumer<K, V> implements CloseableResource {
 
@@ -25,10 +23,8 @@ public class MergeIndexAndConsumer<K, V> implements CloseableResource {
             final int blockSize) {
         this.inputDirectory = Objects.requireNonNull(inputIndex);
         this.merger = Objects.requireNonNull(merger);
-        final TypeConvertors tc = TypeConvertors.getInstance();
-        this.keyComparator = tc.get(keyClass, OperationType.COMPARATOR);
-        final BasicIndex<K, V> basicIndexInput = new BasicIndex<>(inputIndex, keyClass, valueClass,
-                null);
+        this.keyComparator = null;
+        final BasicIndex<K, V> basicIndexInput = new BasicIndex<>(inputIndex, null, null, null);
         final IndexIterator<K, V> inputIterator = new IndexSearcher<K, V>(inputDirectory, keyClass,
                 valueClass, basicIndexInput).getIterator();
         inputIndexReader = new IndexReader<>(inputIterator);

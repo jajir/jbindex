@@ -12,8 +12,7 @@ import com.coroptis.index.sorteddatafile.Pair;
 import com.coroptis.index.sorteddatafile.SortedDataFile;
 import com.coroptis.index.type.ConvertorFromBytes;
 import com.coroptis.index.type.ConvertorToBytes;
-import com.coroptis.index.type.OperationType;
-import com.coroptis.index.type.TypeConvertors;
+import com.coroptis.index.type.TypeDescriptor;
 import com.coroptis.index.type.TypeReader;
 import com.coroptis.index.type.TypeWriter;
 import com.coroptis.index.unsorteddatafile.UnsortedDataFile;
@@ -32,82 +31,57 @@ import com.coroptis.index.unsorteddatafile.UnsortedDataFile;
 public class BasicIndex<K, V> {
 
     private final Directory directory;
-    private final Class<?> keyClass;
-    private final Class<?> valueClass;
     private final ValueMerger<K, V> valueMerger;
+    private TypeDescriptor<K> keyTypeDescriptor;
+    private TypeDescriptor<V> valueTypeDescriptor;
 
-    public BasicIndex(final Directory directory, final Class<?> keyClass,
-            final Class<?> valueClass) {
-        this(directory, keyClass, valueClass, new DefaultValueMerger<>());
+    public BasicIndex(final Directory directory, TypeDescriptor<K> keyTypeDescriptor,
+            TypeDescriptor<V> valueTypeDescriptor) {
+        this(directory, new DefaultValueMerger<>(), keyTypeDescriptor, valueTypeDescriptor);
     }
 
-    public BasicIndex(final Directory directory, final Class<?> keyClass, final Class<?> valueClass,
-            final ValueMerger<K, V> valueMerger) {
+    public BasicIndex(final Directory directory, final ValueMerger<K, V> valueMerger,
+            TypeDescriptor<K> keyTypeDescriptor, TypeDescriptor<V> valueTypeDescriptor) {
         this.directory = Objects.requireNonNull(directory);
-        this.keyClass = Objects.requireNonNull(keyClass);
-        this.valueClass = Objects.requireNonNull(valueClass);
         this.valueMerger = Objects.requireNonNull(valueMerger);
+        this.keyTypeDescriptor = Objects.requireNonNull(keyTypeDescriptor);
+        this.valueTypeDescriptor = Objects.requireNonNull(valueTypeDescriptor);
+    }
+
+    public static <M, N> BasicIndexBuilder<M, N> builder() {
+        return new BasicIndexBuilder<M, N>();
     }
 
     protected Directory getDirectory() {
         return directory;
     }
 
-    protected Class<?> getKeyClass() {
-        return keyClass;
-    }
-
-    protected Class<?> getValueClass() {
-        return valueClass;
-    }
-
     protected TypeReader<K> getKeyReader() {
-        final TypeConvertors tc = TypeConvertors.getInstance();
-        final TypeReader<K> keyReader = tc.get(Objects.requireNonNull(getKeyClass()),
-                OperationType.READER);
-        return keyReader;
+        return keyTypeDescriptor.getTypeReader();
     }
 
     protected TypeReader<V> getValueReader() {
-        final TypeConvertors tc = TypeConvertors.getInstance();
-        final TypeReader<V> keyReader = tc.get(Objects.requireNonNull(getValueClass()),
-                OperationType.READER);
-        return keyReader;
+        return valueTypeDescriptor.getTypeReader();
     }
 
     protected TypeWriter<K> getKeyWriter() {
-        final TypeConvertors tc = TypeConvertors.getInstance();
-        final TypeWriter<K> keyReader = tc.get(Objects.requireNonNull(getKeyClass()),
-                OperationType.WRITER);
-        return keyReader;
+        return keyTypeDescriptor.getTypeWriter();
     }
 
     protected TypeWriter<V> getValueWriter() {
-        final TypeConvertors tc = TypeConvertors.getInstance();
-        final TypeWriter<V> keyReader = tc.get(Objects.requireNonNull(getValueClass()),
-                OperationType.WRITER);
-        return keyReader;
+        return valueTypeDescriptor.getTypeWriter();
     }
 
     protected Comparator<? super K> getKeyComparator() {
-        final TypeConvertors tc = TypeConvertors.getInstance();
-        final Comparator<? super K> keyComparator = tc.get(Objects.requireNonNull(getKeyClass()),
-                OperationType.COMPARATOR);
-        return keyComparator;
+        return keyTypeDescriptor.getComparator();
     };
 
     protected ConvertorFromBytes<K> getKeyConvertorFromBytes() {
-        final TypeConvertors tc = TypeConvertors.getInstance();
-        final ConvertorFromBytes<K> keyConvertorFromBytes = tc
-                .get(Objects.requireNonNull(getKeyClass()), OperationType.CONVERTOR_FROM_BYTES);
-        return keyConvertorFromBytes;
+        return keyTypeDescriptor.getConvertorFromBytes();
     };
 
     protected ConvertorToBytes<K> getKeyConvertorToBytes() {
-        final TypeConvertors tc = TypeConvertors.getInstance();
-        final ConvertorToBytes<K> keyConvertorToBytes = tc
-                .get(Objects.requireNonNull(getKeyClass()), OperationType.CONVERTOR_TO_BYTES);
-        return keyConvertorToBytes;
+        return keyTypeDescriptor.getConvertorToBytes();
     };
 
     public UnsortedDataFile<K, V> getUnsortedFile(final String fileName) {

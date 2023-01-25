@@ -10,6 +10,7 @@ import com.coroptis.index.directory.Directory;
 import com.coroptis.index.directory.MemDirectory;
 import com.coroptis.index.jbindex.IndexSearcher;
 import com.coroptis.index.jbindex.IndexWriter;
+import com.coroptis.index.type.TypeDescriptorInteger;
 
 public class SearchIntegersTest {
 
@@ -23,8 +24,8 @@ public class SearchIntegersTest {
     }
 
     private void search_test(final Directory directory) {
-        final BasicIndex<Integer, Integer> basicIndex = new BasicIndex<>(directory, Integer.class,
-                Integer.class);
+        final BasicIndex<Integer, Integer> basicIndex = new BasicIndex<>(directory,
+                new TypeDescriptorInteger(), new TypeDescriptorInteger());
         IndexSearcher<Integer, Integer> search = new IndexSearcher<>(directory, Integer.class,
                 Integer.class, basicIndex);
 

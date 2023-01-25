@@ -50,7 +50,8 @@ public class IndexDesc {
 
     private void load() {
         try (final FileReader desc = directory.getFileReader(INDEX_DESCRIPTION_FILE)) {
-            final ConvertorFromBytes<Integer> intReader = integerTypeDescriptor.getConvertorFromBytes();
+            final ConvertorFromBytes<Integer> intReader = integerTypeDescriptor
+                    .getConvertorFromBytes();
             final byte[] data = new byte[4];
             desc.read(data);
             blockSize = intReader.fromBytes(data);
