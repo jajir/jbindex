@@ -7,4 +7,4 @@
  * @author jajir
  *
  */
-package com.coroptis.index.jbindex;
+package com.coroptis.index.simpleindex;

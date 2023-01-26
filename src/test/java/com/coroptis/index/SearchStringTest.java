@@ -7,8 +7,8 @@ import org.junit.jupiter.api.Test;
 import com.coroptis.index.basic.BasicIndex;
 import com.coroptis.index.directory.Directory;
 import com.coroptis.index.directory.MemDirectory;
-import com.coroptis.index.jbindex.IndexSearcher;
-import com.coroptis.index.jbindex.IndexWriter;
+import com.coroptis.index.simpleindex.IndexSearcher;
+import com.coroptis.index.simpleindex.IndexWriter;
 import com.coroptis.index.type.TypeDescriptorString;
 
 public class SearchStringTest {

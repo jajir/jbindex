@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 import com.coroptis.index.DataFileIterator;
 import com.coroptis.index.directory.Directory;
 import com.coroptis.index.directory.MemDirectory;
-import com.coroptis.index.jbindex.IndexConfiguration;
+import com.coroptis.index.simpleindex.IndexConfiguration;
 import com.coroptis.index.sorteddatafile.Pair;
 
 public class UnsortedFileTest {

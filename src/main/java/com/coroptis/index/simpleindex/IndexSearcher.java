@@ -1,4 +1,4 @@
-package com.coroptis.index.jbindex;
+package com.coroptis.index.simpleindex;
 
 import java.util.ArrayList;
 import java.util.Comparator;
