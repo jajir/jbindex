@@ -7,6 +7,7 @@ import com.coroptis.index.directory.Directory;
 import com.coroptis.index.sorteddatafile.SortedDataFile;
 import com.coroptis.index.type.ConvertorFromBytes;
 import com.coroptis.index.type.ConvertorToBytes;
+import com.coroptis.index.type.TypeDescriptor;
 import com.coroptis.index.type.TypeReader;
 import com.coroptis.index.type.TypeWriter;
 import com.coroptis.index.unsorteddatafile.UnsortedDataFile;
@@ -14,54 +15,48 @@ import com.coroptis.index.unsorteddatafile.UnsortedDataFile;
 public class IndexConfiguration<K, V> {
 
     private final Directory directory;
-    private final Class<?> keyClass;
-    private final Class<?> valueClass;
+    private final TypeDescriptor<K> keyTypeDescriptor;
+    private final TypeDescriptor<V> valueTypeDescriptor;
 
-    public IndexConfiguration(final Directory directory, final Class<?> keyClass,
-            final Class<?> valueClass) {
+    public IndexConfiguration(final Directory directory, final TypeDescriptor<K> keyTypeDescriptor,
+            final TypeDescriptor<V> valueTypeDescriptor) {
         this.directory = Objects.requireNonNull(directory);
-        this.keyClass = Objects.requireNonNull(keyClass);
-        this.valueClass = Objects.requireNonNull(valueClass);
+        this.keyTypeDescriptor = Objects.requireNonNull(keyTypeDescriptor,
+                "Key type descriptor is null.");
+        this.valueTypeDescriptor = Objects.requireNonNull(valueTypeDescriptor,
+                "Value type descriptor is null.");
     }
 
     public Directory getDirectory() {
         return directory;
     }
 
-    public Class<?> getKeyClass() {
-        return keyClass;
-    }
-
-    public Class<?> getValueClass() {
-        return valueClass;
-    }
-
     TypeReader<K> getKeyReader() {
-        return null;
+        return keyTypeDescriptor.getTypeReader();
     }
 
     TypeReader<V> getValueReader() {
-        return null;
+        return valueTypeDescriptor.getTypeReader();
     }
 
     TypeWriter<K> getKeyWriter() {
-        return null;
+        return keyTypeDescriptor.getTypeWriter();
     }
 
     TypeWriter<V> getValueWriter() {
-        return null;
+        return valueTypeDescriptor.getTypeWriter();
     }
 
     Comparator<? super K> getKeyComparator() {
-        return null;
+        return keyTypeDescriptor.getComparator();
     };
 
     ConvertorFromBytes<K> getKeyConvertorFromBytes() {
-        return null;
+        return keyTypeDescriptor.getConvertorFromBytes();
     };
 
     ConvertorToBytes<K> getKeyConvertorToBytes() {
-        return null;
+        return keyTypeDescriptor.getConvertorToBytes();
     };
 
     public UnsortedDataFile<K, V> getUnsortedFile(final String fileName) {

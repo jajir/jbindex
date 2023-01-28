@@ -9,6 +9,7 @@ import com.coroptis.index.basic.BasicIndex;
 import com.coroptis.index.basic.ValueMerger;
 import com.coroptis.index.directory.Directory;
 import com.coroptis.index.sorteddatafile.Pair;
+import com.coroptis.index.type.TypeDescriptor;
 
 public class MergeIndexAndConsumer<K, V> implements CloseableResource {
 
@@ -19,16 +20,17 @@ public class MergeIndexAndConsumer<K, V> implements CloseableResource {
     final Comparator<? super K> keyComparator;
 
     public MergeIndexAndConsumer(final Directory inputIndex, final Directory output,
-            final ValueMerger<K, V> merger, final Class<?> keyClass, final Class<?> valueClass,
-            final int blockSize) {
+            final ValueMerger<K, V> merger, final TypeDescriptor<K> keyTypeDescriptor,
+            final TypeDescriptor<V> valueTypeDescriptor, final int blockSize) {
         this.inputDirectory = Objects.requireNonNull(inputIndex);
         this.merger = Objects.requireNonNull(merger);
         this.keyComparator = null;
         final BasicIndex<K, V> basicIndexInput = new BasicIndex<>(inputIndex, null, null, null);
-        final IndexIterator<K, V> inputIterator = new IndexSearcher<K, V>(inputDirectory, keyClass,
-                valueClass, basicIndexInput).getIterator();
+        final IndexIterator<K, V> inputIterator = new IndexSearcher<K, V>(inputDirectory,
+                keyTypeDescriptor, valueTypeDescriptor, basicIndexInput).getIterator();
         inputIndexReader = new IndexReader<>(inputIterator);
-        finalIndexWriter = new IndexWriter<>(output, blockSize, keyClass, valueClass);
+        finalIndexWriter = new IndexWriter<>(output, blockSize, keyTypeDescriptor,
+                valueTypeDescriptor);
     }
 
     public Consumer<Pair<K, V>> getConsumer() {

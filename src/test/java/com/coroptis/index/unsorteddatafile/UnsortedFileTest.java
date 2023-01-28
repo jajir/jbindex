@@ -9,6 +9,8 @@ import com.coroptis.index.directory.Directory;
 import com.coroptis.index.directory.MemDirectory;
 import com.coroptis.index.simpleindex.IndexConfiguration;
 import com.coroptis.index.sorteddatafile.Pair;
+import com.coroptis.index.type.TypeDescriptorInteger;
+import com.coroptis.index.type.TypeDescriptorString;
 
 public class UnsortedFileTest {
 
@@ -17,7 +19,7 @@ public class UnsortedFileTest {
         final Directory dir = new MemDirectory();
 
         final IndexConfiguration<Integer, String> configuration = new IndexConfiguration<>(dir,
-                Integer.class, String.class);
+                new TypeDescriptorInteger(), new TypeDescriptorString());
 
         final UnsortedDataFile<Integer, String> unsorted = configuration.getUnsortedFile("duck");
         assertNotNull(unsorted);

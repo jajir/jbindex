@@ -1,5 +1,12 @@
 package com.coroptis.index;
 
+/**
+ * Main project exception. Allows to wrap checked exceptions and allows to
+ * throws project specific exceptions.
+ * 
+ * @author honza
+ *
+ */
 public class IndexException extends RuntimeException {
 
     /**

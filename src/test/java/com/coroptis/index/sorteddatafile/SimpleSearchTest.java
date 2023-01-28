@@ -37,8 +37,8 @@ public class SimpleSearchTest {
     private void search_test(final Directory directory) {
         final BasicIndex<String, Byte> basicIndex = new BasicIndex<>(directory,
                 new TypeDescriptorString(), new TypeDescriptorByte());
-        IndexSearcher<String, Byte> search = new IndexSearcher<>(directory, String.class,
-                Byte.class, basicIndex);
+        IndexSearcher<String, Byte> search = new IndexSearcher<>(directory,
+                new TypeDescriptorString(), new TypeDescriptorByte(), basicIndex);
 
         assertEquals(Byte.valueOf((byte) 0), search.get("aaa"));
         assertEquals(Byte.valueOf((byte) 1), search.get("aaabbb"));
@@ -52,8 +52,8 @@ public class SimpleSearchTest {
     }
 
     private void writeIndex(final Directory directory) {
-        try (IndexWriter<String, Byte> iw = new IndexWriter<>(directory, 2, String.class,
-                Byte.class)) {
+        try (IndexWriter<String, Byte> iw = new IndexWriter<>(directory, 2,
+                new TypeDescriptorString(), new TypeDescriptorByte())) {
             iw.put("aaa", Byte.valueOf((byte) 0));
             iw.put("aaabbb", Byte.valueOf((byte) 1));
             iw.put("aaacc", Byte.valueOf((byte) 2));

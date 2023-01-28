@@ -1,9 +1,7 @@
-package com.coroptis.index;
+package com.coroptis.index.sorteddatafile;
 
 import java.util.Comparator;
 import java.util.Objects;
-
-import com.coroptis.index.sorteddatafile.Pair;
 
 public class PairComparator<K, V> implements Comparator<Pair<K, V>> {
 
