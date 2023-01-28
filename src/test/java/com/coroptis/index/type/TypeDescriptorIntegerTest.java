@@ -1,24 +1,13 @@
 package com.coroptis.index.type;
 
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.io.File;
 import java.util.Comparator;
 
 import org.junit.jupiter.api.Test;
 
-import com.coroptis.index.DataFileReader;
-import com.coroptis.index.basic.BasicIndex;
-import com.coroptis.index.directory.Directory;
-import com.coroptis.index.directory.FsDirectory;
-import com.coroptis.index.directory.MemDirectory;
-import com.coroptis.index.type.TypeDescriptorByte;
-import com.coroptis.index.type.TypeDescriptorString;
-
-
-public class IntegerTypeTest {
+public class TypeDescriptorIntegerTest {
 
     private final TypeDescriptorInteger ti = new TypeDescriptorInteger();
     private final ConvertorToBytes<Integer> toBytes = ti.getConvertorToBytes();
@@ -26,19 +15,24 @@ public class IntegerTypeTest {
 
     @Test
     public void test_convertorto_bytes() throws Exception {
-
-
         assertEqualsBytes(0);
         assertEqualsBytes(Integer.MAX_VALUE);
         assertEqualsBytes(Integer.MIN_VALUE);
         assertEqualsBytes(-1);
-    }  
+    }
 
-    
-
-    private void assertEqualsBytes(Integer number){
+    private void assertEqualsBytes(Integer number) {
         final byte[] bytes = toBytes.toBytes(number);
         final Integer ret = fromBytes.fromBytes(bytes);
-        assertEquals(number,ret,String.format("Expected '%s' byt returned was '%s'", number,ret));
+        assertEquals(number, ret,
+                String.format("Expected '%s' byt returned was '%s'", number, ret));
+    }
+    
+    @Test
+    public void test_compare() throws Exception {
+        final Comparator<Integer> cmp = ti.getComparator();
+        assertTrue(cmp.compare(0, 0)==0);
+        assertTrue(cmp.compare(3, 12)<0);
+        assertTrue(cmp.compare(3, 2)>0);
     }
 }

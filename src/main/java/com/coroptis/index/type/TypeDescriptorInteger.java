@@ -82,7 +82,7 @@ public class TypeDescriptorInteger implements TypeDescriptor<Integer> {
 
     @Override
     public Comparator<Integer> getComparator() {
-        return (i1, i2) -> i2 - i1;
+        return (i1, i2) -> i1 - i2;
     }
 
 }
