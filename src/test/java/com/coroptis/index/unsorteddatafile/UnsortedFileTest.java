@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 import com.coroptis.index.DataFileIterator;
 import com.coroptis.index.directory.Directory;
 import com.coroptis.index.directory.MemDirectory;
-import com.coroptis.index.simpleindex.IndexConfiguration;
+import com.coroptis.index.rigidindex.IndexConfiguration;
 import com.coroptis.index.sorteddatafile.Pair;
 import com.coroptis.index.type.TypeDescriptorInteger;
 import com.coroptis.index.type.TypeDescriptorString;

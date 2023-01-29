@@ -1,4 +1,4 @@
-package com.coroptis.index.simpleindex;
+package com.coroptis.index.rigidindex;
 
 import com.coroptis.index.basic.ValueMerger;
 import com.coroptis.index.directory.Directory;

@@ -1,4 +1,4 @@
-package com.coroptis.index.simpleindex;
+package com.coroptis.index.rigidindex;
 
 import java.util.Objects;
 import java.util.Optional;
