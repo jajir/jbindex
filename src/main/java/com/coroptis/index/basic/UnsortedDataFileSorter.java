@@ -5,8 +5,8 @@ import java.util.Objects;
 import java.util.function.Consumer;
 
 import com.coroptis.index.DataFileIterator;
+import com.coroptis.index.Pair;
 import com.coroptis.index.partiallysorteddatafile.PartiallySortedDataFileWriter;
-import com.coroptis.index.sorteddatafile.Pair;
 import com.coroptis.index.unsorteddatafile.UnsortedDataFile;
 
 /**

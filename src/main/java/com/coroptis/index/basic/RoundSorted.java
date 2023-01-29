@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
 
-import com.coroptis.index.sorteddatafile.Pair;
+import com.coroptis.index.Pair;
 
 public class RoundSorted<K, V> {
 

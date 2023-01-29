@@ -6,10 +6,10 @@ import java.util.List;
 import java.util.Objects;
 
 import com.coroptis.index.CloseableResource;
+import com.coroptis.index.Pair;
 import com.coroptis.index.basic.BasicIndex;
 import com.coroptis.index.basic.SortSupport;
 import com.coroptis.index.basic.ValueMerger;
-import com.coroptis.index.sorteddatafile.Pair;
 import com.coroptis.index.sorteddatafile.SortedDataFile;
 import com.coroptis.index.sorteddatafile.SortedDataFileWriter;
 

@@ -10,7 +10,7 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import com.coroptis.index.DataFileIterator;
-import com.coroptis.index.sorteddatafile.Pair;
+import com.coroptis.index.Pair;
 
 public class MergeSpliterator<K, V> implements Spliterator<Pair<K, V>> {
 

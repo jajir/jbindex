@@ -4,7 +4,6 @@ import java.util.Objects;
 
 import com.coroptis.index.directory.Directory;
 import com.coroptis.index.directory.FileReader;
-import com.coroptis.index.sorteddatafile.Pair;
 import com.coroptis.index.sorteddatafile.PairReader;
 
 /**

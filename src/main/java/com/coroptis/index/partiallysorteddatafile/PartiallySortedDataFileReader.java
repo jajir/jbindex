@@ -5,9 +5,9 @@ import java.util.Objects;
 
 import com.coroptis.index.CloseableResource;
 import com.coroptis.index.DataFileReader;
+import com.coroptis.index.Pair;
 import com.coroptis.index.basic.BasicIndex;
 import com.coroptis.index.basic.SortSupport;
-import com.coroptis.index.sorteddatafile.Pair;
 import com.coroptis.index.sorteddatafile.SortedDataFile;
 
 public class PartiallySortedDataFileReader<K, V> implements CloseableResource {

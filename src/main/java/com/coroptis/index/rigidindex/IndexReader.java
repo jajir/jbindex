@@ -3,7 +3,7 @@ package com.coroptis.index.rigidindex;
 import java.util.Objects;
 import java.util.Optional;
 
-import com.coroptis.index.sorteddatafile.Pair;
+import com.coroptis.index.Pair;
 
 public class IndexReader<K, V> {
 

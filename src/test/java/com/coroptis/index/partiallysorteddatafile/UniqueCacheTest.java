@@ -6,8 +6,8 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
+import com.coroptis.index.Pair;
 import com.coroptis.index.basic.ValueMerger;
-import com.coroptis.index.sorteddatafile.Pair;
 
 public class UniqueCacheTest {
 

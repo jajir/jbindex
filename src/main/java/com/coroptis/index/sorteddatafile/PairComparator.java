@@ -3,6 +3,8 @@ package com.coroptis.index.sorteddatafile;
 import java.util.Comparator;
 import java.util.Objects;
 
+import com.coroptis.index.Pair;
+
 public class PairComparator<K, V> implements Comparator<Pair<K, V>> {
 
     private final Comparator<? super K> keyComparator;

@@ -4,6 +4,7 @@ import java.util.Objects;
 
 import com.coroptis.index.DataFileIterator;
 import com.coroptis.index.DataFileReader;
+import com.coroptis.index.PairWriter;
 import com.coroptis.index.directory.Directory;
 import com.coroptis.index.sorteddatafile.PairReader;
 import com.coroptis.index.sorteddatafile.PairReaderImpl;
@@ -52,7 +53,7 @@ public class UnsortedDataFile<K, V> {
         return iterator;
     }
 
-    public UnsortedDataFileWriter<K, V> openWriter() {
+    public PairWriter<K, V> openWriter() {
         final UnsortedDataFileWriter<K, V> writer = new UnsortedDataFileWriter<>(directory,
                 fileName, keyWriter, valueWriter);
         return writer;

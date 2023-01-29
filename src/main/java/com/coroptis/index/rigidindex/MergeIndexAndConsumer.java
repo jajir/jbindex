@@ -5,10 +5,10 @@ import java.util.Objects;
 import java.util.function.Consumer;
 
 import com.coroptis.index.CloseableResource;
+import com.coroptis.index.Pair;
 import com.coroptis.index.basic.BasicIndex;
 import com.coroptis.index.basic.ValueMerger;
 import com.coroptis.index.directory.Directory;
-import com.coroptis.index.sorteddatafile.Pair;
 import com.coroptis.index.type.TypeDescriptor;
 
 public class MergeIndexAndConsumer<K, V> implements CloseableResource {

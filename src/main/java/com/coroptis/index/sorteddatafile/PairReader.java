@@ -1,5 +1,6 @@
 package com.coroptis.index.sorteddatafile;
 
+import com.coroptis.index.Pair;
 import com.coroptis.index.directory.FileReader;
 import com.coroptis.index.type.TypeReader;
 

@@ -11,9 +11,9 @@ import java.util.Arrays;
 import org.junit.jupiter.api.Test;
 
 import com.coroptis.index.DataFileReader;
+import com.coroptis.index.Pair;
 import com.coroptis.index.basic.BasicIndex;
 import com.coroptis.index.basic.SortSupport;
-import com.coroptis.index.sorteddatafile.Pair;
 import com.coroptis.index.sorteddatafile.SortedDataFile;
 
 public class PartialySortedDataFileReaderTest {

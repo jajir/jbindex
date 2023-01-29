@@ -9,6 +9,7 @@ import java.util.Comparator;
 import org.junit.jupiter.api.Test;
 
 import com.coroptis.index.DataFileReader;
+import com.coroptis.index.Pair;
 import com.coroptis.index.basic.BasicIndex;
 import com.coroptis.index.directory.Directory;
 import com.coroptis.index.directory.FsDirectory;

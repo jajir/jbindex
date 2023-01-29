@@ -2,13 +2,13 @@ package com.coroptis.index.unsorteddatafile;
 
 import java.util.Objects;
 
-import com.coroptis.index.CloseableResource;
+import com.coroptis.index.Pair;
+import com.coroptis.index.PairWriter;
 import com.coroptis.index.directory.Directory;
 import com.coroptis.index.directory.FileWriter;
-import com.coroptis.index.sorteddatafile.Pair;
 import com.coroptis.index.type.TypeWriter;
 
-public class UnsortedDataFileWriter<K, V> implements CloseableResource {
+public class UnsortedDataFileWriter<K, V> implements PairWriter<K, V> {
 
     private final TypeWriter<K> keyWriter;
     private final TypeWriter<V> valueWriter;
@@ -23,6 +23,7 @@ public class UnsortedDataFileWriter<K, V> implements CloseableResource {
         fileWriter = directory.getFileWriter(fileName);
     }
 
+    @Override
     public void put(final Pair<K, V> pair) {
         Objects.requireNonNull(pair.getKey());
         Objects.requireNonNull(pair.getValue());

@@ -6,10 +6,10 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+import com.coroptis.index.Pair;
 import com.coroptis.index.basic.BasicIndex;
 import com.coroptis.index.directory.Directory;
 import com.coroptis.index.sorteddatafile.DiffKeyReader;
-import com.coroptis.index.sorteddatafile.Pair;
 import com.coroptis.index.sorteddatafile.SortedDataFile;
 import com.coroptis.index.sorteddatafile.SortedDataFileStreamer;
 import com.coroptis.index.type.ConvertorFromBytes;

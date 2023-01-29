@@ -5,6 +5,7 @@ import java.util.Objects;
 import java.util.Spliterator;
 import java.util.function.Consumer;
 
+import com.coroptis.index.Pair;
 import com.coroptis.index.directory.FileReader;
 
 public class SortedDataFileSpliteratorSized<K, V> implements Spliterator<Pair<K, V>> {

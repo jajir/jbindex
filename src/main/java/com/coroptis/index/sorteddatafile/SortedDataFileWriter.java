@@ -4,6 +4,7 @@ import java.util.Comparator;
 import java.util.Objects;
 
 import com.coroptis.index.CloseableResource;
+import com.coroptis.index.Pair;
 import com.coroptis.index.directory.Directory;
 import com.coroptis.index.directory.FileWriter;
 import com.coroptis.index.type.ConvertorToBytes;

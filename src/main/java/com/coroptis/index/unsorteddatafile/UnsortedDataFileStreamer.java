@@ -5,9 +5,9 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import com.coroptis.index.CloseableResource;
+import com.coroptis.index.Pair;
 import com.coroptis.index.directory.Directory;
 import com.coroptis.index.directory.FileReader;
-import com.coroptis.index.sorteddatafile.Pair;
 import com.coroptis.index.sorteddatafile.PairReader;
 import com.coroptis.index.sorteddatafile.PairReaderImpl;
 import com.coroptis.index.type.TypeReader;

@@ -6,9 +6,9 @@ import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import com.coroptis.index.IndexException;
+import com.coroptis.index.Pair;
 import com.coroptis.index.directory.Directory;
 import com.coroptis.index.partiallysorteddatafile.PartiallySortedDataFile;
-import com.coroptis.index.sorteddatafile.Pair;
 import com.coroptis.index.sorteddatafile.SortedDataFile;
 import com.coroptis.index.type.ConvertorFromBytes;
 import com.coroptis.index.type.ConvertorToBytes;

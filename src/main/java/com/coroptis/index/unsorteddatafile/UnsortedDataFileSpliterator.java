@@ -4,8 +4,8 @@ import java.util.Objects;
 import java.util.Spliterator;
 import java.util.function.Consumer;
 
+import com.coroptis.index.Pair;
 import com.coroptis.index.directory.FileReader;
-import com.coroptis.index.sorteddatafile.Pair;
 import com.coroptis.index.sorteddatafile.PairReader;
 
 public class UnsortedDataFileSpliterator<K, V> implements Spliterator<Pair<K, V>> {

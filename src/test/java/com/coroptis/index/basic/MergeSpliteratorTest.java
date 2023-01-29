@@ -17,7 +17,7 @@ import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
 
 import com.coroptis.index.DataFileIterator;
-import com.coroptis.index.sorteddatafile.Pair;
+import com.coroptis.index.Pair;
 import com.coroptis.index.sorteddatafile.PairReader;
 
 public class MergeSpliteratorTest {
