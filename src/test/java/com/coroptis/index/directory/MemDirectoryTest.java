@@ -1,6 +1,6 @@
 package com.coroptis.index.directory;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
 
@@ -27,6 +27,17 @@ public class MemDirectoryTest {
         fr.read(read);
 
         assertEquals("KarelNovotny", new String(read));
+    }
+    
+    @Test
+    void test_fileExists() throws Exception {
+        final MemDirectory directory = new MemDirectory();
+        FileWriter fw = directory.getFileWriter("pok");
+        fw.write(name);
+        fw.close();
+
+        assertTrue(directory.isFileExists("pok"));
+        assertFalse(directory.isFileExists("anotherOne"));
     }
 
 }

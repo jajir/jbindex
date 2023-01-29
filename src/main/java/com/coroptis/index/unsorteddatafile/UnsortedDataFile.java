@@ -6,6 +6,7 @@ import com.coroptis.index.DataFileIterator;
 import com.coroptis.index.DataFileReader;
 import com.coroptis.index.PairWriter;
 import com.coroptis.index.directory.Directory;
+import com.coroptis.index.directory.Directory.Access;
 import com.coroptis.index.sorteddatafile.PairReader;
 import com.coroptis.index.sorteddatafile.PairReaderImpl;
 import com.coroptis.index.type.TypeReader;
@@ -41,27 +42,30 @@ public class UnsortedDataFile<K, V> {
     }
 
     public DataFileReader<K, V> openReader() {
-        final PairReader<K, V> pairReader = new PairReaderImpl<>(keyReader, valueReader);
-        final DataFileReader<K, V> reader = new DataFileReader<>(directory, fileName, pairReader);
+        final PairReader<K, V> pairReader = new PairReaderImpl<>(keyReader,
+                valueReader);
+        final DataFileReader<K, V> reader = new DataFileReader<>(directory,
+                fileName, pairReader);
         return reader;
     }
 
     public DataFileIterator<K, V> openIterator() {
-        final PairReader<K, V> pairReader = new PairReaderImpl<>(keyReader, valueReader);
-        final DataFileIterator<K, V> iterator = new DataFileIterator<>(directory, fileName,
-                pairReader);
+        final PairReader<K, V> pairReader = new PairReaderImpl<>(keyReader,
+                valueReader);
+        final DataFileIterator<K, V> iterator = new DataFileIterator<>(
+                directory, fileName, pairReader);
         return iterator;
     }
 
     public PairWriter<K, V> openWriter() {
-        final UnsortedDataFileWriter<K, V> writer = new UnsortedDataFileWriter<>(directory,
-                fileName, keyWriter, valueWriter);
+        final UnsortedDataFileWriter<K, V> writer = new UnsortedDataFileWriter<>(
+                directory, fileName, keyWriter, valueWriter, Access.OVERWRITE);
         return writer;
     }
 
     public UnsortedDataFileStreamer<K, V> openStreamer() {
-        final UnsortedDataFileStreamer<K, V> streamer = new UnsortedDataFileStreamer<>(directory,
-                fileName, keyReader, valueReader);
+        final UnsortedDataFileStreamer<K, V> streamer = new UnsortedDataFileStreamer<>(
+                directory, fileName, keyReader, valueReader);
         return streamer;
     }
 

@@ -24,6 +24,8 @@ public interface Directory {
                 Access.OVERWRITE);
     }
 
+    boolean isFileExists(final String fileName);
+    
     FileWriter getFileWriter(String fileName, Access access);
 
     boolean deleteFile(String fileName);

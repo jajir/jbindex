@@ -75,4 +75,10 @@ public class FsZipDirectory implements Directory {
                 fileName, () -> String.format("File name is required."))));
     }
 
+    @Override
+    public boolean isFileExists(final String fileName) {
+        final File file = getFile(fileName);
+        return file.exists();
+    }
+
 }

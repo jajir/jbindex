@@ -5,6 +5,7 @@ import java.util.Objects;
 import com.coroptis.index.Pair;
 import com.coroptis.index.PairWriter;
 import com.coroptis.index.directory.Directory;
+import com.coroptis.index.directory.Directory.Access;
 import com.coroptis.index.directory.FileWriter;
 import com.coroptis.index.type.TypeWriter;
 
@@ -14,13 +15,14 @@ public class UnsortedDataFileWriter<K, V> implements PairWriter<K, V> {
     private final TypeWriter<V> valueWriter;
     private final FileWriter fileWriter;
 
-    UnsortedDataFileWriter(final Directory directory, final String fileName,
-            final TypeWriter<K> keyWriter, final TypeWriter<V> valueWriter) {
+    public UnsortedDataFileWriter(final Directory directory, final String fileName,
+            final TypeWriter<K> keyWriter, final TypeWriter<V> valueWriter,
+            final Access access) {
         this.keyWriter = Objects.requireNonNull(keyWriter);
         this.valueWriter = Objects.requireNonNull(valueWriter);
         Objects.requireNonNull(directory);
         Objects.requireNonNull(fileName);
-        fileWriter = directory.getFileWriter(fileName);
+        fileWriter = directory.getFileWriter(fileName, access);
     }
 
     @Override

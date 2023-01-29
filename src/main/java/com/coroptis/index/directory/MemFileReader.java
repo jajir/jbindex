@@ -27,11 +27,16 @@ public class MemFileReader implements FileReader {
 
     @Override
     public int read(byte[] bytes) {
-        final int newPosition = position + bytes.length;
-        if (newPosition <= data.length) {
-            System.arraycopy(data, position, bytes, 0, bytes.length);
+        if (position < data.length) {
+            // at least one byte will be read
+            int newPosition = position + bytes.length;
+            if (newPosition > data.length) {
+                newPosition = data.length;
+            }
+            final int toReadBytes = newPosition-position;
+            System.arraycopy(data, position, bytes, 0, toReadBytes);
             position = newPosition;
-            return bytes.length;
+            return toReadBytes;            
         } else {
             return -1;
         }

@@ -26,6 +26,12 @@ public class FsDirectory implements Directory {
     }
 
     @Override
+    public boolean isFileExists(final String fileName) {
+        final File file = getFile(fileName);
+        return file.exists();
+    }
+
+    @Override
     public FileReader getFileReader(final String fileName) {
         final File file = getFile(fileName);
         if (!directory.exists()) {
@@ -39,7 +45,8 @@ public class FsDirectory implements Directory {
     public FileWriter getFileWriter(final String fileName,
             final Access access) {
         Objects.requireNonNull(fileName, "File name can't be null.");
-        return new FsFileWriterStream(getFile(fileName), access);
+        return new FsFileWriterStream(getFile(fileName),
+                Objects.requireNonNull(access, "Access name can't be null."));
     }
 
     @Override
@@ -58,7 +65,7 @@ public class FsDirectory implements Directory {
     }
 
     private File getFile(final String fileName) {
-        Objects.requireNonNull(fileName);
+        Objects.requireNonNull(fileName, "file name can't be null.");
         return directory.toPath().resolve(fileName).toFile();
     }
 

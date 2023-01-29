@@ -58,4 +58,9 @@ public class MemDirectory implements Directory {
         return data.keySet().stream();
     }
 
+    @Override
+    public boolean isFileExists(final String fileName) {
+        return data.containsKey(fileName);
+    }
+
 }

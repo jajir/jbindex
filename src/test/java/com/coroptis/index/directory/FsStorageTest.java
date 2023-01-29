@@ -63,7 +63,7 @@ public class FsStorageTest {
             byte[] bytes = new byte[TEXT_LONG.getBytes().length];
 
             final int loadedBytes = fr.read(bytes);
-            assertEquals(-1, loadedBytes);
+            assertEquals(10, loadedBytes);
         }
     }
 
