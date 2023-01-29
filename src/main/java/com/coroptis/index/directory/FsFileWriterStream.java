@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 
 import com.coroptis.index.IndexException;
 
@@ -15,10 +16,13 @@ public class FsFileWriterStream implements FileWriter {
 
     private static final int BUFFER_SIZE = 1024 * 1024 * 5;
 
-    FsFileWriterStream(final File file) {
+    FsFileWriterStream(final File file, final Directory.Access access) {
         try {
             final Path path = file.toPath();
-            final OutputStream os = Files.newOutputStream(path);
+            final OutputStream os = Files.newOutputStream(path,
+                    Directory.Access.APPEND == access
+                            ? StandardOpenOption.APPEND
+                            : StandardOpenOption.CREATE);
             this.fio = new BufferedOutputStream(os, BUFFER_SIZE);
         } catch (IOException e) {
             throw new IndexException(e.getMessage(), e);

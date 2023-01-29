@@ -15,11 +15,12 @@ public class FsZipDirectory implements Directory {
         this.directory = Objects.requireNonNull(directory);
         if (!directory.exists() && !directory.mkdirs()) {
             throw new IndexException(
-                    String.format("Unable to create directory '%s.", directory.getAbsoluteFile()));
+                    String.format("Unable to create directory '%s.",
+                            directory.getAbsoluteFile()));
         }
         if (directory.isFile()) {
-            throw new IndexException(
-                    String.format("There is required directory but '%s' is file."));
+            throw new IndexException(String
+                    .format("There is required directory but '%s' is file."));
         }
     }
 
@@ -27,26 +28,24 @@ public class FsZipDirectory implements Directory {
     public FileReader getFileReader(final String fileName) {
         final File file = getFile(fileName);
         if (!directory.exists()) {
-            throw new IndexException(String.format("File '%s' doesn't exists."));
+            throw new IndexException(
+                    String.format("File '%s' doesn't exists."));
         }
         return new FsZipFileReaderStream(file);
     }
 
     @Override
-    public FileWriter getFileWriter(final String fileName) {
-        Objects.requireNonNull(fileName);
-        return new FsZipFileWriterStream(getFile(fileName));
-    }
-
-    @Override
-    public void renameFile(final String currentFileName, final String newFileName) {
+    public void renameFile(final String currentFileName,
+            final String newFileName) {
         final File file = getFile(currentFileName);
         if (!directory.exists()) {
-            throw new IndexException(String.format("File '%s' doesn't exists."));
+            throw new IndexException(
+                    String.format("File '%s' doesn't exists."));
         }
         if (!file.renameTo(getFile(newFileName))) {
-            throw new IndexException(String.format("Unable to rename file '%s' to '%s'.",
-                    currentFileName, newFileName));
+            throw new IndexException(
+                    String.format("Unable to rename file '%s' to '%s'.",
+                            currentFileName, newFileName));
         }
     }
 
@@ -63,6 +62,17 @@ public class FsZipDirectory implements Directory {
     @Override
     public Stream<String> getFileNames() {
         return Arrays.stream(directory.list());
+    }
+
+    @Override
+    public FileWriter getFileWriter(final String fileName,
+            final Access access) {
+        if (Access.APPEND == access) {
+            throw new IndexException(
+                    "Append to ZIP file system is not supported");
+        }
+        return new FsZipFileWriterStream(getFile(Objects.requireNonNull(
+                fileName, () -> String.format("File name is required."))));
     }
 
 }

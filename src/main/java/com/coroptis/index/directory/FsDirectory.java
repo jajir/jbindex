@@ -15,10 +15,12 @@ public class FsDirectory implements Directory {
         this.directory = Objects.requireNonNull(directory);
         if (!directory.exists() && !directory.mkdirs()) {
             throw new IndexException(
-                    String.format("Unable to create directory '%s'.", directory.getAbsolutePath()));
+                    String.format("Unable to create directory '%s'.",
+                            directory.getAbsolutePath()));
         }
         if (directory.isFile()) {
-            throw new IndexException(String.format("There is required directory but '%s' is file.",
+            throw new IndexException(String.format(
+                    "There is required directory but '%s' is file.",
                     directory.getAbsolutePath()));
         }
     }
@@ -27,26 +29,31 @@ public class FsDirectory implements Directory {
     public FileReader getFileReader(final String fileName) {
         final File file = getFile(fileName);
         if (!directory.exists()) {
-            throw new IndexException(String.format("File '%s' doesn't exists."));
+            throw new IndexException(
+                    String.format("File '%s' doesn't exists."));
         }
         return new FsFileReaderStream(file);
     }
 
     @Override
-    public FileWriter getFileWriter(final String fileName) {
-        Objects.requireNonNull(fileName);
-        return new FsFileWriterStream(getFile(fileName));
+    public FileWriter getFileWriter(final String fileName,
+            final Access access) {
+        Objects.requireNonNull(fileName, "File name can't be null.");
+        return new FsFileWriterStream(getFile(fileName), access);
     }
 
     @Override
-    public void renameFile(final String currentFileName, final String newFileName) {
+    public void renameFile(final String currentFileName,
+            final String newFileName) {
         final File file = getFile(currentFileName);
         if (!directory.exists()) {
-            throw new IndexException(String.format("File '%s' doesn't exists."));
+            throw new IndexException(
+                    String.format("File '%s' doesn't exists."));
         }
         if (!file.renameTo(getFile(newFileName))) {
-            throw new IndexException(String.format("Unable to rename file '%s' to name '%s'.",
-                    file.getAbsolutePath(), newFileName));
+            throw new IndexException(
+                    String.format("Unable to rename file '%s' to name '%s'.",
+                            file.getAbsolutePath(), newFileName));
         }
     }
 
