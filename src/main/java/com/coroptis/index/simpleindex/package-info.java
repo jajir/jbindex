@@ -2,7 +2,8 @@
  * 
  */
 /**
- * This package should be removed after refactoring is done.
+ * Represent one file containing sorted key value pair. Standalone doesn't make
+ * much sense but is combination with other types of data store is helpful.
  * 
  * @author jajir
  *
