@@ -4,6 +4,7 @@ import java.util.Objects;
 
 import com.coroptis.index.DataFileIterator;
 import com.coroptis.index.DataFileReader;
+import com.coroptis.index.DataFileReaderImpl;
 import com.coroptis.index.PairWriter;
 import com.coroptis.index.directory.Directory;
 import com.coroptis.index.directory.Directory.Access;
@@ -44,7 +45,7 @@ public class UnsortedDataFile<K, V> {
     public DataFileReader<K, V> openReader() {
         final PairReader<K, V> pairReader = new PairReaderImpl<>(keyReader,
                 valueReader);
-        final DataFileReader<K, V> reader = new DataFileReader<>(directory,
+        final DataFileReaderImpl<K, V> reader = new DataFileReaderImpl<>(directory,
                 fileName, pairReader);
         return reader;
     }

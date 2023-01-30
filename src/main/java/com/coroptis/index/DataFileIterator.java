@@ -8,18 +8,28 @@ import java.util.Optional;
 import com.coroptis.index.directory.Directory;
 import com.coroptis.index.sorteddatafile.PairReader;
 
-public class DataFileIterator<K, V> implements Iterator<Pair<K, V>>, CloseableResource {
+/**
+ * Allows to use {@link DataFileReader} as {@link Iterator}. Some operations
+ * like data merging it makes a lot easier.
+ * 
+ * @author honza
+ *
+ * @param <K>
+ * @param <V>
+ */
+public class DataFileIterator<K, V>
+        implements Iterator<Pair<K, V>>, CloseableResource {
 
-    private final DataFileReader<K, V> reader;
+    private final DataFileReaderImpl<K, V> reader;
 
     private Pair<K, V> current = null;
 
     public DataFileIterator(final Directory directory, final String fileName,
             final PairReader<K, V> pairReader) {
-        this(new DataFileReader<>(directory, fileName, pairReader));
+        this(new DataFileReaderImpl<>(directory, fileName, pairReader));
     }
 
-    public DataFileIterator(final DataFileReader<K, V> reader) {
+    public DataFileIterator(final DataFileReaderImpl<K, V> reader) {
         this.reader = Objects.requireNonNull(reader);
         current = reader.read();
     }

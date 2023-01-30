@@ -31,8 +31,8 @@ public class PartiallySortedDataFileReader<K, V> implements CloseableResource {
     /**
      * Try to read data.
      * 
-     * @return Return read data when it's possible. Return <code>null</code> when
-     *         there are no data.
+     * @return Return read data when it's possible. Return <code>null</code>
+     *         when there are no data.
      */
     public Pair<K, V> read() {
         if (currentReader == null) {
@@ -60,7 +60,8 @@ public class PartiallySortedDataFileReader<K, V> implements CloseableResource {
             return;
         }
         final String currentFileName = fileNames.remove(0);
-        final SortedDataFile<K, V> dataFile = basicIndex.getSortedDataFile(currentFileName);
+        final SortedDataFile<K, V> dataFile = basicIndex
+                .getSortedDataFile(currentFileName);
         currentReader = dataFile.openReader();
     }
 
