@@ -20,7 +20,7 @@ import com.coroptis.index.sorteddatafile.PairTypeReader;
 public class DataFileIterator<K, V>
         implements Iterator<Pair<K, V>>, CloseableResource {
 
-    private final PairFileReaderImpl<K, V> reader;
+    private final PairFileReader<K, V> reader;
 
     private Pair<K, V> current = null;
 
@@ -29,7 +29,7 @@ public class DataFileIterator<K, V>
         this(new PairFileReaderImpl<>(directory, fileName, pairReader));
     }
 
-    public DataFileIterator(final PairFileReaderImpl<K, V> reader) {
+    public DataFileIterator(final PairFileReader<K, V> reader) {
         this.reader = Objects.requireNonNull(reader);
         current = reader.read();
     }

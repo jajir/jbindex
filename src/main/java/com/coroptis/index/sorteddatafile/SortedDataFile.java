@@ -70,6 +70,10 @@ public class SortedDataFile<K, V> {
     }
 
     public DataFileIterator<K, V> openIterator() {
+        if (!directory.isFileExists(fileName)) {
+            return new DataFileIterator<>(
+                    new PairFileReaderEmpty<>());
+        }
         final DiffKeyReader<K> diffKeyReader = new DiffKeyReader<K>(keyConvertorFromBytes);
         final PairTypeReader<K, V> pairReader = new PairTypeReaderImpl<>(diffKeyReader, valueReader);
         final DataFileIterator<K, V> iterator = new DataFileIterator<>(directory, fileName,

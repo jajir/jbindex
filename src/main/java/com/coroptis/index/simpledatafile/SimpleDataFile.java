@@ -66,6 +66,9 @@ public class SimpleDataFile<K, V> {
                 }
             }
         }
+        directory.deleteFile(getCacheFileName());
+        directory.deleteFile(getMainFileName());
+        directory.renameFile(getMergedFileName(), getMainFileName());
         props.setLong(PairWriterCountPair.NUMBER_OF_KEY_VALUE_PAIRS_IN_CACHE,
                 0);
         props.setLong(NUMBER_OF_KEY_VALUE_PAIRS_IN_MAIN_FILE, cx);
@@ -99,7 +102,7 @@ public class SimpleDataFile<K, V> {
     }
 
     private SortedDataFile<K, V> getMainFile() {
-        final SortedDataFile<K, V> out = getSortedFile(getSortedFileName());
+        final SortedDataFile<K, V> out = getSortedFile(getMainFileName());
         return out;
     }
 
@@ -142,7 +145,7 @@ public class SimpleDataFile<K, V> {
         return fileName + "-cache.unsorted";
     }
 
-    private String getSortedFileName() {
+    private String getMainFileName() {
         return fileName + ".sorted";
     }
 
