@@ -73,7 +73,8 @@ public class SimpleDataFile<K, V> {
     }
 
     /**
-     * Return merged and sorted data from cache and main file.s
+     * Return merged and sorted data from cache and main file. Access time to
+     * reader could significantly slow down when number of data in cache.
      * 
      * @return reader with all data
      */
