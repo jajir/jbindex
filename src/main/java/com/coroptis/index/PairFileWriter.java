@@ -9,7 +9,7 @@ package com.coroptis.index;
  * @param <K>
  * @param <V>
  */
-public interface PairWriter<K, V> extends CloseableResource {
+public interface PairFileWriter<K, V> extends CloseableResource {
 
     void put(Pair<K, V> pair);
 

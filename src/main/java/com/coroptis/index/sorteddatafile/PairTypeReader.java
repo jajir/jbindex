@@ -13,7 +13,7 @@ import com.coroptis.index.type.TypeReader;
  * @param <K>
  * @param <V>
  */
-public interface PairReader<K, V> extends TypeReader<Pair<K, V>> {
+public interface PairTypeReader<K, V> extends TypeReader<Pair<K, V>> {
 
     /**
      * Define reading as reading of key value pair.

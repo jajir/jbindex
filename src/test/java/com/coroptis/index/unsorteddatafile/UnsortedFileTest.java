@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 
 import com.coroptis.index.DataFileIterator;
 import com.coroptis.index.Pair;
-import com.coroptis.index.PairWriter;
+import com.coroptis.index.PairFileWriter;
 import com.coroptis.index.directory.Directory;
 import com.coroptis.index.directory.MemDirectory;
 import com.coroptis.index.rigidindex.IndexConfiguration;
@@ -26,7 +26,7 @@ public class UnsortedFileTest {
                 .getUnsortedFile("duck");
         assertNotNull(unsorted);
 
-        try (final PairWriter<Integer, String> writer = unsorted.openWriter()) {
+        try (final PairFileWriter<Integer, String> writer = unsorted.openWriter()) {
             writer.put(Pair.of(4, "here"));
             writer.put(Pair.of(-12, "we"));
             writer.put(Pair.of(98, "go"));

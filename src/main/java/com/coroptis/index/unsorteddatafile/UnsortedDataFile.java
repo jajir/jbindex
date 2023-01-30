@@ -3,13 +3,13 @@ package com.coroptis.index.unsorteddatafile;
 import java.util.Objects;
 
 import com.coroptis.index.DataFileIterator;
-import com.coroptis.index.DataFileReader;
-import com.coroptis.index.DataFileReaderImpl;
-import com.coroptis.index.PairWriter;
+import com.coroptis.index.PairFileReader;
+import com.coroptis.index.PairFileReaderImpl;
+import com.coroptis.index.PairFileWriter;
 import com.coroptis.index.directory.Directory;
 import com.coroptis.index.directory.Directory.Access;
-import com.coroptis.index.sorteddatafile.PairReader;
-import com.coroptis.index.sorteddatafile.PairReaderImpl;
+import com.coroptis.index.sorteddatafile.PairTypeReader;
+import com.coroptis.index.sorteddatafile.PairTypeReaderImpl;
 import com.coroptis.index.type.TypeReader;
 import com.coroptis.index.type.TypeWriter;
 
@@ -42,23 +42,23 @@ public class UnsortedDataFile<K, V> {
         this.valueReader = Objects.requireNonNull(valueReader);
     }
 
-    public DataFileReader<K, V> openReader() {
-        final PairReader<K, V> pairReader = new PairReaderImpl<>(keyReader,
+    public PairFileReader<K, V> openReader() {
+        final PairTypeReader<K, V> pairReader = new PairTypeReaderImpl<>(keyReader,
                 valueReader);
-        final DataFileReaderImpl<K, V> reader = new DataFileReaderImpl<>(directory,
+        final PairFileReaderImpl<K, V> reader = new PairFileReaderImpl<>(directory,
                 fileName, pairReader);
         return reader;
     }
 
     public DataFileIterator<K, V> openIterator() {
-        final PairReader<K, V> pairReader = new PairReaderImpl<>(keyReader,
+        final PairTypeReader<K, V> pairReader = new PairTypeReaderImpl<>(keyReader,
                 valueReader);
         final DataFileIterator<K, V> iterator = new DataFileIterator<>(
                 directory, fileName, pairReader);
         return iterator;
     }
 
-    public PairWriter<K, V> openWriter() {
+    public PairFileWriter<K, V> openWriter() {
         final UnsortedDataFileWriter<K, V> writer = new UnsortedDataFileWriter<>(
                 directory, fileName, keyWriter, valueWriter, Access.OVERWRITE);
         return writer;

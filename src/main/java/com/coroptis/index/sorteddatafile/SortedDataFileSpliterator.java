@@ -10,13 +10,13 @@ import com.coroptis.index.directory.FileReader;
 
 public class SortedDataFileSpliterator<K, V> implements Spliterator<Pair<K, V>> {
 
-    private final PairReader<K, V> pairReader;
+    private final PairTypeReader<K, V> pairReader;
 
     private final FileReader fileReader;
 
     private final PairComparator<K, V> pairComparator;
 
-    public SortedDataFileSpliterator(final PairReader<K, V> pairReader, final FileReader fileReader,
+    public SortedDataFileSpliterator(final PairTypeReader<K, V> pairReader, final FileReader fileReader,
             final PairComparator<K, V> pairComparator) {
         this.pairReader = Objects.requireNonNull(pairReader);
         this.fileReader = Objects.requireNonNull(fileReader);

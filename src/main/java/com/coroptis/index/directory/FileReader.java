@@ -7,10 +7,10 @@ import com.coroptis.index.CloseableResource;
  * just once.
  *
  * @author jajir
- *
+ * 
  */
 public interface FileReader extends CloseableResource {
-
+   //FIXME rename it to DataReader 
     /**
      * Read one byte. When byte is not available than return -1.
      *

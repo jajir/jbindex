@@ -8,14 +8,14 @@ import com.coroptis.index.CloseableResource;
 import com.coroptis.index.Pair;
 import com.coroptis.index.directory.Directory;
 import com.coroptis.index.directory.FileReader;
-import com.coroptis.index.sorteddatafile.PairReader;
-import com.coroptis.index.sorteddatafile.PairReaderImpl;
+import com.coroptis.index.sorteddatafile.PairTypeReader;
+import com.coroptis.index.sorteddatafile.PairTypeReaderImpl;
 import com.coroptis.index.type.TypeReader;
 
 public class UnsortedDataFileStreamer<K, V> implements CloseableResource {
 
     private final FileReader fileReader;
-    private final PairReader<K, V> pairReader;
+    private final PairTypeReader<K, V> pairReader;
 
     UnsortedDataFileStreamer(final Directory directory, final String fileName,
             final TypeReader<K> keyReader, final TypeReader<V> valueReader) {
@@ -24,7 +24,7 @@ public class UnsortedDataFileStreamer<K, V> implements CloseableResource {
         Objects.requireNonNull(keyReader);
         Objects.requireNonNull(valueReader);
         this.fileReader = directory.getFileReader(fileName);
-        this.pairReader = new PairReaderImpl<K, V>(keyReader, valueReader);
+        this.pairReader = new PairTypeReaderImpl<K, V>(keyReader, valueReader);
     }
 
     public Stream<Pair<K, V>> stream() {

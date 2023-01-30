@@ -4,24 +4,24 @@ import java.util.Objects;
 
 import com.coroptis.index.directory.Directory;
 import com.coroptis.index.directory.FileReader;
-import com.coroptis.index.sorteddatafile.PairReader;
+import com.coroptis.index.sorteddatafile.PairTypeReader;
 
 /**
- * Simple implementation of {@link DataFileReader} that uses given
- * {@link PairReader}.
+ * Simple implementation of {@link PairFileReader} that uses given
+ * {@link PairTypeReader}.
  * 
  * @author Honza
  *
  * @param<K> key type
  * @param <V> value type
  */
-public class DataFileReaderImpl<K, V> implements DataFileReader<K, V> {
+public class PairFileReaderImpl<K, V> implements PairFileReader<K, V> {
 
     private final FileReader fileReader;
-    private final PairReader<K, V> pairReader;
+    private final PairTypeReader<K, V> pairReader;
 
-    public DataFileReaderImpl(final Directory directory, final String fileName,
-            final PairReader<K, V> pairReader) {
+    public PairFileReaderImpl(final Directory directory, final String fileName,
+            final PairTypeReader<K, V> pairReader) {
         Objects.requireNonNull(directory);
         Objects.requireNonNull(fileName);
         this.fileReader = directory.getFileReader(fileName);

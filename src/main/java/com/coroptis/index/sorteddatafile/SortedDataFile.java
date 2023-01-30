@@ -4,8 +4,9 @@ import java.util.Comparator;
 import java.util.Objects;
 
 import com.coroptis.index.DataFileIterator;
-import com.coroptis.index.DataFileReader;
-import com.coroptis.index.DataFileReaderImpl;
+import com.coroptis.index.PairFileReader;
+import com.coroptis.index.PairFileReaderEmpty;
+import com.coroptis.index.PairFileReaderImpl;
 import com.coroptis.index.directory.Directory;
 import com.coroptis.index.type.ConvertorFromBytes;
 import com.coroptis.index.type.ConvertorToBytes;
@@ -58,16 +59,19 @@ public class SortedDataFile<K, V> {
         return streamer;
     }
 
-    public DataFileReader<K, V> openReader() {
+    public PairFileReader<K, V> openReader() {
+        if (!directory.isFileExists(fileName)) {
+            return new PairFileReaderEmpty<>();
+        }
         final DiffKeyReader<K> diffKeyReader = new DiffKeyReader<K>(keyConvertorFromBytes);
-        final PairReader<K, V> pairReader = new PairReaderImpl<>(diffKeyReader, valueReader);
-        final DataFileReaderImpl<K, V> reader = new DataFileReaderImpl<>(directory, fileName, pairReader);
+        final PairTypeReader<K, V> pairReader = new PairTypeReaderImpl<>(diffKeyReader, valueReader);
+        final PairFileReaderImpl<K, V> reader = new PairFileReaderImpl<>(directory, fileName, pairReader);
         return reader;
     }
 
     public DataFileIterator<K, V> openIterator() {
         final DiffKeyReader<K> diffKeyReader = new DiffKeyReader<K>(keyConvertorFromBytes);
-        final PairReader<K, V> pairReader = new PairReaderImpl<>(diffKeyReader, valueReader);
+        final PairTypeReader<K, V> pairReader = new PairTypeReaderImpl<>(diffKeyReader, valueReader);
         final DataFileIterator<K, V> iterator = new DataFileIterator<>(directory, fileName,
                 pairReader);
         return iterator;

@@ -15,12 +15,12 @@ import com.coroptis.index.type.TypeReader;
  * @param <K>
  * @param <V>
  */
-public class PairReaderImpl<K, V> implements PairReader<K, V> {
+public class PairTypeReaderImpl<K, V> implements PairTypeReader<K, V> {
 
     private final TypeReader<K> keyReader;
     private final TypeReader<V> valueReader;
 
-    public PairReaderImpl(final TypeReader<K> keyReader, final TypeReader<V> valueReader) {
+    public PairTypeReaderImpl(final TypeReader<K> keyReader, final TypeReader<V> valueReader) {
         this.keyReader = Objects.requireNonNull(keyReader);
         this.valueReader = Objects.requireNonNull(valueReader);
     }

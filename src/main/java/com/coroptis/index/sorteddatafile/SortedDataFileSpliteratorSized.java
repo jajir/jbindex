@@ -10,7 +10,7 @@ import com.coroptis.index.directory.FileReader;
 
 public class SortedDataFileSpliteratorSized<K, V> implements Spliterator<Pair<K, V>> {
 
-    private final PairReader<K, V> pairReader;
+    private final PairTypeReader<K, V> pairReader;
 
     private final FileReader fileReader;
 
@@ -18,7 +18,7 @@ public class SortedDataFileSpliteratorSized<K, V> implements Spliterator<Pair<K,
 
     private final long estimateSize;
 
-    public SortedDataFileSpliteratorSized(final PairReader<K, V> pairReader,
+    public SortedDataFileSpliteratorSized(final PairTypeReader<K, V> pairReader,
             final FileReader fileReader, final PairComparator<K, V> pairComparator,
             final long estimateSize) {
         this.pairReader = Objects.requireNonNull(pairReader);

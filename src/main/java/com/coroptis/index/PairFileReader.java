@@ -8,7 +8,7 @@ package com.coroptis.index;
  * @param<K> key type
  * @param <V> value type
  */
-public interface DataFileReader<K, V> extends CloseableResource {
+public interface PairFileReader<K, V> extends CloseableResource {
 
     /**
      * Try to read data.
@@ -18,6 +18,7 @@ public interface DataFileReader<K, V> extends CloseableResource {
      */
     public Pair<K, V> read();
 
+    // FIXME remove this method. In Most cases doesn't make sense.
     public void skip(long position);
 
 }

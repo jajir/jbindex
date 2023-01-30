@@ -18,15 +18,15 @@ import org.junit.jupiter.api.Test;
 
 import com.coroptis.index.DataFileIterator;
 import com.coroptis.index.Pair;
-import com.coroptis.index.sorteddatafile.PairReader;
+import com.coroptis.index.sorteddatafile.PairTypeReader;
 
 public class MergeSpliteratorTest {
 
     @SuppressWarnings("unchecked")
-    final PairReader<String, String> pairReader1 = mock(PairReader.class);
+    final PairTypeReader<String, String> pairReader1 = mock(PairTypeReader.class);
 
     @SuppressWarnings("unchecked")
-    final PairReader<String, String> pairReader2 = mock(PairReader.class);
+    final PairTypeReader<String, String> pairReader2 = mock(PairTypeReader.class);
 
     @SuppressWarnings("unchecked")
     final DataFileIterator<Integer, String> file1Reader = mock(DataFileIterator.class);

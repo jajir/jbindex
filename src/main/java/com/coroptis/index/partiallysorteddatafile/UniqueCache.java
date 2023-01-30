@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import com.coroptis.index.Pair;
 import com.coroptis.index.basic.ValueMerger;
@@ -19,8 +20,8 @@ public class UniqueCache<K, V> {
     }
 
     public void add(final Pair<K, V> pair) {
-        map.merge(pair.getKey(), pair.getValue(),
-                (oldVal, newVal) -> merger.merge(pair.getKey(), oldVal, newVal));
+        map.merge(pair.getKey(), pair.getValue(), (oldVal, newVal) -> merger
+                .merge(pair.getKey(), oldVal, newVal));
     }
 
     public void clear() {
@@ -39,6 +40,11 @@ public class UniqueCache<K, V> {
         return map.entrySet().stream()
                 .map(entry -> new Pair<K, V>(entry.getKey(), entry.getValue()))
                 .collect(Collectors.toList());
+    }
+
+    public Stream<Pair<K, V>> getStream() {
+        return map.entrySet().stream()
+                .map(entry -> new Pair<K, V>(entry.getKey(), entry.getValue()));
     }
 
 }

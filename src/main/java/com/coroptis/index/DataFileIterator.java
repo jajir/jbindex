@@ -6,10 +6,10 @@ import java.util.Objects;
 import java.util.Optional;
 
 import com.coroptis.index.directory.Directory;
-import com.coroptis.index.sorteddatafile.PairReader;
+import com.coroptis.index.sorteddatafile.PairTypeReader;
 
 /**
- * Allows to use {@link DataFileReader} as {@link Iterator}. Some operations
+ * Allows to use {@link PairFileReader} as {@link Iterator}. Some operations
  * like data merging it makes a lot easier.
  * 
  * @author honza
@@ -20,16 +20,16 @@ import com.coroptis.index.sorteddatafile.PairReader;
 public class DataFileIterator<K, V>
         implements Iterator<Pair<K, V>>, CloseableResource {
 
-    private final DataFileReaderImpl<K, V> reader;
+    private final PairFileReaderImpl<K, V> reader;
 
     private Pair<K, V> current = null;
 
     public DataFileIterator(final Directory directory, final String fileName,
-            final PairReader<K, V> pairReader) {
-        this(new DataFileReaderImpl<>(directory, fileName, pairReader));
+            final PairTypeReader<K, V> pairReader) {
+        this(new PairFileReaderImpl<>(directory, fileName, pairReader));
     }
 
-    public DataFileIterator(final DataFileReaderImpl<K, V> reader) {
+    public DataFileIterator(final PairFileReaderImpl<K, V> reader) {
         this.reader = Objects.requireNonNull(reader);
         current = reader.read();
     }

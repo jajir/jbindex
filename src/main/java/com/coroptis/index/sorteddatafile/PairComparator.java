@@ -5,6 +5,14 @@ import java.util.Objects;
 
 import com.coroptis.index.Pair;
 
+/**
+ * Allows to compare pairs by key.
+ * 
+ * @author honza
+ *
+ * @param <K>
+ * @param <V>
+ */
 public class PairComparator<K, V> implements Comparator<Pair<K, V>> {
 
     private final Comparator<? super K> keyComparator;
