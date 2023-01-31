@@ -38,6 +38,18 @@ public class FastIndexFile<K> implements CloseableResource {
             }
         }
     }
+    
+    public Integer findFileId(final K key) {
+        return null;
+    }
+    
+    public void insertPage(final K key, final Integer pageId) {
+        
+    }
+    
+    public void save() {
+        
+    }
 
     @Override
     public void close() {

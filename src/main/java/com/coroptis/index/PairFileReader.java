@@ -16,9 +16,9 @@ public interface PairFileReader<K, V> extends CloseableResource {
      * @return Return read data when it's possible. Return <code>null</code>
      *         when there are no data.
      */
-    public Pair<K, V> read();
+    Pair<K, V> read();
 
     // FIXME remove this method. In Most cases doesn't make sense.
-    public void skip(long position);
+    void skip(long position);
 
 }
