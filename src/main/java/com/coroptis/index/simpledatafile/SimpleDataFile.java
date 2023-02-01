@@ -2,7 +2,9 @@ package com.coroptis.index.simpledatafile;
 
 import java.util.Objects;
 
+import com.coroptis.index.DataFileIterator;
 import com.coroptis.index.IndexException;
+import com.coroptis.index.Pair;
 import com.coroptis.index.PairFileReader;
 import com.coroptis.index.PairFileWriter;
 import com.coroptis.index.basic.ValueMerger;
@@ -27,130 +29,171 @@ public class SimpleDataFile<K, V> {
     private final ValueMerger<K, V> valueMerger;
     private final Props props;
 
-    public SimpleDataFile(final Directory directory, final String fileName,
-            final TypeDescriptor<K> keyTypeDescriptor,
-            final TypeDescriptor<V> valueTypeDescriptor,
-            final ValueMerger<K, V> valueMerger) {
-        this.directory = Objects.requireNonNull(directory);
-        Objects.requireNonNull(fileName, "File name is required");
-        if (fileName.contains(".")) {
-            throw new IndexException(String.format(
-                    "File name '%s' should not contain any dots.", fileName));
-        }
-        this.fileName = Objects.requireNonNull(fileName);
-        this.keyTypeDescriptor = Objects.requireNonNull(keyTypeDescriptor);
-        this.valueTypeDescriptor = Objects.requireNonNull(valueTypeDescriptor);
-        this.valueMerger = Objects.requireNonNull(valueMerger);
-        this.props = new Props(directory, fileName + ".properties");
+    public SimpleDataFile(final Directory directory, final String fileName, final TypeDescriptor<K> keyTypeDescriptor,
+	    final TypeDescriptor<V> valueTypeDescriptor, final ValueMerger<K, V> valueMerger) {
+	this.directory = Objects.requireNonNull(directory);
+	Objects.requireNonNull(fileName, "File name is required");
+	if (fileName.contains(".")) {
+	    throw new IndexException(String.format("File name '%s' should not contain any dots.", fileName));
+	}
+	this.fileName = Objects.requireNonNull(fileName);
+	this.keyTypeDescriptor = Objects.requireNonNull(keyTypeDescriptor);
+	this.valueTypeDescriptor = Objects.requireNonNull(valueTypeDescriptor);
+	this.valueMerger = Objects.requireNonNull(valueMerger);
+	this.props = new Props(directory, fileName + ".properties");
     }
 
     public Stats getStats() {
-        return new Stats(
-                props.getLong(
-                        PairWriterCountPair.NUMBER_OF_KEY_VALUE_PAIRS_IN_CACHE),
-                props.getLong(NUMBER_OF_KEY_VALUE_PAIRS_IN_MAIN_FILE));
+	return new Stats(props.getLong(PairWriterCountPair.NUMBER_OF_KEY_VALUE_PAIRS_IN_CACHE),
+		props.getLong(NUMBER_OF_KEY_VALUE_PAIRS_IN_MAIN_FILE));
     }
 
     /**
      * Merge data from cache to main index.
      */
     public void merge() {
-        long cx = 0;
-        try (final IndexIterator2<K, V> iterator = new IndexIterator2<>(
-                openReader())) {
-            try (final SortedDataFileWriter<K, V> writer = getTempFile()
-                    .openWriter()) {
-                while (iterator.hasNext()) {
-                    writer.put(iterator.next());
-                    cx++;
-                }
-            }
-        }
-        directory.deleteFile(getCacheFileName());
-        directory.deleteFile(getMainFileName());
-        directory.renameFile(getMergedFileName(), getMainFileName());
-        props.setLong(PairWriterCountPair.NUMBER_OF_KEY_VALUE_PAIRS_IN_CACHE,
-                0);
-        props.setLong(NUMBER_OF_KEY_VALUE_PAIRS_IN_MAIN_FILE, cx);
-        props.writeData();
+	long cx = 0;
+	try (final IndexIterator2<K, V> iterator = new IndexIterator2<>(openReader())) {
+	    try (final SortedDataFileWriter<K, V> writer = getTempFile().openWriter()) {
+		while (iterator.hasNext()) {
+		    writer.put(iterator.next());
+		    cx++;
+		}
+	    }
+	}
+	directory.deleteFile(getCacheFileName());
+	directory.deleteFile(getMainFileName());
+	directory.renameFile(getMergedFileName(), getMainFileName());
+	props.setLong(PairWriterCountPair.NUMBER_OF_KEY_VALUE_PAIRS_IN_CACHE, 0);
+	props.setLong(NUMBER_OF_KEY_VALUE_PAIRS_IN_MAIN_FILE, cx);
+	props.writeData();
     }
 
     /**
-     * Return merged and sorted data from cache and main file. Access time to
-     * reader could significantly slow down when number of data in cache.
+     * Return merged and sorted data from cache and main file. Access time to reader
+     * could significantly slow down when number of data in cache.
      * 
      * @return reader with all data
      */
     public PairFileReader<K, V> openReader() {
-        final CacheSortedReader<K, V> reader1 = new CacheSortedReader<>(
-                valueMerger, getCacheFile(), keyTypeDescriptor.getComparator());
-        final PairFileReader<K, V> reader2 = getMainFile().openReader();
-        final MergedPairReader<K, V> mergedPairReader = new MergedPairReader<>(
-                reader1, reader2, valueMerger,
-                keyTypeDescriptor.getComparator());
-        return mergedPairReader;
+	final CacheSortedReader<K, V> reader1 = new CacheSortedReader<>(valueMerger, getCacheFile(),
+		keyTypeDescriptor.getComparator());
+	final PairFileReader<K, V> reader2 = getMainFile().openReader();
+	final MergedPairReader<K, V> mergedPairReader = new MergedPairReader<>(reader1, reader2, valueMerger,
+		keyTypeDescriptor.getComparator());
+	return mergedPairReader;
     }
 
     private UnsortedDataFile<K, V> getCacheFile() {
-        final UnsortedDataFile<K, V> out = UnsortedDataFile.<K, V>builder()
-                .withDirectory(directory).withFileName(getCacheFileName())
-                .withKeyReader(keyTypeDescriptor.getTypeReader())
-                .withValueReader(valueTypeDescriptor.getTypeReader())
-                .withKeyWriter(keyTypeDescriptor.getTypeWriter())
-                .withValueWriter(valueTypeDescriptor.getTypeWriter()).build();
-        return out;
-    }
-
-    private SortedDataFile<K, V> getMainFile() {
-        final SortedDataFile<K, V> out = getSortedFile(getMainFileName());
-        return out;
-    }
-
-    private SortedDataFile<K, V> getTempFile() {
-        final SortedDataFile<K, V> out = getSortedFile(getMergedFileName());
-        return out;
-    }
-
-    private SortedDataFile<K, V> getSortedFile(final String fileName) {
-        final SortedDataFile<K, V> out = SortedDataFile.<K, V>builder()
-                .withDirectory(directory).withFileName(fileName)
-                .withKeyConvertorFromBytes(
-                        keyTypeDescriptor.getConvertorFromBytes())
-                .withValueReader(valueTypeDescriptor.getTypeReader())
-                .withKeyConvertorToBytes(
-                        keyTypeDescriptor.getConvertorToBytes())
-                .withValueWriter(valueTypeDescriptor.getTypeWriter())
-                .withKeyComparator(keyTypeDescriptor.getComparator()).build();
-        return out;
+	final UnsortedDataFile<K, V> out = UnsortedDataFile.<K, V>builder().withDirectory(directory)
+		.withFileName(getCacheFileName()).withKeyReader(keyTypeDescriptor.getTypeReader())
+		.withValueReader(valueTypeDescriptor.getTypeReader()).withKeyWriter(keyTypeDescriptor.getTypeWriter())
+		.withValueWriter(valueTypeDescriptor.getTypeWriter()).build();
+	return out;
     }
 
     /**
-     * Writer ignores previously written data. Just append open data writer for
-     * new data.
+     * Split simple data file into two simple data files. Newly created simple data
+     * file will contains smaller half of keys. Max key value in new simple data
+     * file will be returned.
+     * 
+     * @param smallerDataFileName
+     * @return
+     */
+    public K split(final String smallerDataFileName) {
+
+	long cx = 0;
+	long half = getStats().getTotalNumberOfPairs() / 2;
+	K maxLowerIndexKey = null;
+	try (final DataFileIterator<K, V> iterator = new DataFileIterator<>(openReader())) {
+	    final SimpleDataFile<K, V> sdfLower = new SimpleDataFile<>(directory, smallerDataFileName,
+		    keyTypeDescriptor, valueTypeDescriptor, valueMerger);
+	    maxLowerIndexKey = sdfLower.writePairsFromIterator(iterator, half);
+
+	    // read bigger half and store it to current simple data file.
+	    cx = 0;
+	    try (final SortedDataFileWriter<K, V> writer = getTempFile().openWriter()) {
+		while (iterator.hasNext()) {
+		    writer.put(iterator.next());
+		    cx++;
+		}
+	    }
+	    directory.deleteFile(getCacheFileName());
+	    directory.deleteFile(getMainFileName());
+	    directory.renameFile(getMergedFileName(), getMainFileName());
+	    props.setLong(PairWriterCountPair.NUMBER_OF_KEY_VALUE_PAIRS_IN_CACHE, 0);
+	    props.setLong(NUMBER_OF_KEY_VALUE_PAIRS_IN_MAIN_FILE, cx);
+	    props.writeData();
+
+	}
+	return maxLowerIndexKey;
+    }
+
+    private SortedDataFile<K, V> getMainFile() {
+	final SortedDataFile<K, V> out = getSortedFile(getMainFileName());
+	return out;
+    }
+
+    private SortedDataFile<K, V> getTempFile() {
+	final SortedDataFile<K, V> out = getSortedFile(getMergedFileName());
+	return out;
+    }
+
+    private SortedDataFile<K, V> getSortedFile(final String fileName) {
+	final SortedDataFile<K, V> out = SortedDataFile.<K, V>builder().withDirectory(directory).withFileName(fileName)
+		.withKeyConvertorFromBytes(keyTypeDescriptor.getConvertorFromBytes())
+		.withValueReader(valueTypeDescriptor.getTypeReader())
+		.withKeyConvertorToBytes(keyTypeDescriptor.getConvertorToBytes())
+		.withValueWriter(valueTypeDescriptor.getTypeWriter())
+		.withKeyComparator(keyTypeDescriptor.getComparator()).build();
+	return out;
+    }
+
+    /**
+     * Writer ignores previously written data. Just append open data writer for new
+     * data.
      * 
      * @return
      */
     public PairFileWriter<K, V> openCacheWriter() {
-        final Access access = directory.isFileExists(getCacheFileName())
-                ? Access.APPEND
-                : Access.OVERWRITE;
-        final PairFileWriter<K, V> basePairWriter = new UnsortedDataFileWriter<>(
-                directory, getCacheFileName(),
-                keyTypeDescriptor.getTypeWriter(),
-                valueTypeDescriptor.getTypeWriter(), access);
-        return new PairWriterCountPair<>(basePairWriter, props);
+	final Access access = directory.isFileExists(getCacheFileName()) ? Access.APPEND : Access.OVERWRITE;
+	final PairFileWriter<K, V> basePairWriter = new UnsortedDataFileWriter<>(directory, getCacheFileName(),
+		keyTypeDescriptor.getTypeWriter(), valueTypeDescriptor.getTypeWriter(), access);
+	return new PairWriterCountPair<>(basePairWriter, props);
+    }
+
+    /**
+     * Method overwrite main index file
+     * 
+     * @return
+     */
+    public K writePairsFromIterator(final DataFileIterator<K, V> iterator, long howManyToCopy) {
+	K maxLowerIndexKey = null;
+	long cx = 0;
+	try (final SortedDataFileWriter<K, V> writer = getSortedFile(getMainFileName()).openWriter()) {
+	    while (cx < howManyToCopy) {
+		final Pair<K, V> pair = iterator.next();
+		writer.put(pair);
+		maxLowerIndexKey = pair.getKey();
+		cx++;
+	    }
+	}
+	props.setLong(NUMBER_OF_KEY_VALUE_PAIRS_IN_MAIN_FILE, cx);
+	props.setLong(PairWriterCountPair.NUMBER_OF_KEY_VALUE_PAIRS_IN_CACHE, 0);
+	props.writeData();
+	return maxLowerIndexKey;
     }
 
     private String getCacheFileName() {
-        return fileName + "-cache.unsorted";
+	return fileName + ".unsorted";
     }
 
     private String getMainFileName() {
-        return fileName + ".sorted";
+	return fileName + ".sorted";
     }
 
     private String getMergedFileName() {
-        return fileName + ".merged";
+	return fileName + ".merged";
     }
 
 }

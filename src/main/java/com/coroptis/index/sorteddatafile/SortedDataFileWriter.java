@@ -11,6 +11,7 @@ import com.coroptis.index.type.ConvertorToBytes;
 import com.coroptis.index.type.TypeWriter;
 
 public class SortedDataFileWriter<K, V> implements CloseableResource {
+    //TODO implements PairFileWriter.
 
     private final TypeWriter<V> valueWriter;
 

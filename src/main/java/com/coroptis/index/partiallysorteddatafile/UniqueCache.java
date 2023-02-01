@@ -1,5 +1,6 @@
 package com.coroptis.index.partiallysorteddatafile;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -8,6 +9,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.coroptis.index.Pair;
+import com.coroptis.index.PairFileReader;
 import com.coroptis.index.basic.ValueMerger;
 
 public class UniqueCache<K, V> {
@@ -40,6 +42,17 @@ public class UniqueCache<K, V> {
         return map.entrySet().stream()
                 .map(entry -> new Pair<K, V>(entry.getKey(), entry.getValue()))
                 .collect(Collectors.toList());
+    }
+    
+    
+    public PairFileReader<K, V> openReader() {
+	return new UniqueCacheReader<>(getStream().iterator());
+    }
+    
+    public PairFileReader<K, V> openClonedReader() {
+	final List<Pair<K,V>> out = new ArrayList<>();
+	getStream().forEach(out::add);
+	return new UniqueCacheReader<>(out.iterator());
     }
 
     public Stream<Pair<K, V>> getStream() {
