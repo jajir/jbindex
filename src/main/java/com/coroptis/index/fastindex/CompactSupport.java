@@ -35,7 +35,7 @@ public class CompactSupport<K, V> {
 	    return;
 	} else {
 	    /* Write all keys to index and clean cache and set new pageId */
-	    flushToSegment();
+	    flushToCurrentPageIdSegment();
 	    toSameSegment.add(pair);
 	    currentPageId = pageId;
 	}
@@ -45,11 +45,12 @@ public class CompactSupport<K, V> {
 	if (currentPageId == -1) {
 	    return;
 	}
-	flushToSegment();
+	flushToCurrentPageIdSegment();
 	currentPageId = -1;
     }
 
-    private void flushToSegment() {
+    private void flushToCurrentPageIdSegment() {
+	System.out.println("Flushig data " + toSameSegment.size() + " to segment " + currentPageId);
 	final SimpleDataFile<K, V> sdf = fastIndex.getSegment(currentPageId);
 	try (final PairFileWriter<K, V> writer = sdf.openCacheWriter()) {
 	    toSameSegment.forEach(writer::put);

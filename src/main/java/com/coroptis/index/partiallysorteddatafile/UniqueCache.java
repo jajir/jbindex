@@ -55,6 +55,11 @@ public class UniqueCache<K, V> {
 	return new UniqueCacheReader<>(out.iterator());
     }
 
+    /**
+     * Get unsorted stream of key value pairs
+     * 
+     * @return unsorted stream of key value pairs
+     */
     public Stream<Pair<K, V>> getStream() {
         return map.entrySet().stream()
                 .map(entry -> new Pair<K, V>(entry.getKey(), entry.getValue()));

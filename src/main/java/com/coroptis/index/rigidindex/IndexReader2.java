@@ -21,7 +21,7 @@ public class IndexReader2<K, V> implements CloseableResource {
     public boolean hasCurrent() {
         return currentPair != null;
     }
-
+    
     public Optional<Pair<K, V>> readCurrent() {
         return Optional.ofNullable(currentPair);
     }
