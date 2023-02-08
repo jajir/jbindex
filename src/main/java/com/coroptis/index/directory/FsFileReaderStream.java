@@ -13,7 +13,7 @@ public class FsFileReaderStream implements FileReader {
 
     private final BufferedInputStream bis;
 
-    private final static int BUFFER_SIZE = 1024 * 1024 * 5;
+    private final static int BUFFER_SIZE = 1024 * 1 * 4;
 
     FsFileReaderStream(final File file) {
         try {

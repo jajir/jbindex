@@ -10,7 +10,7 @@ public class PartiallySortedDataFileBuilder<K, V> {
 
     private String fileName;
 
-    private Comparator<? super K> keyComparator;
+    private Comparator<K> keyComparator;
 
     private BasicIndex<K, V> basicIndex;
 
@@ -22,7 +22,7 @@ public class PartiallySortedDataFileBuilder<K, V> {
     }
 
     public PartiallySortedDataFileBuilder<K, V> withKeyComparator(
-            final Comparator<? super K> keyComparator) {
+            final Comparator<K> keyComparator) {
         this.keyComparator = Objects.requireNonNull(keyComparator);
         return this;
     }

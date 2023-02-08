@@ -1,10 +1,10 @@
 package com.coroptis.index.partiallysorteddatafile;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -14,11 +14,12 @@ import com.coroptis.index.basic.ValueMerger;
 
 public class UniqueCache<K, V> {
 
-    private final Map<K, V> map = new HashMap<>();
+    private final TreeMap<K, V> map;
     private final ValueMerger<K, V> merger;
 
-    public UniqueCache(final ValueMerger<K, V> merger) {
+    public UniqueCache(final ValueMerger<K, V> merger, final Comparator<K> keyComparator) {
         this.merger = Objects.requireNonNull(merger);
+        this.map = new TreeMap<>(keyComparator);
     }
 
     public void add(final Pair<K, V> pair) {

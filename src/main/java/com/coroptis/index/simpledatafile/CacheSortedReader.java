@@ -21,7 +21,7 @@ public class CacheSortedReader<K, V> implements PairFileReader<K, V> {
     CacheSortedReader(final ValueMerger<K, V> merger,
             final UnsortedDataFile<K, V> unsortedDataFile,
             final Comparator<K> keyComparator) {
-        final UniqueCache<K, V> cache = new UniqueCache<>(merger);
+        final UniqueCache<K, V> cache = new UniqueCache<>(merger,keyComparator);
         try (final UnsortedDataFileStreamer<K, V> streamer = unsortedDataFile
                 .openStreamer()) {
             streamer.stream().forEach(cache::add);

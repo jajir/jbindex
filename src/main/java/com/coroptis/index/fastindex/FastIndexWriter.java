@@ -1,5 +1,7 @@
 package com.coroptis.index.fastindex;
 
+import java.util.Comparator;
+
 import com.coroptis.index.Pair;
 import com.coroptis.index.PairFileWriter;
 import com.coroptis.index.basic.ValueMerger;
@@ -9,8 +11,8 @@ public class FastIndexWriter<K, V> implements PairFileWriter<K, V> {
 
     private final UniqueCache<K, V> cache;
 
-    FastIndexWriter(final ValueMerger<K, V> merger) {
-        this.cache = new UniqueCache<>(merger);
+    FastIndexWriter(final ValueMerger<K, V> merger, final Comparator<K> keyComparator) {
+        this.cache = new UniqueCache<>(merger, keyComparator);
     }
 
     @Override

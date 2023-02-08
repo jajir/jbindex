@@ -11,7 +11,7 @@ public class PartiallySortedDataFile<K, V> {
 
     private final String fileName;
 
-    private final Comparator<? super K> keyComparator;
+    private final Comparator<K> keyComparator;
 
     private final BasicIndex<K, V> basicIndex;
 
@@ -21,7 +21,7 @@ public class PartiallySortedDataFile<K, V> {
         return new PartiallySortedDataFileBuilder<M, N>();
     }
 
-    public PartiallySortedDataFile(final String fileName, final Comparator<? super K> keyComparator,
+    public PartiallySortedDataFile(final String fileName, final Comparator<K> keyComparator,
             final BasicIndex<K, V> basicIndex, final ValueMerger<K, V> merger) {
         this.fileName = Objects.requireNonNull(fileName);
         this.keyComparator = Objects.requireNonNull(keyComparator);

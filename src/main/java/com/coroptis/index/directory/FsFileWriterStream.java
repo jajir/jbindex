@@ -14,7 +14,7 @@ public class FsFileWriterStream implements FileWriter {
 
     private final OutputStream fio;
 
-    private static final int BUFFER_SIZE = 1024 * 1024 * 5;
+    private static final int BUFFER_SIZE = 1024 * 1 * 4;
 
     FsFileWriterStream(final File file, final Directory.Access access) {
         try {

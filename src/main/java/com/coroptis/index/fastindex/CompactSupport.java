@@ -19,7 +19,7 @@ public class CompactSupport<K, V> {
     private final FastIndexFile<K> fastIndexFile;
     private final FastIndex<K, V> fastIndex;
     K currentSegmentKey = null;
-    int currentPageId = -1;
+    int currentSegmentId = -1;
 
     CompactSupport(final FastIndex<K, V> fastIndex, final FastIndexFile<K> fastIndexFile) {
 	this.fastIndex = fastIndex;
@@ -30,37 +30,38 @@ public class CompactSupport<K, V> {
 	Objects.requireNonNull(pair);
 	final K segmentKey = pair.getKey();
 	final int pageId = fastIndexFile.insertKeyToPage(segmentKey);
-	if (currentPageId == -1) {
-	    currentPageId = pageId;
+	if (currentSegmentId == -1) {
+	    currentSegmentId = pageId;
 	    toSameSegment.add(pair);
 	    return;
 	}
-	if (currentPageId == pageId) {
+	if (currentSegmentId == pageId) {
 	    toSameSegment.add(pair);
 	    return;
 	} else {
 	    /* Write all keys to index and clean cache and set new pageId */
 	    flushToCurrentPageIdSegment();
 	    toSameSegment.add(pair);
-	    currentPageId = pageId;
+	    currentSegmentId = pageId;
 	}
     }
 
     public void compactRest() {
-	if (currentPageId == -1) {
+	if (currentSegmentId == -1) {
 	    return;
 	}
 	flushToCurrentPageIdSegment();
-	currentPageId = -1;
+	currentSegmentId = -1;
     }
 
     private void flushToCurrentPageIdSegment() {
-	logger.debug("Flushig data {} to segment {}.",  toSameSegment.size(),  currentPageId);
-	final SimpleDataFile<K, V> sdf = fastIndex.getSegment(currentPageId);
+	logger.debug("Flushing {} key value pairs into segment {}.",  toSameSegment.size(),  currentSegmentId);
+	final SimpleDataFile<K, V> sdf = fastIndex.getSegment(currentSegmentId);
 	try (final PairFileWriter<K, V> writer = sdf.openCacheWriter()) {
 	    toSameSegment.forEach(writer::put);
 	}
 	toSameSegment.clear();
+	logger.debug("Flushing to segment {} was done.",  toSameSegment.size(),  currentSegmentId);
     }
 
 }

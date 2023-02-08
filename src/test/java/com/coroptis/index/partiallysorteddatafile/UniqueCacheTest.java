@@ -20,7 +20,7 @@ public class UniqueCacheTest {
 	}
     };
 
-    private final UniqueCache<Integer, String> cache = new UniqueCache<>(concat);
+    private final UniqueCache<Integer, String> cache = new UniqueCache<>(concat, (i1, i2) -> i2 - i1);
 
     @Test
     public void test_basic_function() throws Exception {

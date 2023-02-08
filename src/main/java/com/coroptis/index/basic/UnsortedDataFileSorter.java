@@ -28,14 +28,14 @@ class UnsortedDataFileSorter<K, V> {
      */
     private final String unsortedFileName;
     private final ValueMerger<K, V> merger;
-    private final Comparator<? super K> keyComparator;
+    private final Comparator<K> keyComparator;
     private final Integer howManySortInMemory;
     private final BasicIndex<K, V> basicIndex;
     private final SortSupport<K, V> sortSupport;
     private final RoundSorted<K, V> roundSorter;
 
     UnsortedDataFileSorter(final String unsortedFileName, final ValueMerger<K, V> merger,
-            final Comparator<? super K> keyComparator, final Integer howManySortInMemory,
+            final Comparator<K> keyComparator, final Integer howManySortInMemory,
             final BasicIndex<K, V> basicIndex) {
         this.unsortedFileName = Objects.requireNonNull(unsortedFileName);
         this.merger = Objects.requireNonNull(merger);

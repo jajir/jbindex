@@ -18,8 +18,8 @@ import com.coroptis.index.simpledatafile.SimpleDataFile;
 import com.coroptis.index.type.TypeDescriptor;
 
 public class FastIndex<K, V> implements CloseableResource {
-	
-	Logger logger = LoggerFactory.getLogger(FastIndex.class);
+
+    Logger logger = LoggerFactory.getLogger(FastIndex.class);
 
     private final long maxNumberOfKeysInCache;
     private final long maxNumeberOfKeysInSegmentCache;
@@ -47,7 +47,7 @@ public class FastIndex<K, V> implements CloseableResource {
 	this.valueTypeDescriptor = Objects.requireNonNull(valueTypeDescriptor);
 	this.valueMerger = Objects.requireNonNull(valueMerger);
 	this.fastIndexFile = new FastIndexFile<K>(directory, keyTypeDescriptor);
-	this.cache = new UniqueCache<>(valueMerger);
+	this.cache = new UniqueCache<>(valueMerger, keyTypeDescriptor.getComparator());
     }
 
     public void put(final Pair<K, V> pair) {
@@ -60,7 +60,7 @@ public class FastIndex<K, V> implements CloseableResource {
 
     private void compact() {
 	// It's stupid more than one pair falls into opened segment.
-	logger.debug("Compacting");
+	logger.debug("Compacting of {} key value pairs in cache started.", cache.size());
 	final CompactSupport<K, V> support = new CompactSupport<>(this, fastIndexFile);
 	cache.getStream()
 		.sorted((pair1, pair2) -> keyTypeDescriptor.getComparator().compare(pair1.getKey(), pair2.getKey()))
@@ -69,8 +69,8 @@ public class FastIndex<K, V> implements CloseableResource {
 		});
 	support.compactRest();
 	cache.clear();
+	logger.debug("Compacting is done. Cache contains {} key value pairs.", cache.size());
 	optionallyCompactSegments();
-	logger.debug("Number of keys in cache is {}.", cache.size());
     }
 
     SimpleDataFile<K, V> getSegment(final int pageId) {
@@ -88,22 +88,25 @@ public class FastIndex<K, V> implements CloseableResource {
 	 * Defensive copy have to be done, because further splitting will affect list
 	 * size. In the future it will be slow.
 	 */
-	logger.debug("Trying to merging segments " + fastIndexFile.getPagesAsStream().count());
 	final List<Pair<K, Integer>> list = fastIndexFile.getPagesAsStream().collect(Collectors.toList());
+	logger.debug("Start of optimalizations of {} segments.", list.size());
 	list.forEach(pair -> {
 	    final SimpleDataFile<K, V> sdf = new SimpleDataFile<>(directory, getFileName(pair.getValue()),
 		    keyTypeDescriptor, valueTypeDescriptor, valueMerger);
 	    if (sdf.getStats().getNumberOfPairsInMainFile() > maxNumeberOfKeysInSegment) {
+		logger.debug("Splitting of segment {} started.", pair.getValue());
 		final int newSegmentId = (int) (fastIndexFile.getPagesAsStream().count());
 		final K newPageKey = sdf.split(getFileName(newSegmentId));
 		fastIndexFile.insertPage(newPageKey, newSegmentId);
-		logger.debug("Splitting segments " + pair.getValue());
+		logger.debug("Splitting of segment {} to {} is done.", pair.getValue(), newSegmentId);
 	    }
 	    if (sdf.getStats().getNumberOfPairsInCache() > maxNumeberOfKeysInSegmentCache) {
-		logger.debug("Merging segments " + pair.getValue());
+		logger.debug("Merging of segment {} started.", pair.getValue());
 		sdf.merge();
+		logger.debug("Merging of segment {} is done.", pair.getValue());
 	    }
 	});
+	logger.debug("Optimalizations of {} segments is done.", list.size());
     }
 
     /**

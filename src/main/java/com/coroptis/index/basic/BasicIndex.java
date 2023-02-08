@@ -72,7 +72,7 @@ public class BasicIndex<K, V> {
         return valueTypeDescriptor.getTypeWriter();
     }
 
-    protected Comparator<? super K> getKeyComparator() {
+    protected Comparator<K> getKeyComparator() {
         return keyTypeDescriptor.getComparator();
     };
 
