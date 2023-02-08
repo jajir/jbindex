@@ -4,6 +4,9 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.coroptis.index.CloseableResource;
 import com.coroptis.index.Pair;
 import com.coroptis.index.PairFileReader;
@@ -15,6 +18,8 @@ import com.coroptis.index.simpledatafile.SimpleDataFile;
 import com.coroptis.index.type.TypeDescriptor;
 
 public class FastIndex<K, V> implements CloseableResource {
+	
+	Logger logger = LoggerFactory.getLogger(FastIndex.class);
 
     private final long maxNumberOfKeysInCache;
     private final long maxNumeberOfKeysInSegmentCache;
@@ -55,7 +60,7 @@ public class FastIndex<K, V> implements CloseableResource {
 
     private void compact() {
 	// It's stupid more than one pair falls into opened segment.
-	System.out.println(String.format("Compacting"));
+	logger.debug("Compacting");
 	final CompactSupport<K, V> support = new CompactSupport<>(this, fastIndexFile);
 	cache.getStream()
 		.sorted((pair1, pair2) -> keyTypeDescriptor.getComparator().compare(pair1.getKey(), pair2.getKey()))
@@ -65,7 +70,7 @@ public class FastIndex<K, V> implements CloseableResource {
 	support.compactRest();
 	cache.clear();
 	optionallyCompactSegments();
-	System.out.println(String.format("Number of keys in cache is %d.", cache.size()));
+	logger.debug("Number of keys in cache is {}.", cache.size());
     }
 
     SimpleDataFile<K, V> getSegment(final int pageId) {
@@ -83,7 +88,7 @@ public class FastIndex<K, V> implements CloseableResource {
 	 * Defensive copy have to be done, because further splitting will affect list
 	 * size. In the future it will be slow.
 	 */
-	System.out.println("Trying to merging segments " + fastIndexFile.getPagesAsStream().count());
+	logger.debug("Trying to merging segments " + fastIndexFile.getPagesAsStream().count());
 	final List<Pair<K, Integer>> list = fastIndexFile.getPagesAsStream().collect(Collectors.toList());
 	list.forEach(pair -> {
 	    final SimpleDataFile<K, V> sdf = new SimpleDataFile<>(directory, getFileName(pair.getValue()),
@@ -92,10 +97,10 @@ public class FastIndex<K, V> implements CloseableResource {
 		final int newSegmentId = (int) (fastIndexFile.getPagesAsStream().count());
 		final K newPageKey = sdf.split(getFileName(newSegmentId));
 		fastIndexFile.insertPage(newPageKey, newSegmentId);
-		System.out.println("Splitting segments " + pair.getValue());
+		logger.debug("Splitting segments " + pair.getValue());
 	    }
 	    if (sdf.getStats().getNumberOfPairsInCache() > maxNumeberOfKeysInSegmentCache) {
-		System.out.println("Merging segments " + pair.getValue());
+		logger.debug("Merging segments " + pair.getValue());
 		sdf.merge();
 	    }
 	});

@@ -4,11 +4,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.coroptis.index.Pair;
 import com.coroptis.index.PairFileWriter;
 import com.coroptis.index.simpledatafile.SimpleDataFile;
 
 public class CompactSupport<K, V> {
+
+	Logger logger = LoggerFactory.getLogger(CompactSupport.class);
 
     private final List<Pair<K, V>> toSameSegment = new ArrayList<>();
     private final FastIndexFile<K> fastIndexFile;
@@ -50,7 +55,7 @@ public class CompactSupport<K, V> {
     }
 
     private void flushToCurrentPageIdSegment() {
-	System.out.println("Flushig data " + toSameSegment.size() + " to segment " + currentPageId);
+	logger.debug("Flushig data {} to segment {}.",  toSameSegment.size(),  currentPageId);
 	final SimpleDataFile<K, V> sdf = fastIndex.getSegment(currentPageId);
 	try (final PairFileWriter<K, V> writer = sdf.openCacheWriter()) {
 	    toSameSegment.forEach(writer::put);
