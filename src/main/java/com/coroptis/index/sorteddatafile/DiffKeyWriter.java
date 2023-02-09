@@ -35,13 +35,18 @@ public class DiffKeyWriter<K> implements TypeWriter<K> {
         if (previousKey != null) {
             final int cmp = keyComparator.compare(previousKey, key);
             if (cmp == 0) {
-                throw new IllegalArgumentException(
-                        String.format("Attempt to insers same key as previous. Key is %s.", key));
+                final String s2 = new String(keyTypeWriter.toBytes(key));
+                throw new IllegalArgumentException(String.format(
+                        "Attempt to insers same key as previous. Key is %s.",
+                        s2));
             }
             if (cmp > 0) {
+                final String s1 = new String(previousKeyBytes);
+                final String s2 = new String(keyTypeWriter.toBytes(key));
                 throw new IllegalArgumentException(String.format(
-                        "Attempt to insers key in invalid order. Previous key is %s, inserted key is %s",
-                        previousKey, key));
+                        "Attempt to insers key in invalid order. "
+                                + "Previous key is %s, inserted key is %s",
+                        s1, s2));
             }
         }
         if (fullWrite) {

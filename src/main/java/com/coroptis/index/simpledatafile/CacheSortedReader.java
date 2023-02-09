@@ -5,9 +5,12 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import com.coroptis.index.PairFileReader;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.coroptis.index.IndexException;
 import com.coroptis.index.Pair;
+import com.coroptis.index.PairFileReader;
 import com.coroptis.index.basic.ValueMerger;
 import com.coroptis.index.partiallysorteddatafile.UniqueCache;
 import com.coroptis.index.sorteddatafile.PairComparator;
@@ -16,12 +19,19 @@ import com.coroptis.index.unsorteddatafile.UnsortedDataFileStreamer;
 
 public class CacheSortedReader<K, V> implements PairFileReader<K, V> {
 
-    private List<Pair<K, V>> sortedPairs;
+    private final Logger logger = LoggerFactory
+            .getLogger(CacheSortedReader.class);
+
+    private final List<Pair<K, V>> sortedPairs;
+    
+    private int indexToReturn = 0;
 
     CacheSortedReader(final ValueMerger<K, V> merger,
             final UnsortedDataFile<K, V> unsortedDataFile,
             final Comparator<K> keyComparator) {
-        final UniqueCache<K, V> cache = new UniqueCache<>(merger,keyComparator);
+        logger.debug("Initilizing of sorter cache reader started.");
+        final UniqueCache<K, V> cache = new UniqueCache<>(merger,
+                keyComparator);
         try (final UnsortedDataFileStreamer<K, V> streamer = unsortedDataFile
                 .openStreamer()) {
             streamer.stream().forEach(cache::add);
@@ -31,14 +41,19 @@ public class CacheSortedReader<K, V> implements PairFileReader<K, V> {
         sortedPairs = cache.getStream().sorted(pairComparator)
                 .collect(Collectors.toList());
         cache.clear();
+        logger.debug(
+                "Initilization is done with '{}' key value pairs.",
+                sortedPairs.size());
     }
 
     @Override
     public Pair<K, V> read() {
-        if (sortedPairs.isEmpty()) {
-            return null;
+        if (indexToReturn < sortedPairs.size()) {
+            final Pair<K, V> out = sortedPairs.get(indexToReturn);
+            indexToReturn++;
+            return out;
         } else {
-            return sortedPairs.remove(0);
+            return null;
         }
     }
 

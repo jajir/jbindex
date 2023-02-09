@@ -55,13 +55,13 @@ public class CompactSupport<K, V> {
     }
 
     private void flushToCurrentPageIdSegment() {
-	logger.debug("Flushing {} key value pairs into segment {}.",  toSameSegment.size(),  currentSegmentId);
+	logger.debug("Flushing '{}' key value pairs into segment '{}'.",  toSameSegment.size(),  currentSegmentId);
 	final SimpleDataFile<K, V> sdf = fastIndex.getSegment(currentSegmentId);
 	try (final PairFileWriter<K, V> writer = sdf.openCacheWriter()) {
 	    toSameSegment.forEach(writer::put);
 	}
 	toSameSegment.clear();
-	logger.debug("Flushing to segment {} was done.",  toSameSegment.size(),  currentSegmentId);
+	logger.debug("Flushing to segment '{}' was done.",  currentSegmentId);
     }
 
 }
