@@ -3,53 +3,62 @@ package com.coroptis.index.partiallysorteddatafile;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.coroptis.index.Pair;
 import com.coroptis.index.basic.ValueMerger;
 
 public class UniqueCacheTest {
 
+    private final Logger logger = LoggerFactory
+            .getLogger(UniqueCacheTest.class);
+
     private final ValueMerger<Integer, String> concat = new ValueMerger<Integer, String>() {
 
-	@Override
-	public String merge(Integer key, String value1, String value2) {
-	    return value1 + value2;
-	}
+        @Override
+        public String merge(Integer key, String value1, String value2) {
+            return value1 + value2;
+        }
     };
 
-    private final UniqueCache<Integer, String> cache = new UniqueCache<>(concat, (i1, i2) -> i2 - i1);
+    final UniqueCache<Integer, String> cache = new UniqueCache<>(concat,
+            (i1, i2) -> i1 - i2);
 
     @Test
     public void test_basic_function() throws Exception {
-	cache.add(Pair.of(10, "hello"));
-	cache.add(Pair.of(13, "my"));
-	cache.add(Pair.of(15, "dear"));
+        final UniqueCache<Integer, String> cache = new UniqueCache<>(concat,
+                (i1, i2) -> i1 - i2);
+        cache.add(Pair.of(10, "hello"));
+        cache.add(Pair.of(13, "my"));
+        cache.add(Pair.of(15, "dear"));
 
-	final List<Pair<Integer, String>> out = cache.toList();
-	assertEquals(3, cache.size());
-	assertEquals(Pair.of(10, "hello"), out.remove(0));
-	assertEquals(Pair.of(13, "my"), out.remove(0));
-	assertEquals(Pair.of(15, "dear"), out.remove(0));
-	cache.clear();
-	assertEquals(0, cache.size());
+        final List<Pair<Integer, String>> out = cache.toList();
+        assertEquals(3, cache.size());
+        assertEquals(Pair.of(10, "hello"), out.remove(0));
+        assertEquals(Pair.of(13, "my"), out.remove(0));
+        assertEquals(Pair.of(15, "dear"), out.remove(0));
+        cache.clear();
+        assertEquals(0, cache.size());
     }
 
     @Test
     public void test_basic_function_different_order() throws Exception {
-	cache.add(Pair.of(15, "dear"));
-	cache.add(Pair.of(13, "my"));
-	cache.add(Pair.of(-199, "hello"));
+        final UniqueCache<Integer, String> cache = new UniqueCache<>(concat,
+                (i1, i2) -> i1 - i2);
+        cache.add(Pair.of(15, "dear"));
+        cache.add(Pair.of(13, "my"));
+        cache.add(Pair.of(-199, "hello"));
 
-	final List<Pair<Integer, String>> out = cache.toList();
-	assertEquals(3, cache.size());
-	assertEquals(Pair.of(-199, "hello"), out.remove(0));
-	assertEquals(Pair.of(13, "my"), out.remove(0));
-	assertEquals(Pair.of(15, "dear"), out.remove(0));
-	cache.clear();
-	assertEquals(0, cache.size());
+        final List<Pair<Integer, String>> out = cache.getAsSortedList();
+        assertEquals(3, cache.size());
+        assertEquals(Pair.of(-199, "hello"), out.remove(0));
+        assertEquals(Pair.of(13, "my"), out.remove(0));
+        assertEquals(Pair.of(15, "dear"), out.remove(0));
+        cache.clear();
+        assertEquals(0, cache.size());
     }
 
     /**
@@ -59,18 +68,20 @@ public class UniqueCacheTest {
      */
     @Test
     public void test_stream_sorting() throws Exception {
-	cache.add(Pair.of(15, "dear"));
-	cache.add(Pair.of(13, "my"));
-	cache.add(Pair.of(-199, "hello"));
-	cache.add(Pair.of(-19, "Duck"));
+        final UniqueCache<Integer, String> cache = new UniqueCache<>(concat,
+                (i1, i2) -> i1 - i2);
+        cache.add(Pair.of(15, "dear"));
+        cache.add(Pair.of(13, "my"));
+        cache.add(Pair.of(-199, "hello"));
+        cache.add(Pair.of(-19, "Duck"));
 
-	final List<Pair<Integer, String>> out = cache.getStream().collect(Collectors.toList());
-	assertEquals(4, cache.size());
-	assertEquals(Pair.of(-19, "Duck"), out.remove(0));
-	assertEquals(Pair.of(-199, "hello"), out.remove(0));
-	assertEquals(Pair.of(13, "my"), out.remove(0));
-	assertEquals(Pair.of(15, "dear"), out.remove(0));
-	assertEquals(4, cache.size());
+        final List<Pair<Integer, String>> out = cache.getAsSortedList();
+        assertEquals(4, cache.size());
+        assertEquals(Pair.of(-199, "hello"), out.remove(0));
+        assertEquals(Pair.of(-19, "Duck"), out.remove(0));
+        assertEquals(Pair.of(13, "my"), out.remove(0));
+        assertEquals(Pair.of(15, "dear"), out.remove(0));
+        assertEquals(4, cache.size());
     }
 
     /**
@@ -80,15 +91,19 @@ public class UniqueCacheTest {
      */
     @Test
     public void test_merging() throws Exception {
-	cache.add(Pair.of(10, "hello"));
-	cache.add(Pair.of(10, "my"));
-	cache.add(Pair.of(10, "dear"));
+        final UniqueCache<Integer, String> cache = new UniqueCache<>(concat,
+                (i1, i2) -> i1 - i2);
+        logger.debug("Cache size '{}'", cache.size());
+        cache.add(Pair.of(10, "hello"));
+        cache.add(Pair.of(10, "my"));
+        cache.add(Pair.of(10, "dear"));
 
-	final List<Pair<Integer, String>> out = cache.toList();
-	assertEquals(1, cache.size());
-	assertEquals(Pair.of(10, "hellomydear"), out.remove(0));
-	cache.clear();
-	assertEquals(0, cache.size());
+        logger.debug("Cache size '{}'", cache.size());
+        final List<Pair<Integer, String>> out = cache.toList();
+        assertEquals(1, cache.size());
+        assertEquals(Pair.of(10, "hellomydear"), out.remove(0));
+        cache.clear();
+        assertEquals(0, cache.size());
     }
 
 }

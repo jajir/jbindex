@@ -17,9 +17,9 @@ public class DiffKeyWriter<K> implements TypeWriter<K> {
 
     private K previousKey;
 
-    public DiffKeyWriter(final ConvertorToBytes<K> keyTypeRawArrayWriter,
+    public DiffKeyWriter(final ConvertorToBytes<K> convertorToBytes,
             final Comparator<? super K> keyComparator) {
-        this.keyTypeWriter = keyTypeRawArrayWriter;
+        this.keyTypeWriter = convertorToBytes;
         this.keyComparator = Objects.requireNonNull(keyComparator, "Key comparator can't be null");
         previousKeyBytes = new byte[0];
         previousKey = null;
@@ -37,7 +37,7 @@ public class DiffKeyWriter<K> implements TypeWriter<K> {
             if (cmp == 0) {
                 final String s2 = new String(keyTypeWriter.toBytes(key));
                 throw new IllegalArgumentException(String.format(
-                        "Attempt to insers same key as previous. Key is %s.",
+                        "Attempt to insers same key as previous. Key is '%s'.",
                         s2));
             }
             if (cmp > 0) {
@@ -45,7 +45,7 @@ public class DiffKeyWriter<K> implements TypeWriter<K> {
                 final String s2 = new String(keyTypeWriter.toBytes(key));
                 throw new IllegalArgumentException(String.format(
                         "Attempt to insers key in invalid order. "
-                                + "Previous key is %s, inserted key is %s",
+                                + "Previous key is '%s', inserted key is '%s'",
                         s1, s2));
             }
         }

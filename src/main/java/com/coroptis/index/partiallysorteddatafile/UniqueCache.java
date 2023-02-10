@@ -1,6 +1,5 @@
 package com.coroptis.index.partiallysorteddatafile;
 
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
@@ -11,13 +10,17 @@ import java.util.stream.Stream;
 import com.coroptis.index.Pair;
 import com.coroptis.index.PairFileReader;
 import com.coroptis.index.basic.ValueMerger;
+import com.coroptis.index.sorteddatafile.PairComparator;
 
 public class UniqueCache<K, V> {
 
+    private final Comparator<K> keyComparator;
     private final TreeMap<K, V> map;
     private final ValueMerger<K, V> merger;
 
-    public UniqueCache(final ValueMerger<K, V> merger, final Comparator<K> keyComparator) {
+    public UniqueCache(final ValueMerger<K, V> merger,
+            final Comparator<K> keyComparator) {
+        this.keyComparator = Objects.requireNonNull(keyComparator);
         this.merger = Objects.requireNonNull(merger);
         this.map = new TreeMap<>(keyComparator);
     }
@@ -39,21 +42,40 @@ public class UniqueCache<K, V> {
         return map.isEmpty();
     }
 
+    /**
+     * It's unsorted.
+     * 
+     * @return
+     */
     public List<Pair<K, V>> toList() {
         return map.entrySet().stream()
                 .map(entry -> new Pair<K, V>(entry.getKey(), entry.getValue()))
                 .collect(Collectors.toList());
     }
-    
-    
+
+    /**
+     * It's unsorted.
+     * 
+     * @return
+     */
     public PairFileReader<K, V> openReader() {
-	return new UniqueCacheReader<>(getStream().iterator());
+        return new UniqueCacheReader<>(getStream().iterator());
+    }
+
+    public List<Pair<K, V>> getAsSortedList(){
+        return map.entrySet().stream()
+                .map(entry -> new Pair<K, V>(entry.getKey(), entry.getValue()))
+                .sorted(new PairComparator<>(keyComparator))
+                .collect(Collectors.toList());        
     }
     
-    public PairFileReader<K, V> openClonedReader() {
-	final List<Pair<K,V>> out = new ArrayList<>();
-	getStream().forEach(out::add);
-	return new UniqueCacheReader<>(out.iterator());
+    /**
+     * It's unsorted.
+     * 
+     * @return
+     */
+    public PairFileReader<K, V> openSortedClonedReader() {
+        return new UniqueCacheReader<>(getAsSortedList().iterator());
     }
 
     /**

@@ -19,11 +19,14 @@ public interface ValueMerger<K, V> {
         Objects.requireNonNull(pair2, "Second pair for merging can't be null.");
         final K key = pair1.getKey();
         if (!key.equals(pair2.getKey())) {
-            throw new IllegalArgumentException("Comparing pair with different keys");
+            throw new IllegalArgumentException(String.format(
+                    "Comparing pair with different keys '%s' and '%s'", pair1,
+                    pair2));
         }
         final V val = merge(key, pair1.getValue(), pair2.getValue());
-        Objects.requireNonNull(val, () -> String
-                .format("Results of merging values '%s' and '%s' cant't by null.", pair1, pair2));
+        Objects.requireNonNull(val, () -> String.format(
+                "Results of merging values '%s' and '%s' cant't by null.",
+                pair1, pair2));
         return new Pair<K, V>(key, val);
     }
 

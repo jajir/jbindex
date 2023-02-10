@@ -15,6 +15,7 @@ import com.coroptis.index.directory.Directory;
 import com.coroptis.index.partiallysorteddatafile.UniqueCache;
 import com.coroptis.index.simpledatafile.MergedPairReader;
 import com.coroptis.index.simpledatafile.SimpleDataFile;
+import com.coroptis.index.sorteddatafile.PairComparator;
 import com.coroptis.index.type.TypeDescriptor;
 
 public class FastIndex<K, V> implements CloseableResource {
@@ -63,7 +64,7 @@ public class FastIndex<K, V> implements CloseableResource {
 	logger.debug("Compacting of '{}' key value pairs in cache started.", cache.size());
 	final CompactSupport<K, V> support = new CompactSupport<>(this, fastIndexFile);
 	cache.getStream()
-		.sorted((pair1, pair2) -> keyTypeDescriptor.getComparator().compare(pair1.getKey(), pair2.getKey()))
+                .sorted(new PairComparator<>(keyTypeDescriptor.getComparator()))
 		.forEach(pair -> {
 		    support.compact(pair);
 		});
@@ -116,7 +117,7 @@ public class FastIndex<K, V> implements CloseableResource {
      */
     public PairFileReader<K, V> openReader() {
 	final FastIndexReader<K, V> fastIndexreader = new FastIndexReader<>(this, fastIndexFile);
-	final PairFileReader<K, V> cacheReader = cache.openClonedReader();
+	final PairFileReader<K, V> cacheReader = cache.openSortedClonedReader();
 	final MergedPairReader<K, V> mergedPairReader = new MergedPairReader<>(cacheReader, fastIndexreader,
 		valueMerger, keyTypeDescriptor.getComparator());
 	return mergedPairReader;
