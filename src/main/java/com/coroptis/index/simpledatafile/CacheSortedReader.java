@@ -8,16 +8,15 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.coroptis.index.IndexException;
 import com.coroptis.index.Pair;
-import com.coroptis.index.PairFileReader;
+import com.coroptis.index.PairReader;
 import com.coroptis.index.basic.ValueMerger;
 import com.coroptis.index.partiallysorteddatafile.UniqueCache;
 import com.coroptis.index.sorteddatafile.PairComparator;
 import com.coroptis.index.unsorteddatafile.UnsortedDataFile;
 import com.coroptis.index.unsorteddatafile.UnsortedDataFileStreamer;
 
-public class CacheSortedReader<K, V> implements PairFileReader<K, V> {
+public class CacheSortedReader<K, V> implements PairReader<K, V> {
 
     private final Logger logger = LoggerFactory
             .getLogger(CacheSortedReader.class);
@@ -55,11 +54,6 @@ public class CacheSortedReader<K, V> implements PairFileReader<K, V> {
         } else {
             return null;
         }
-    }
-
-    @Override
-    public void skip(long position) {
-        throw new IndexException("Method is not supported.");
     }
 
     @Override

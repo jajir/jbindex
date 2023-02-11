@@ -3,12 +3,14 @@ package com.coroptis.index;
 /**
  * Class represents empty file.
  * 
+ * It could be useful to represent empty input.
+ * 
  * @author Honza
  *
  * @param<K> key type
  * @param <V> value type
  */
-public class PairFileReaderEmpty<K, V> implements PairFileReader<K, V> {
+public class PairFileReaderEmpty<K, V> implements PairReader<K, V> {
 
     /**
      * It return just null.
@@ -17,10 +19,6 @@ public class PairFileReaderEmpty<K, V> implements PairFileReader<K, V> {
      */
     public Pair<K, V> read() {
         return null;
-    }
-
-    public void skip(long position) {
-        // Intentionally do nothing
     }
 
     @Override

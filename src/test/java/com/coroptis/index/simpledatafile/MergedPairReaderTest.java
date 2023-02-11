@@ -10,17 +10,17 @@ import java.util.Comparator;
 import org.junit.jupiter.api.Test;
 
 import com.coroptis.index.Pair;
-import com.coroptis.index.PairFileReader;
+import com.coroptis.index.PairReader;
 
 public class MergedPairReaderTest {
 
     @SuppressWarnings("unchecked")
-    private final PairFileReader<Integer, String> reader1 = mock(
-            PairFileReader.class);
+    private final PairReader<Integer, String> reader1 = mock(
+            PairReader.class);
 
     @SuppressWarnings("unchecked")
-    private final PairFileReader<Integer, String> reader2 = mock(
-            PairFileReader.class);
+    private final PairReader<Integer, String> reader2 = mock(
+            PairReader.class);
 
     @Test
     public void test_reader2_is_empty() throws Exception {

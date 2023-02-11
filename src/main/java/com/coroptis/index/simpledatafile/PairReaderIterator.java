@@ -1,21 +1,26 @@
-package com.coroptis.index.rigidindex;
+package com.coroptis.index.simpledatafile;
 
 import java.util.Iterator;
 import java.util.Objects;
+import java.util.Optional;
 
 import com.coroptis.index.CloseableResource;
 import com.coroptis.index.Pair;
-import com.coroptis.index.PairFileReader;
+import com.coroptis.index.PairReader;
 
-public class IndexIterator2<K, V>
+public class PairReaderIterator<K, V>
         implements Iterator<Pair<K, V>>, CloseableResource {
 
-    private final PairFileReader<K, V> pairFileReader;
+    private final PairReader<K, V> pairFileReader;
     private Pair<K, V> pair;
 
-    public IndexIterator2(final PairFileReader<K, V> pairFileReader) {
+    public PairReaderIterator(final PairReader<K, V> pairFileReader) {
         this.pairFileReader = Objects.requireNonNull(pairFileReader);
         tryReadNext();
+    }
+    
+    public Optional<Pair<K, V>> readCurrent() {
+        return Optional.ofNullable(pair);
     }
 
     @Override

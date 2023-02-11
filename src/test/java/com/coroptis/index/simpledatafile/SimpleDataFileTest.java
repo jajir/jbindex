@@ -5,8 +5,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
 
 import com.coroptis.index.Pair;
-import com.coroptis.index.PairFileReader;
-import com.coroptis.index.PairFileWriter;
+import com.coroptis.index.PairReader;
+import com.coroptis.index.PairWriter;
 import com.coroptis.index.directory.Directory;
 import com.coroptis.index.directory.MemDirectory;
 import com.coroptis.index.type.TypeDescriptorInteger;
@@ -26,7 +26,7 @@ public class SimpleDataFileTest {
         assertEquals(0, sdf.getStats().getNumberOfPairsInCache());
         assertEquals(0, sdf.getStats().getNumberOfPairsInMainFile());
 
-        try (final PairFileWriter<Integer, String> writer = sdf
+        try (final PairWriter<Integer, String> writer = sdf
                 .openCacheWriter()) {
             writer.put(Pair.of(3, "kachna"));
             writer.put(Pair.of(1, "prase"));
@@ -51,7 +51,7 @@ public class SimpleDataFileTest {
         assertEquals(0, sdf.getStats().getNumberOfPairsInCache());
         assertEquals(0, sdf.getStats().getNumberOfPairsInMainFile());
 
-        try (final PairFileWriter<Integer, String> writer = sdf
+        try (final PairWriter<Integer, String> writer = sdf
                 .openCacheWriter()) {
             writer.put(Pair.of(3, "kachna"));
             writer.put(Pair.of(1, "prase"));
@@ -61,7 +61,7 @@ public class SimpleDataFileTest {
         assertEquals(3, sdf.getStats().getNumberOfPairsInCache());
         assertEquals(0, sdf.getStats().getNumberOfPairsInMainFile());
 
-        try (final PairFileWriter<Integer, String> writer = sdf
+        try (final PairWriter<Integer, String> writer = sdf
                 .openCacheWriter()) {
             writer.put(Pair.of(16, "kun"));
             writer.put(Pair.of(13, "liska"));
@@ -71,7 +71,7 @@ public class SimpleDataFileTest {
         assertEquals(6, sdf.getStats().getNumberOfPairsInCache());
         assertEquals(0, sdf.getStats().getNumberOfPairsInMainFile());
 
-        try (final PairFileReader<Integer, String> reader = sdf.openReader()) {
+        try (final PairReader<Integer, String> reader = sdf.openReader()) {
             assertEquals(Pair.of(1, "prase"), reader.read());
             assertEquals(Pair.of(3, "kachna"), reader.read());
             assertEquals(Pair.of(5, "osel"), reader.read());

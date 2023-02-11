@@ -6,11 +6,16 @@ package com.coroptis.index;
  * 
  * @author honza
  *
- * @param <K>
- * @param <V>
+ * @param<K> key type
+ * @param <V> value type
  */
-public interface PairFileWriter<K, V> extends CloseableResource {
+public interface PairWriter<K, V> extends CloseableResource {
 
+    /**
+     * Allows to insert key value pair somewhere.
+     * 
+     * @param pair required key value pair
+     */
     void put(Pair<K, V> pair);
 
 }

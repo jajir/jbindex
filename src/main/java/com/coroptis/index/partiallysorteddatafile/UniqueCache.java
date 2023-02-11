@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.coroptis.index.Pair;
-import com.coroptis.index.PairFileReader;
+import com.coroptis.index.PairReader;
 import com.coroptis.index.basic.ValueMerger;
 import com.coroptis.index.sorteddatafile.PairComparator;
 
@@ -58,7 +58,7 @@ public class UniqueCache<K, V> {
      * 
      * @return
      */
-    public PairFileReader<K, V> openReader() {
+    public PairReader<K, V> openReader() {
         return new UniqueCacheReader<>(getStream().iterator());
     }
 
@@ -74,7 +74,7 @@ public class UniqueCache<K, V> {
      * 
      * @return
      */
-    public PairFileReader<K, V> openSortedClonedReader() {
+    public PairReader<K, V> openSortedClonedReader() {
         return new UniqueCacheReader<>(getAsSortedList().iterator());
     }
 

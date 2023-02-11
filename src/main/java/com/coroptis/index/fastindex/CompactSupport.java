@@ -8,7 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.coroptis.index.Pair;
-import com.coroptis.index.PairFileWriter;
+import com.coroptis.index.PairWriter;
 import com.coroptis.index.simpledatafile.SimpleDataFile;
 
 public class CompactSupport<K, V> {
@@ -57,7 +57,7 @@ public class CompactSupport<K, V> {
     private void flushToCurrentPageIdSegment() {
 	logger.debug("Flushing '{}' key value pairs into segment '{}'.",  toSameSegment.size(),  currentSegmentId);
 	final SimpleDataFile<K, V> sdf = fastIndex.getSegment(currentSegmentId);
-	try (final PairFileWriter<K, V> writer = sdf.openCacheWriter()) {
+	try (final PairWriter<K, V> writer = sdf.openCacheWriter()) {
 	    toSameSegment.forEach(writer::put);
 	}
 	toSameSegment.clear();

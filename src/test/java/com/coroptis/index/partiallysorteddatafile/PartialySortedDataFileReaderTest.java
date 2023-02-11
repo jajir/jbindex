@@ -10,7 +10,7 @@ import java.util.Arrays;
 
 import org.junit.jupiter.api.Test;
 
-import com.coroptis.index.PairFileReaderImpl;
+import com.coroptis.index.PairFileReader;
 import com.coroptis.index.Pair;
 import com.coroptis.index.basic.BasicIndex;
 import com.coroptis.index.basic.SortSupport;
@@ -28,13 +28,13 @@ public class PartialySortedDataFileReaderTest {
     private final SortedDataFile<Integer, String> dataFile0 = mock(SortedDataFile.class);
 
     @SuppressWarnings("unchecked")
-    private final PairFileReaderImpl<Integer, String> dataFileReader0 = mock(PairFileReaderImpl.class);
+    private final PairFileReader<Integer, String> dataFileReader0 = mock(PairFileReader.class);
 
     @SuppressWarnings("unchecked")
     private final SortedDataFile<Integer, String> dataFile1 = mock(SortedDataFile.class);
 
     @SuppressWarnings("unchecked")
-    private final PairFileReaderImpl<Integer, String> dataFileReader1 = mock(PairFileReaderImpl.class);
+    private final PairFileReader<Integer, String> dataFileReader1 = mock(PairFileReader.class);
 
     final String[] files = new String[] { "file-0", "file-1" };
 

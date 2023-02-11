@@ -3,11 +3,10 @@ package com.coroptis.index.partiallysorteddatafile;
 import java.util.Iterator;
 import java.util.Objects;
 
-import com.coroptis.index.IndexException;
 import com.coroptis.index.Pair;
-import com.coroptis.index.PairFileReader;
+import com.coroptis.index.PairReader;
 
-public class UniqueCacheReader<K, V> implements PairFileReader<K, V> {
+public class UniqueCacheReader<K, V> implements PairReader<K, V> {
 
     private final Iterator<Pair<K, V>> iterator;
 
@@ -27,11 +26,6 @@ public class UniqueCacheReader<K, V> implements PairFileReader<K, V> {
 	} else {
 	    return null;
 	}
-    }
-
-    @Override
-    public void skip(long position) {
-	throw new IndexException("Not implemented");
     }
 
 }

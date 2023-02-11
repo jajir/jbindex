@@ -3,7 +3,7 @@ package com.coroptis.index.simpledatafile;
 import java.util.Objects;
 
 import com.coroptis.index.Pair;
-import com.coroptis.index.PairFileWriter;
+import com.coroptis.index.PairWriter;
 import com.coroptis.index.directory.Props;
 
 /**
@@ -14,13 +14,13 @@ import com.coroptis.index.directory.Props;
  * @param <K>
  * @param <V>
  */
-public class PairWriterCountPair<K, V> implements PairFileWriter<K, V> {
+public class PairWriterCountPair<K, V> implements PairWriter<K, V> {
 
-    private final PairFileWriter<K, V> pairWriter;
+    private final PairWriter<K, V> pairWriter;
     private final Props props;
     final static String NUMBER_OF_KEY_VALUE_PAIRS_IN_CACHE = "number_of_key_value_pairs_in_cache";
 
-    PairWriterCountPair(final PairFileWriter<K, V> pairWriter, final Props props) {
+    PairWriterCountPair(final PairWriter<K, V> pairWriter, final Props props) {
         this.pairWriter = Objects.requireNonNull(pairWriter);
         this.props = Objects.requireNonNull(props);
     }

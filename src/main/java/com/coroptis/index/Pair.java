@@ -7,8 +7,8 @@ import java.util.Objects;
  * 
  * @author jan
  *
- * @param <K>
- * @param <V>
+ * @param<K> key type
+ * @param <V> value type
  */
 public class Pair<K, V> {
 

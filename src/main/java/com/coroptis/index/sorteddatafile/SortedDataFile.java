@@ -4,9 +4,9 @@ import java.util.Comparator;
 import java.util.Objects;
 
 import com.coroptis.index.DataFileIterator;
-import com.coroptis.index.PairFileReader;
+import com.coroptis.index.PairReader;
 import com.coroptis.index.PairFileReaderEmpty;
-import com.coroptis.index.PairFileReaderImpl;
+import com.coroptis.index.PairFileReader;
 import com.coroptis.index.directory.Directory;
 import com.coroptis.index.type.ConvertorFromBytes;
 import com.coroptis.index.type.ConvertorToBytes;
@@ -59,13 +59,13 @@ public class SortedDataFile<K, V> {
         return streamer;
     }
 
-    public PairFileReader<K, V> openReader() {
+    public PairReader<K, V> openReader() {
         if (!directory.isFileExists(fileName)) {
             return new PairFileReaderEmpty<>();
         }
         final DiffKeyReader<K> diffKeyReader = new DiffKeyReader<K>(keyConvertorFromBytes);
         final PairTypeReader<K, V> pairReader = new PairTypeReaderImpl<>(diffKeyReader, valueReader);
-        final PairFileReaderImpl<K, V> reader = new PairFileReaderImpl<>(directory, fileName, pairReader);
+        final PairFileReader<K, V> reader = new PairFileReader<>(directory, fileName, pairReader);
         return reader;
     }
 

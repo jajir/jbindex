@@ -3,11 +3,11 @@ package com.coroptis.index.fastindex;
 import java.util.Comparator;
 
 import com.coroptis.index.Pair;
-import com.coroptis.index.PairFileWriter;
+import com.coroptis.index.PairWriter;
 import com.coroptis.index.basic.ValueMerger;
 import com.coroptis.index.partiallysorteddatafile.UniqueCache;
 
-public class FastIndexWriter<K, V> implements PairFileWriter<K, V> {
+public class FastIndexWriter<K, V> implements PairWriter<K, V> {
 
     private final UniqueCache<K, V> cache;
 

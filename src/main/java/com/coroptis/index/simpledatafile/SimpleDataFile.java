@@ -5,13 +5,12 @@ import java.util.Objects;
 import com.coroptis.index.DataFileIterator;
 import com.coroptis.index.IndexException;
 import com.coroptis.index.Pair;
-import com.coroptis.index.PairFileReader;
-import com.coroptis.index.PairFileWriter;
+import com.coroptis.index.PairReader;
+import com.coroptis.index.PairWriter;
 import com.coroptis.index.basic.ValueMerger;
 import com.coroptis.index.directory.Directory;
 import com.coroptis.index.directory.Directory.Access;
 import com.coroptis.index.directory.Props;
-import com.coroptis.index.rigidindex.IndexIterator2;
 import com.coroptis.index.sorteddatafile.SortedDataFile;
 import com.coroptis.index.sorteddatafile.SortedDataFileWriter;
 import com.coroptis.index.type.TypeDescriptor;
@@ -53,7 +52,7 @@ public class SimpleDataFile<K, V> {
      */
     public void merge() {
 	long cx = 0;
-	try (final IndexIterator2<K, V> iterator = new IndexIterator2<>(openReader())) {
+	try (final PairReaderIterator<K, V> iterator = new PairReaderIterator<>(openReader())) {
 	    try (final SortedDataFileWriter<K, V> writer = getTempFile().openWriter()) {
 		while (iterator.hasNext()) {
 		    writer.put(iterator.next());
@@ -75,10 +74,10 @@ public class SimpleDataFile<K, V> {
      * 
      * @return reader with all data
      */
-    public PairFileReader<K, V> openReader() {
+    public PairReader<K, V> openReader() {
 	final CacheSortedReader<K, V> reader1 = new CacheSortedReader<>(valueMerger, getCacheFile(),
 		keyTypeDescriptor.getComparator());
-	final PairFileReader<K, V> reader2 = getMainFile().openReader();
+	final PairReader<K, V> reader2 = getMainFile().openReader();
 	final MergedPairReader<K, V> mergedPairReader = new MergedPairReader<>(reader1, reader2, valueMerger,
 		keyTypeDescriptor.getComparator());
 	return mergedPairReader;
@@ -155,9 +154,9 @@ public class SimpleDataFile<K, V> {
      * 
      * @return
      */
-    public PairFileWriter<K, V> openCacheWriter() {
+    public PairWriter<K, V> openCacheWriter() {
 	final Access access = directory.isFileExists(getCacheFileName()) ? Access.APPEND : Access.OVERWRITE;
-	final PairFileWriter<K, V> basePairWriter = new UnsortedDataFileWriter<>(directory, getCacheFileName(),
+	final PairWriter<K, V> basePairWriter = new UnsortedDataFileWriter<>(directory, getCacheFileName(),
 		keyTypeDescriptor.getTypeWriter(), valueTypeDescriptor.getTypeWriter(), access);
 	return new PairWriterCountPair<>(basePairWriter, props);
     }

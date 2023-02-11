@@ -7,7 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
 
 import com.coroptis.index.Pair;
-import com.coroptis.index.PairFileReader;
+import com.coroptis.index.PairReader;
 import com.coroptis.index.directory.Directory;
 import com.coroptis.index.directory.MemDirectory;
 import com.coroptis.index.type.TypeDescriptorInteger;
@@ -29,7 +29,7 @@ public class FastIndexTest {
 	assertTrue(directory.isFileExists("segment-00000.unsorted"));
 	assertTrue(directory.isFileExists("segment-00000.properties"));
 
-	try (final PairFileReader<Integer, String> reader = fastIndex.openReader()) {
+	try (final PairReader<Integer, String> reader = fastIndex.openReader()) {
 	    assertEquals(Pair.of(0, "Miluje"), reader.read());
 	    assertEquals(Pair.of(1, "psaní"), reader.read());
 	    assertNull(reader.read());
@@ -62,7 +62,7 @@ public class FastIndexTest {
 	assertTrue(directory.isFileExists("segment-00001.sorted"));
 	assertTrue(directory.isFileExists("segment-00001.properties"));
 
-	try (final PairFileReader<Integer, String> reader = fastIndex.openReader()) {
+	try (final PairReader<Integer, String> reader = fastIndex.openReader()) {
 	    assertEquals(Pair.of(0, "Miluje"), reader.read());
 	    assertEquals(Pair.of(1, "psaní"), reader.read());
 	    assertEquals(Pair.of(2, "a"), reader.read());

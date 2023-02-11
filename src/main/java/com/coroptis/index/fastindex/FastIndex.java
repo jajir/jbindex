@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
 
 import com.coroptis.index.CloseableResource;
 import com.coroptis.index.Pair;
-import com.coroptis.index.PairFileReader;
+import com.coroptis.index.PairReader;
 import com.coroptis.index.basic.ValueMerger;
 import com.coroptis.index.directory.Directory;
 import com.coroptis.index.partiallysorteddatafile.UniqueCache;
@@ -115,9 +115,9 @@ public class FastIndex<K, V> implements CloseableResource {
      * 
      * @return
      */
-    public PairFileReader<K, V> openReader() {
+    public PairReader<K, V> openReader() {
 	final FastIndexReader<K, V> fastIndexreader = new FastIndexReader<>(this, fastIndexFile);
-	final PairFileReader<K, V> cacheReader = cache.openSortedClonedReader();
+	final PairReader<K, V> cacheReader = cache.openSortedClonedReader();
 	final MergedPairReader<K, V> mergedPairReader = new MergedPairReader<>(cacheReader, fastIndexreader,
 		valueMerger, keyTypeDescriptor.getComparator());
 	return mergedPairReader;

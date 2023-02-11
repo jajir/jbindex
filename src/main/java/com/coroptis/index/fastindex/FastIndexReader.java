@@ -4,17 +4,16 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import com.coroptis.index.IndexException;
 import com.coroptis.index.Pair;
-import com.coroptis.index.PairFileReader;
+import com.coroptis.index.PairReader;
 import com.coroptis.index.simpledatafile.SimpleDataFile;
 
-public class FastIndexReader<K, V> implements PairFileReader<K, V> {
+public class FastIndexReader<K, V> implements PairReader<K, V> {
 
     private final List<Integer> pageIdsd;
     private final FastIndex<K, V> fastIndex;
     private SimpleDataFile<K, V> currentSegment;
-    private PairFileReader<K, V> currentReader;
+    private PairReader<K, V> currentReader;
 
     FastIndexReader(final FastIndex<K, V> fastIndex, final FastIndexFile<K> fastIndexFile) {
 	this.fastIndex = Objects.requireNonNull(fastIndex);
@@ -45,11 +44,6 @@ public class FastIndexReader<K, V> implements PairFileReader<K, V> {
 	    currentSegment = fastIndex.getSegment(segmentId);
 	    currentReader = currentSegment.openReader();
 	}
-    }
-
-    @Override
-    public void skip(long position) {
-	throw new IndexException("not implemented");
     }
 
     @Override

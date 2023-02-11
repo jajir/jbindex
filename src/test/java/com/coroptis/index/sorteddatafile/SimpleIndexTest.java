@@ -8,7 +8,7 @@ import java.util.Comparator;
 
 import org.junit.jupiter.api.Test;
 
-import com.coroptis.index.PairFileReader;
+import com.coroptis.index.PairReader;
 import com.coroptis.index.Pair;
 import com.coroptis.index.basic.BasicIndex;
 import com.coroptis.index.directory.Directory;
@@ -59,7 +59,7 @@ public class SimpleIndexTest {
             assertEquals(17, siw.put(new Pair<String, Byte>("ccc", (byte) 3)));
         }
 
-        try (final PairFileReader<String, Byte> sir = sortedFile.openReader()) {
+        try (final PairReader<String, Byte> sir = sortedFile.openReader()) {
             final Pair<String, Byte> p1 = sir.read();
             final Pair<String, Byte> p2 = sir.read();
             final Pair<String, Byte> p3 = sir.read();

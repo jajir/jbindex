@@ -3,9 +3,9 @@ package com.coroptis.index.unsorteddatafile;
 import java.util.Objects;
 
 import com.coroptis.index.DataFileIterator;
+import com.coroptis.index.PairReader;
 import com.coroptis.index.PairFileReader;
-import com.coroptis.index.PairFileReaderImpl;
-import com.coroptis.index.PairFileWriter;
+import com.coroptis.index.PairWriter;
 import com.coroptis.index.directory.Directory;
 import com.coroptis.index.directory.Directory.Access;
 import com.coroptis.index.sorteddatafile.PairTypeReader;
@@ -42,10 +42,10 @@ public class UnsortedDataFile<K, V> {
         this.valueReader = Objects.requireNonNull(valueReader);
     }
 
-    public PairFileReader<K, V> openReader() {
+    public PairReader<K, V> openReader() {
         final PairTypeReader<K, V> pairReader = new PairTypeReaderImpl<>(keyReader,
                 valueReader);
-        final PairFileReaderImpl<K, V> reader = new PairFileReaderImpl<>(directory,
+        final PairFileReader<K, V> reader = new PairFileReader<>(directory,
                 fileName, pairReader);
         return reader;
     }
@@ -58,7 +58,7 @@ public class UnsortedDataFile<K, V> {
         return iterator;
     }
 
-    public PairFileWriter<K, V> openWriter() {
+    public PairWriter<K, V> openWriter() {
         final UnsortedDataFileWriter<K, V> writer = new UnsortedDataFileWriter<>(
                 directory, fileName, keyWriter, valueWriter, Access.OVERWRITE);
         return writer;
