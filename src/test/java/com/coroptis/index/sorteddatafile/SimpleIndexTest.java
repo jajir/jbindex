@@ -25,7 +25,8 @@ public class SimpleIndexTest {
 
     @Test
     public void read_and_write_index_fs() throws Exception {
-        final Directory directory = new FsDirectory(new File("./target/pok-index"));
+        final Directory directory = new FsDirectory(
+                new File("./target/pok-index"));
         test_read_write(directory);
     }
 
@@ -38,10 +39,11 @@ public class SimpleIndexTest {
     @Test
     public void read_incorrect_insert_order_mem() throws Exception {
         final Directory directory = new MemDirectory();
-        try (final SortedDataFileWriter<String, Byte> siw = new SortedDataFileWriter<>(directory,
-                FILE_NAME, stringTd.getConvertorToBytes(), Comparator.naturalOrder(),
-                byteTd.getTypeWriter())) {
-            assertEquals(0, siw.put(new Pair<String, Byte>("aaabbb", (byte) 1)));
+        try (final SortedDataFileWriter<String, Byte> siw = new SortedDataFileWriter<>(
+                directory, FILE_NAME, stringTd.getConvertorToBytes(),
+                Comparator.naturalOrder(), byteTd.getTypeWriter())) {
+            assertEquals(0,
+                    siw.put(new Pair<String, Byte>("aaabbb", (byte) 1)));
             assertThrows(IllegalArgumentException.class, () -> {
                 siw.put(new Pair<String, Byte>("aaa", (byte) 0), false);
             });
@@ -51,11 +53,16 @@ public class SimpleIndexTest {
     private void test_read_write(final Directory directory) {
         final BasicIndex<String, Byte> index = new BasicIndex<>(directory,
                 new TypeDescriptorString(), new TypeDescriptorByte());
-        final SortedDataFile<String, Byte> sortedFile = index.getSortedDataFile(FILE_NAME);
-        try (final SortedDataFileWriter<String, Byte> siw = sortedFile.openWriter()) {
-            assertEquals(0, siw.put(new Pair<String, Byte>("aaa", (byte) 0), false));
-            assertEquals(6, siw.put(new Pair<String, Byte>("aaabbb", (byte) 1)));
-            assertEquals(12, siw.put(new Pair<String, Byte>("aaacc", (byte) 2)));
+        final SortedDataFile<String, Byte> sortedFile = index
+                .getSortedDataFile(FILE_NAME);
+        try (final SortedDataFileWriter<String, Byte> siw = sortedFile
+                .openWriter()) {
+            assertEquals(0,
+                    siw.put(new Pair<String, Byte>("aaa", (byte) 0), false));
+            assertEquals(6,
+                    siw.put(new Pair<String, Byte>("aaabbb", (byte) 1)));
+            assertEquals(12,
+                    siw.put(new Pair<String, Byte>("aaacc", (byte) 2)));
             assertEquals(17, siw.put(new Pair<String, Byte>("ccc", (byte) 3)));
         }
 

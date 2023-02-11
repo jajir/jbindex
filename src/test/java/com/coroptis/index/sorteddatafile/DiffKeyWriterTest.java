@@ -15,7 +15,7 @@ public class DiffKeyWriterTest {
     private final TypeDescriptorInteger tdi = new TypeDescriptorInteger();
 
     @Test
-    public void test_key_order() throws Exception {
+    public void test_ordering_of_key() throws Exception {
         final DiffKeyWriter<Integer> diffWriter = new DiffKeyWriter<>(
                 tdi.getConvertorToBytes(), Comparator.naturalOrder());
         final MemDirectory directory = new MemDirectory();
@@ -27,7 +27,7 @@ public class DiffKeyWriterTest {
     }
 
     @Test
-    public void test_same_keys_throw_exception() throws Exception {
+    public void test_ordering_same_keys_throw_exception() throws Exception {
         final DiffKeyWriter<Integer> diffWriter = new DiffKeyWriter<>(
                 tdi.getConvertorToBytes(), Comparator.naturalOrder());
         final MemDirectory directory = new MemDirectory();
@@ -41,7 +41,8 @@ public class DiffKeyWriterTest {
     }
 
     @Test
-    public void test_same_keys_throw_full_write_exception() throws Exception {
+    public void test_ordering_same_keys_throw_full_write_exception()
+            throws Exception {
         final DiffKeyWriter<Integer> diffWriter = new DiffKeyWriter<>(
                 tdi.getConvertorToBytes(), Comparator.naturalOrder());
         final MemDirectory directory = new MemDirectory();
@@ -55,7 +56,7 @@ public class DiffKeyWriterTest {
     }
 
     @Test
-    public void test_smaller_key_than_previous_one_throw_exception()
+    public void test_ordering_smaller_key_than_previous_one_throw_exception()
             throws Exception {
         final DiffKeyWriter<Integer> diffWriter = new DiffKeyWriter<>(
                 tdi.getConvertorToBytes(), Comparator.naturalOrder());
