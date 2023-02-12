@@ -7,8 +7,8 @@ import java.util.Objects;
 import java.util.stream.Stream;
 
 import com.coroptis.index.CloseableResource;
-import com.coroptis.index.DataFileIterator;
 import com.coroptis.index.Pair;
+import com.coroptis.index.PairIterator;
 import com.coroptis.index.directory.Directory;
 import com.coroptis.index.sorteddatafile.SortedDataFile;
 import com.coroptis.index.sorteddatafile.SortedDataFileWriter;
@@ -36,7 +36,7 @@ public class FastIndexFile<K> implements CloseableResource {
 	this.sdf = new SortedDataFile<>(directory, FILE_NAME, itd.getTypeWriter(), itd.getTypeReader(),
 		keyTypeDescriptor.getComparator(), keyTypeDescriptor.getConvertorFromBytes(),
 		keyTypeDescriptor.getConvertorToBytes());
-	try (final DataFileIterator<K, Integer> reader = sdf.openIterator()) {
+	try (final PairIterator<K, Integer> reader = sdf.openIterator()) {
 	    while (reader.hasNext()) {
 		final Pair<K, Integer> pair = reader.next();
 		list.add(pair);

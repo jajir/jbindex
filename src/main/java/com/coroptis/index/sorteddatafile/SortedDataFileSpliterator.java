@@ -6,27 +6,25 @@ import java.util.Spliterator;
 import java.util.function.Consumer;
 
 import com.coroptis.index.Pair;
-import com.coroptis.index.directory.FileReader;
+import com.coroptis.index.PairReader;
 
-public class SortedDataFileSpliterator<K, V> implements Spliterator<Pair<K, V>> {
+public class SortedDataFileSpliterator<K, V>
+        implements Spliterator<Pair<K, V>> {
 
-    private final PairTypeReader<K, V> pairReader;
-
-    private final FileReader fileReader;
+    private final PairReader<K, V> pairReader;
 
     private final PairComparator<K, V> pairComparator;
 
-    public SortedDataFileSpliterator(final PairTypeReader<K, V> pairReader, final FileReader fileReader,
+    public SortedDataFileSpliterator(final PairReader<K, V> pairReader,
             final PairComparator<K, V> pairComparator) {
         this.pairReader = Objects.requireNonNull(pairReader);
-        this.fileReader = Objects.requireNonNull(fileReader);
         this.pairComparator = Objects.requireNonNull(pairComparator,
                 "pair comparator must not be null");
     }
 
     @Override
     public boolean tryAdvance(final Consumer<? super Pair<K, V>> action) {
-        final Pair<K, V> out = pairReader.read(fileReader);
+        final Pair<K, V> out = pairReader.read();
         if (out == null) {
             return false;
         } else {
@@ -58,8 +56,8 @@ public class SortedDataFileSpliterator<K, V> implements Spliterator<Pair<K, V>> 
 
     @Override
     public int characteristics() {
-        return Spliterator.DISTINCT | Spliterator.IMMUTABLE | Spliterator.NONNULL
-                | Spliterator.SORTED;
+        return Spliterator.DISTINCT | Spliterator.IMMUTABLE
+                | Spliterator.NONNULL | Spliterator.SORTED;
     }
 
 }

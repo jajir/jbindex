@@ -5,30 +5,21 @@ import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
 
-import com.coroptis.index.directory.Directory;
-import com.coroptis.index.sorteddatafile.PairTypeReader;
-
 /**
- * Allows to use {@link PairReader} as {@link Iterator}. Some operations
- * like data merging it makes a lot easier.
+ * Allows to use {@link PairReader} as {@link Iterator}. Some operations like
+ * data merging it makes a lot easier.
  * 
  * @author honza
  *
  * @param <K>
  * @param <V>
  */
-@Deprecated
 public class DataFileIterator<K, V>
         implements Iterator<Pair<K, V>>, CloseableResource {
 
     private final PairReader<K, V> reader;
 
     private Pair<K, V> current = null;
-
-    public DataFileIterator(final Directory directory, final String fileName,
-            final PairTypeReader<K, V> pairReader) {
-        this(new PairFileReader<>(directory, fileName, pairReader));
-    }
 
     public DataFileIterator(final PairReader<K, V> reader) {
         this.reader = Objects.requireNonNull(reader);

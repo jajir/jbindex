@@ -10,7 +10,7 @@ package com.coroptis.index;
  * @param<K> key type
  * @param <V> value type
  */
-public class PairFileReaderEmpty<K, V> implements PairReader<K, V> {
+public class PairReaderEmpty<K, V> implements PairReader<K, V> {
 
     /**
      * It return just null.

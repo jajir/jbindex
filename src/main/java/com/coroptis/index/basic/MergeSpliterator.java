@@ -9,19 +9,20 @@ import java.util.Spliterator;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-import com.coroptis.index.DataFileIterator;
 import com.coroptis.index.Pair;
+import com.coroptis.index.PairIterator;
 
 public class MergeSpliterator<K, V> implements Spliterator<Pair<K, V>> {
 
-    private final List<DataFileIterator<K, V>> readers;
+    private final List<PairIterator<K, V>> readers;
 
     private final Comparator<? super K> keyComparator;
 
     private final ValueMerger<K, V> merger;
 
-    MergeSpliterator(final List<DataFileIterator<K, V>> readers,
-            final Comparator<? super K> keyComparator, final ValueMerger<K, V> merger) {
+    MergeSpliterator(final List<PairIterator<K, V>> readers,
+            final Comparator<? super K> keyComparator,
+            final ValueMerger<K, V> merger) {
         this.readers = Objects.requireNonNull(readers);
         this.keyComparator = Objects.requireNonNull(keyComparator);
         this.merger = Objects.requireNonNull(merger);
@@ -43,14 +44,14 @@ public class MergeSpliterator<K, V> implements Spliterator<Pair<K, V>> {
 
     @Override
     public boolean tryAdvance(final Consumer<? super Pair<K, V>> consumer) {
-        final List<DataFileIterator<K, V>> iteratorsWithBiggerKey = getIteratorsWithSmallerValue();
+        final List<PairIterator<K, V>> iteratorsWithBiggerKey = getIteratorsWithSmallerValue();
         if (iteratorsWithBiggerKey.isEmpty()) {
             // there are no more items to read
             return false;
         }
 
         Pair<K, V> out = null;
-        for (final DataFileIterator<K, V> reader : iteratorsWithBiggerKey) {
+        for (final PairIterator<K, V> reader : iteratorsWithBiggerKey) {
             final Pair<K, V> readed = reader.readCurrent().get();
             if (out == null) {
                 out = readed;
@@ -68,14 +69,16 @@ public class MergeSpliterator<K, V> implements Spliterator<Pair<K, V>> {
      * 
      * @return
      */
-    private List<DataFileIterator<K, V>> getIteratorsWithSmallerValue() {
+    private List<PairIterator<K, V>> getIteratorsWithSmallerValue() {
         final Optional<K> maxValue = readers.stream()
                 .filter(reader -> reader.readCurrent().isPresent())
-                .map(reader -> reader.readCurrent().get().getKey()).min(keyComparator);
+                .map(reader -> reader.readCurrent().get().getKey())
+                .min(keyComparator);
         if (maxValue.isEmpty()) {
             return Collections.emptyList();
         }
-        return readers.stream().filter(reader -> reader.readCurrent().isPresent())
+        return readers.stream()
+                .filter(reader -> reader.readCurrent().isPresent())
                 .filter(reader -> {
                     final K key = reader.readCurrent().get().getKey();
                     return keyComparator.compare(key, maxValue.get()) == 0;
@@ -84,7 +87,8 @@ public class MergeSpliterator<K, V> implements Spliterator<Pair<K, V>> {
 
     @Override
     public Comparator<? super Pair<K, V>> getComparator() {
-        return (pair1, pair2) -> keyComparator.compare(pair1.getKey(), pair2.getKey());
+        return (pair1, pair2) -> keyComparator.compare(pair1.getKey(),
+                pair2.getKey());
     }
 
     @Override

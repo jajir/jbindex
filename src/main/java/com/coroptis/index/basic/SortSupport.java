@@ -9,8 +9,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-import com.coroptis.index.DataFileIterator;
 import com.coroptis.index.Pair;
+import com.coroptis.index.PairIterator;
 import com.coroptis.index.directory.Directory;
 import com.coroptis.index.sorteddatafile.SortedDataFile;
 import com.coroptis.index.sorteddatafile.SortedDataFileWriter;
@@ -69,7 +69,7 @@ public class SortSupport<K, V> {
 
     void mergeSortedFiles(final List<String> filesToMergeLocaly,
             final Consumer<Pair<K, V>> consumer) {
-        List<DataFileIterator<K, V>> readers = null;
+        List<PairIterator<K, V>> readers = null;
         try {
             readers = filesToMergeLocaly.stream()
                     .map(fileName -> basicIndex.getSortedDataFile(fileName).openIterator())

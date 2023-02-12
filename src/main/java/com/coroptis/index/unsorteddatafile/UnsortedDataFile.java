@@ -3,6 +3,7 @@ package com.coroptis.index.unsorteddatafile;
 import java.util.Objects;
 
 import com.coroptis.index.PairIterator;
+import com.coroptis.index.PairReader;
 import com.coroptis.index.PairWriter;
 import com.coroptis.index.directory.Directory;
 import com.coroptis.index.directory.Directory.Access;
@@ -60,7 +61,7 @@ public class UnsortedDataFile<K, V> {
         }
     }
 
-    public UnsortedDataFileReader<K, V> openReader() {
+    public PairReader<K, V> openReader() {
         final UnsortedDataFileReader<K, V> out = new UnsortedDataFileReader<>(
                 keyReader, valueReader, getFileReader());
         return out;

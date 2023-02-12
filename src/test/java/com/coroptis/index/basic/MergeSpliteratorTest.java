@@ -16,26 +16,25 @@ import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Test;
 
-import com.coroptis.index.DataFileIterator;
 import com.coroptis.index.Pair;
-import com.coroptis.index.sorteddatafile.PairTypeReader;
+import com.coroptis.index.PairIterator;
 
 public class MergeSpliteratorTest {
 
     @SuppressWarnings("unchecked")
-    final PairTypeReader<String, String> pairReader1 = mock(PairTypeReader.class);
+    final PairIterator<String, String> pairReader1 = mock(PairIterator.class);
 
     @SuppressWarnings("unchecked")
-    final PairTypeReader<String, String> pairReader2 = mock(PairTypeReader.class);
+    final PairIterator<String, String> pairReader2 = mock(PairIterator.class);
 
     @SuppressWarnings("unchecked")
-    final DataFileIterator<Integer, String> file1Reader = mock(DataFileIterator.class);
+    final PairIterator<Integer, String> file1Reader = mock(PairIterator.class);
 
     @Test
-    void test_1_valid_in_reader_1() throws Exception {
+    public void test_1_valid_in_reader_1() throws Exception {
 
 	
-	final List<DataFileIterator<Integer, String>> readers = Stream.of(file1Reader)
+	final List<PairIterator<Integer, String>> readers = Stream.of(file1Reader)
 	      .collect(Collectors.toList());
 	final MergeSpliterator<Integer, String> pok = new MergeSpliterator<Integer, String>(readers, 
 		(int1, int2) -> int1.compareTo(int2), (key, val1, val2) -> val1);
