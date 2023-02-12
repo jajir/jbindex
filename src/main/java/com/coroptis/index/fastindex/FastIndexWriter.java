@@ -17,8 +17,7 @@ public class FastIndexWriter<K, V> implements PairWriter<K, V> {
 
     @Override
     public void close() {
-        // TODO Auto-generated method stub
-
+        // It't intentionaly empty.
     }
 
     @Override

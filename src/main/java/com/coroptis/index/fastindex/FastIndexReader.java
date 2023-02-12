@@ -48,8 +48,7 @@ public class FastIndexReader<K, V> implements PairReader<K, V> {
 
     @Override
     public void close() {
-	// TODO Auto-generated method stub
-
+	// It's intentionally empty.
     }
 
 }

@@ -22,7 +22,6 @@ public class MemDirectory implements Directory {
     @Override
     public FileWriter getFileWriter(final String fileName,
             final Access access) {
-        // TODO Auto-generated method stub
         return new MemFileWriter(fileName, this, access);
     }
 
