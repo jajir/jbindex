@@ -42,10 +42,9 @@ public class DiffKeyReaderTest {
                     loadStringToByteArray(invocation, "prase");
                     return 5;
                 });
-        assertThrows(IndexException.class, ()->reader.read(fileReader));
+        assertThrows(IndexException.class, () -> reader.read(fileReader));
     }
 
-    
     @Test
     public void test_reading_first_full_record() throws Exception {
         final DiffKeyReader<String> reader = new DiffKeyReader<>(
@@ -62,6 +61,19 @@ public class DiffKeyReaderTest {
     }
 
     @Test
+    public void test_reading_first_fail_when_just_part_of_data_is_read() throws Exception {
+        final DiffKeyReader<String> reader = new DiffKeyReader<>(
+                tds.getConvertorFromBytes());
+
+        when(fileReader.read()).thenReturn(0).thenReturn(5);
+        when(fileReader.read(Matchers.eq(new byte[5])))
+                .thenAnswer(invocation -> {
+                    return 3;
+                });
+        assertThrows(IndexException.class, () -> reader.read(fileReader));
+    }
+
+    @Test
     public void test_reading_more_records() throws Exception {
         final DiffKeyReader<String> reader = new DiffKeyReader<>(
                 tds.getConvertorFromBytes());
@@ -74,7 +86,7 @@ public class DiffKeyReaderTest {
                 });
         final String ret1 = reader.read(fileReader);
         assertEquals("prase", ret1);
-        
+
         when(fileReader.read()).thenReturn(3).thenReturn(5);
         when(fileReader.read(Matchers.eq(new byte[5])))
                 .thenAnswer(invocation -> {
@@ -86,7 +98,8 @@ public class DiffKeyReaderTest {
     }
 
     @Test
-    public void test_reading_more_records_with_inconsistency() throws Exception {
+    public void test_reading_more_records_with_inconsistency()
+            throws Exception {
         final DiffKeyReader<String> reader = new DiffKeyReader<>(
                 tds.getConvertorFromBytes());
 
@@ -98,9 +111,32 @@ public class DiffKeyReaderTest {
                 });
         final String ret1 = reader.read(fileReader);
         assertEquals("prase", ret1);
-        
+
         when(fileReader.read()).thenReturn(11).thenReturn(5);
-        assertThrows(IndexException.class, ()->reader.read(fileReader));
+        assertThrows(IndexException.class, () -> reader.read(fileReader));
+    }
+
+    @Test
+    public void test_reading_more_records_second_reading_load_part_of_bytes() throws Exception {
+        final DiffKeyReader<String> reader = new DiffKeyReader<>(
+                tds.getConvertorFromBytes());
+
+        when(fileReader.read()).thenReturn(0).thenReturn(5);
+        when(fileReader.read(Matchers.eq(new byte[5])))
+                .thenAnswer(invocation -> {
+                    loadStringToByteArray(invocation, "prase");
+                    return 5;
+                });
+        final String ret1 = reader.read(fileReader);
+        assertEquals("prase", ret1);
+
+        when(fileReader.read()).thenReturn(3).thenReturn(5);
+        when(fileReader.read(Matchers.eq(new byte[5])))
+                .thenAnswer(invocation -> {
+//                    loadStringToByteArray(invocation, "lesni");
+                    return 3;
+                });
+        assertThrows(IndexException.class, () -> reader.read(fileReader));
     }
 
     private void loadStringToByteArray(final InvocationOnMock invocation,

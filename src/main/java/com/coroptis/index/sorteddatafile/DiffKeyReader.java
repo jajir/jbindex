@@ -25,7 +25,7 @@ public class DiffKeyReader<K> implements TypeReader<K> {
         final int keyLengthInBytes = fileReader.read();
         if (sharedByteLength == 0) {
             final byte[] keyBytes = new byte[keyLengthInBytes];
-            fileReader.read(keyBytes);
+            read(fileReader, keyBytes);
             previousKeyBytes = keyBytes;
             return keyConvertor.fromBytes(keyBytes);
         }
@@ -43,11 +43,20 @@ public class DiffKeyReader<K> implements TypeReader<K> {
                     s1, previousKeyBytes.length, sharedByteLength));
         }
         final byte[] diffBytes = new byte[keyLengthInBytes];
-        fileReader.read(diffBytes);
+        read(fileReader, diffBytes);
         final byte[] sharedBytes = getBytes(previousKeyBytes, sharedByteLength);
         final byte[] keyBytes = concatenateArrays(sharedBytes, diffBytes);
         previousKeyBytes = keyBytes;
         return keyConvertor.fromBytes(keyBytes);
+    }
+
+    private void read(final FileReader fileReader, final byte[] bytes) {
+        int read = fileReader.read(bytes);
+        if (read != bytes.length) {
+            throw new IndexException(String.format(
+                    "Reading of '%s' bytes failed just '%s' was read.",
+                    bytes.length, read));
+        }
     }
 
     private byte[] getBytes(final byte[] bytes, final int howMany) {
