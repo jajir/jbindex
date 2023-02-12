@@ -3,15 +3,14 @@ package com.coroptis.index.sorteddatafile;
 import java.util.Comparator;
 import java.util.Objects;
 
-import com.coroptis.index.CloseableResource;
 import com.coroptis.index.Pair;
+import com.coroptis.index.PairWriter;
 import com.coroptis.index.directory.Directory;
 import com.coroptis.index.directory.FileWriter;
 import com.coroptis.index.type.ConvertorToBytes;
 import com.coroptis.index.type.TypeWriter;
 
-public class SortedDataFileWriter<K, V> implements CloseableResource {
-    //TODO implements PairFileWriter.
+public class SortedDataFileWriter<K, V> implements PairWriter<K, V> {
 
     private final TypeWriter<V> valueWriter;
 
@@ -50,8 +49,9 @@ public class SortedDataFileWriter<K, V> implements CloseableResource {
         return lastPosition;
     }
 
-    public int put(final Pair<K, V> pair) {
-        return put(pair, false);
+    @Override
+    public void put(final Pair<K, V> pair) {
+        put(pair, false);
     }
 
     @Override

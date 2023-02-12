@@ -43,7 +43,7 @@ public class SimpleIndexTest {
                 directory, FILE_NAME, stringTd.getConvertorToBytes(),
                 Comparator.naturalOrder(), byteTd.getTypeWriter())) {
             assertEquals(0,
-                    siw.put(new Pair<String, Byte>("aaabbb", (byte) 1)));
+                    siw.put(new Pair<String, Byte>("aaabbb", (byte) 1), true));
             assertThrows(IllegalArgumentException.class, () -> {
                 siw.put(new Pair<String, Byte>("aaa", (byte) 0), false);
             });
@@ -60,10 +60,11 @@ public class SimpleIndexTest {
             assertEquals(0,
                     siw.put(new Pair<String, Byte>("aaa", (byte) 0), false));
             assertEquals(6,
-                    siw.put(new Pair<String, Byte>("aaabbb", (byte) 1)));
+                    siw.put(new Pair<String, Byte>("aaabbb", (byte) 1), false));
             assertEquals(12,
-                    siw.put(new Pair<String, Byte>("aaacc", (byte) 2)));
-            assertEquals(17, siw.put(new Pair<String, Byte>("ccc", (byte) 3)));
+                    siw.put(new Pair<String, Byte>("aaacc", (byte) 2), false));
+            assertEquals(17,
+                    siw.put(new Pair<String, Byte>("ccc", (byte) 3), false));
         }
 
         try (final PairReader<String, Byte> sir = sortedFile.openReader()) {
