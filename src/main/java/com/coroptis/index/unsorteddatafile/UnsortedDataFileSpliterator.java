@@ -4,24 +4,22 @@ import java.util.Objects;
 import java.util.Spliterator;
 import java.util.function.Consumer;
 
+import com.coroptis.index.CloseableResource;
 import com.coroptis.index.Pair;
-import com.coroptis.index.directory.FileReader;
-import com.coroptis.index.sorteddatafile.PairTypeReader;
+import com.coroptis.index.PairReader;
 
-public class UnsortedDataFileSpliterator<K, V> implements Spliterator<Pair<K, V>> {
+public class UnsortedDataFileSpliterator<K, V>
+        implements Spliterator<Pair<K, V>>, CloseableResource {
 
-    private final PairTypeReader<K, V> pairReader;
-    private final FileReader fileReader;
+    private final PairReader<K, V> pairReader;
 
-    public UnsortedDataFileSpliterator(final FileReader fileReader,
-            final PairTypeReader<K, V> pairReader) {
-        this.fileReader = Objects.requireNonNull(fileReader);
+    public UnsortedDataFileSpliterator(final PairReader<K, V> pairReader) {
         this.pairReader = Objects.requireNonNull(pairReader);
     }
 
     @Override
     public boolean tryAdvance(final Consumer<? super Pair<K, V>> action) {
-        final Pair<K, V> out = pairReader.read(fileReader);
+        final Pair<K, V> out = pairReader.read();
         if (out == null) {
             return false;
         } else {
@@ -48,7 +46,13 @@ public class UnsortedDataFileSpliterator<K, V> implements Spliterator<Pair<K, V>
 
     @Override
     public int characteristics() {
-        return Spliterator.DISTINCT | Spliterator.IMMUTABLE | Spliterator.NONNULL;
+        return Spliterator.DISTINCT | Spliterator.IMMUTABLE
+                | Spliterator.NONNULL;
+    }
+
+    @Override
+    public void close() {
+        pairReader.close();
     }
 
 }

@@ -2,14 +2,11 @@ package com.coroptis.index.unsorteddatafile;
 
 import java.util.Objects;
 
-import com.coroptis.index.DataFileIterator;
-import com.coroptis.index.PairReader;
-import com.coroptis.index.PairFileReader;
+import com.coroptis.index.PairIterator;
 import com.coroptis.index.PairWriter;
 import com.coroptis.index.directory.Directory;
 import com.coroptis.index.directory.Directory.Access;
-import com.coroptis.index.sorteddatafile.PairTypeReader;
-import com.coroptis.index.sorteddatafile.PairTypeReaderImpl;
+import com.coroptis.index.directory.FileReader;
 import com.coroptis.index.type.TypeReader;
 import com.coroptis.index.type.TypeWriter;
 
@@ -42,19 +39,8 @@ public class UnsortedDataFile<K, V> {
         this.valueReader = Objects.requireNonNull(valueReader);
     }
 
-    public PairReader<K, V> openReader() {
-        final PairTypeReader<K, V> pairReader = new PairTypeReaderImpl<>(keyReader,
-                valueReader);
-        final PairFileReader<K, V> reader = new PairFileReader<>(directory,
-                fileName, pairReader);
-        return reader;
-    }
-
-    public DataFileIterator<K, V> openIterator() {
-        final PairTypeReader<K, V> pairReader = new PairTypeReaderImpl<>(keyReader,
-                valueReader);
-        final DataFileIterator<K, V> iterator = new DataFileIterator<>(
-                directory, fileName, pairReader);
+    public PairIterator<K, V> openIterator() {
+        final PairIterator<K, V> iterator = new PairIterator<>(openReader());
         return iterator;
     }
 
@@ -65,9 +51,23 @@ public class UnsortedDataFile<K, V> {
     }
 
     public UnsortedDataFileStreamer<K, V> openStreamer() {
-        final UnsortedDataFileStreamer<K, V> streamer = new UnsortedDataFileStreamer<>(
-                directory, fileName, keyReader, valueReader);
-        return streamer;
+        if(directory.isFileExists(fileName)) {
+            final UnsortedDataFileSpliterator<K, V> spliterator = new UnsortedDataFileSpliterator<>(
+                    openReader());
+            return new UnsortedDataFileStreamer<>(spliterator);            
+        }else {
+            return new UnsortedDataFileStreamer<>(null);                        
+        }
+    }
+
+    public UnsortedDataFileReader<K, V> openReader() {
+        final UnsortedDataFileReader<K, V> out = new UnsortedDataFileReader<>(
+                keyReader, valueReader, getFileReader());
+        return out;
+    }
+
+    private FileReader getFileReader() {
+        return directory.getFileReader(fileName);
     }
 
 }

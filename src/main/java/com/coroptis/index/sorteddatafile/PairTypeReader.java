@@ -13,6 +13,7 @@ import com.coroptis.index.type.TypeReader;
  * @param <K>
  * @param <V>
  */
+@Deprecated
 public interface PairTypeReader<K, V> extends TypeReader<Pair<K, V>> {
 
     /**

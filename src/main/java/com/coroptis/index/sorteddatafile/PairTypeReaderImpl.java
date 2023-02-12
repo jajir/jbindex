@@ -15,6 +15,7 @@ import com.coroptis.index.type.TypeReader;
  * @param <K>
  * @param <V>
  */
+@Deprecated
 public class PairTypeReaderImpl<K, V> implements PairTypeReader<K, V> {
 
     private final TypeReader<K> keyReader;

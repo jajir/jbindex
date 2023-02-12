@@ -4,8 +4,8 @@ import java.util.Comparator;
 import java.util.Objects;
 import java.util.function.Consumer;
 
-import com.coroptis.index.DataFileIterator;
 import com.coroptis.index.Pair;
+import com.coroptis.index.PairIterator;
 import com.coroptis.index.partiallysorteddatafile.PartiallySortedDataFileWriter;
 import com.coroptis.index.unsorteddatafile.UnsortedDataFile;
 
@@ -65,7 +65,7 @@ class UnsortedDataFileSorter<K, V> {
                 unsortedFileName, merger, howManySortInMemory, basicIndex, keyComparator)) {
             final UnsortedDataFile<K, V> unsortedFile = basicIndex
                     .getUnsortedFile(unsortedFileName);
-            try (final DataFileIterator<K, V> reader = unsortedFile.openIterator()) {
+            try (final PairIterator<K, V> reader = unsortedFile.openIterator()) {
                 while (reader.hasNext()) {
                     final Pair<K, V> pair = reader.readCurrent().get();
                     writer.put(pair);
