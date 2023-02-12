@@ -69,6 +69,7 @@ public class SortedDataFile<K, V> {
         return reader;
     }
 
+    @SuppressWarnings("resource")
     public DataFileIterator<K, V> openIterator() {
         if (!directory.isFileExists(fileName)) {
             return new DataFileIterator<>(

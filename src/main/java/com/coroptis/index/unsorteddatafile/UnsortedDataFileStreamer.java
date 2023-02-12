@@ -13,7 +13,6 @@ import com.coroptis.index.sorteddatafile.PairTypeReaderImpl;
 import com.coroptis.index.type.TypeReader;
 
 public class UnsortedDataFileStreamer<K, V> implements CloseableResource {
-//TODO make fileStreamer interface
 
     private final FileReader fileReader;
     private final PairTypeReader<K, V> pairReader;
