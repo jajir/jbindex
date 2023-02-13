@@ -1,9 +1,9 @@
 package com.coroptis.index.fastindex;
 
-import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.TreeMap;
 import java.util.stream.Stream;
 
 import com.coroptis.index.CloseableResource;
@@ -26,95 +26,93 @@ public class FastIndexFile<K> implements CloseableResource {
 
     private final static String FILE_NAME = "index.map";
 
-    private List<Pair<K, Integer>> list = new ArrayList<>();
+    private TreeMap<K, Integer> list;
     private final SortedDataFile<K, Integer> sdf;
     private final Comparator<K> keyComparator;
 
-    FastIndexFile(final Directory directory, final TypeDescriptor<K> keyTypeDescriptor) {
-	final TypeDescriptorInteger itd = new TypeDescriptorInteger();
-	this.keyComparator = Objects.requireNonNull(keyTypeDescriptor.getComparator());
-	this.sdf = new SortedDataFile<>(directory, FILE_NAME, itd.getTypeWriter(), itd.getTypeReader(),
-		keyTypeDescriptor.getComparator(), keyTypeDescriptor.getConvertorFromBytes(),
-		keyTypeDescriptor.getConvertorToBytes());
-	try (final PairIterator<K, Integer> reader = sdf.openIterator()) {
-	    while (reader.hasNext()) {
-		final Pair<K, Integer> pair = reader.next();
-		list.add(pair);
-	    }
-	}
+    FastIndexFile(final Directory directory,
+            final TypeDescriptor<K> keyTypeDescriptor) {
+        final TypeDescriptorInteger itd = new TypeDescriptorInteger();
+        this.keyComparator = Objects
+                .requireNonNull(keyTypeDescriptor.getComparator());
+        this.sdf = new SortedDataFile<>(directory, FILE_NAME,
+                itd.getTypeWriter(), itd.getTypeReader(),
+                keyTypeDescriptor.getComparator(),
+                keyTypeDescriptor.getConvertorFromBytes(),
+                keyTypeDescriptor.getConvertorToBytes());
+        this.list = new TreeMap<>(keyComparator);
+        try (final PairIterator<K, Integer> reader = sdf.openIterator()) {
+            while (reader.hasNext()) {
+                final Pair<K, Integer> pair = reader.next();
+                list.put(pair.getKey(), pair.getValue());
+            }
+        }
     }
 
-    public Integer findFileId(final K key) {
-	Objects.requireNonNull(key, "Key can't be null");
-	for (final Pair<K, Integer> pair : list) {
-	    if (keyComparator.compare(key, pair.getKey()) <= 0) {
-		return pair.getValue();
-	    }
-	}
-	return null;
+    public Integer findSegmentId(final K key) {
+        Objects.requireNonNull(key, "Key can't be null");
+        final Pair<K, Integer> pair = localFindSegmentForKey(key);
+        return pair == null ? null : pair.getValue();
     }
 
-    public int insertKeyToPage(final K key) {
-	Objects.requireNonNull(key, "Key can't be null");
-	for (final Pair<K, Integer> pair : list) {
-	    if (keyComparator.compare(key, pair.getKey()) <= 0) {
-		return pair.getValue();
-	    }
-	}
-	/*
-	 * Key is bigger that all key so it will at last segment. But key at last
-	 * segment is smaller than adding one. Because of that key have to be upgraded.
-	 */
-	return updateMaxKey(key);
+    public int insertKeyToSegment(final K key) {
+        Objects.requireNonNull(key, "Key can't be null");
+        final Pair<K, Integer> pair = localFindSegmentForKey(key);
+        if (pair == null) {
+            /*
+             * Key is bigger that all key so it will at last segment. But key at
+             * last segment is smaller than adding one. Because of that key have
+             * to be upgraded.
+             */
+            return updateMaxKey(key);
+        } else {
+            return pair.getValue();
+        }
+    }
+
+    private Pair<K, Integer> localFindSegmentForKey(final K key) {
+        Objects.requireNonNull(key, "Key can't be null");
+        final Map.Entry<K, Integer> ceilingEntry = list.ceilingEntry(key);
+        if (ceilingEntry == null) {
+            return null;
+        } else {
+            return Pair.of(ceilingEntry.getKey(), ceilingEntry.getValue());
+        }
     }
 
     private int updateMaxKey(final K key) {
-	if (list.size() == 0) {
-	    list.add(Pair.of(key, 0));
-	    return 0;
-	} else {
-	    final int lastIndex = list.size() - 1;
-	    final Pair<K, Integer> max = list.get(lastIndex);
-	    final Pair<K, Integer> newMax = Pair.of(key, max.getValue());
-	    list.set(lastIndex, newMax);
-	    return newMax.getValue();
-	}
+        if (list.size() == 0) {
+            list.put(key, 0);
+            return 0;
+        } else {
+            final Pair<K, Integer> max = Pair.of(list.lastEntry().getKey(),
+                    list.lastEntry().getValue());
+            list.remove(max.getKey());
+            final Pair<K, Integer> newMax = Pair.of(key, max.getValue());
+            list.put(newMax.getKey(), newMax.getValue());
+            return newMax.getValue();
+        }
     }
 
-    public void insertPage(final K key, final Integer pageId) {
-	Objects.requireNonNull(key, "Key can't be null");
-	int index = getIndexForKey(key);
-	if (index == list.size()) {
-	    list.add(Pair.of(key, pageId));
-	} else {
-	    list.add(index, Pair.of(key, pageId));
-	}
+    public void insertSegment(final K key, final Integer pageId) {
+        Objects.requireNonNull(key, "Key can't be null");
+        list.put(key, pageId);
     }
 
     public Stream<Pair<K, Integer>> getPagesAsStream() {
-	return list.stream();
+        return list.entrySet().stream()
+                .map(entry -> Pair.of(entry.getKey(), entry.getValue()));
     }
 
-    private int getIndexForKey(final K key) {
-	int i = 0;
-	for (final Pair<K, Integer> pair : list) {
-	    if (keyComparator.compare(key, pair.getKey()) < 0) {
-		return i;
-	    }
-	    i++;
-	}
-	return list.size();
-    }
-
-    public void save() {
-	try (final SortedDataFileWriter<K, Integer> writer = sdf.openWriter()) {
-	    list.forEach(writer::put);
-	}
+    public void flush() {
+        try (final SortedDataFileWriter<K, Integer> writer = sdf.openWriter()) {
+            list.forEach((k, v) -> writer.put(Pair.of(k, v)));
+        }
     }
 
     @Override
     public void close() {
-	save();
+        flush();
     }
 
 }

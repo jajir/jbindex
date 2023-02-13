@@ -29,7 +29,7 @@ public class CompactSupport<K, V> {
     public void compact(final Pair<K, V> pair) {
 	Objects.requireNonNull(pair);
 	final K segmentKey = pair.getKey();
-	final int pageId = fastIndexFile.insertKeyToPage(segmentKey);
+	final int pageId = fastIndexFile.insertKeyToSegment(segmentKey);
 	if (currentSegmentId == -1) {
 	    currentSegmentId = pageId;
 	    toSameSegment.add(pair);

@@ -36,7 +36,7 @@ public class SimpleDataFileTest {
         assertEquals(3, sdf.getStats().getNumberOfPairsInCache());
         assertEquals(0, sdf.getStats().getNumberOfPairsInMainFile());
 
-        sdf.merge();
+        sdf.compact();
 
         assertEquals(0, sdf.getStats().getNumberOfPairsInCache());
         assertEquals(3, sdf.getStats().getNumberOfPairsInMainFile());
