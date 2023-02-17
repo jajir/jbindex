@@ -83,7 +83,7 @@ public class FastIndex<K, V> implements CloseableResource {
         logger.debug(
                 "Cache compacting is done. Cache contains '{}' key value pairs.",
                 cache.size());
-        optionallyCompactSegments();
+        tryToCopactsSegmenst(support.getEligibleSegments());
     }
 
     SimpleDataFile<K, V> getSegment(final int pageId) {
@@ -97,16 +97,22 @@ public class FastIndex<K, V> implements CloseableResource {
      * Verify that number of keys in segments doesn't exceed some threshold.
      * When it exceed than segment is merged or split into two smaller segment.
      */
-    private void optionallyCompactSegments() {
+    public void optionallyCompactSegments() {
         /*
          * Defensive copy have to be done, because further splitting will affect
          * list size. In the future it will be slow.
          */
-        final List<Pair<K, Integer>> list = fastIndexFile.getPagesAsStream()
+        final List<Integer> eligibleSegmentIds = fastIndexFile
+                .getPagesAsStream().map(pair -> pair.getValue())
                 .collect(Collectors.toList());
-        logger.debug("Start of optimalizations of '{}' segments.", list.size());
-        list.forEach(pair -> {
-            final int segmentId = pair.getValue();
+        tryToCopactsSegmenst(eligibleSegmentIds);
+    }
+
+    private void tryToCopactsSegmenst(final List<Integer> eligibleSegment) {
+        Objects.requireNonNull(eligibleSegment);
+        logger.debug("Start of compacting of '{}' segments.",
+                eligibleSegment.size());
+        eligibleSegment.forEach(segmentId -> {
             final SimpleDataFile<K, V> sdf = new SimpleDataFile<>(directory,
                     getFileName(segmentId), keyTypeDescriptor,
                     valueTypeDescriptor, valueMerger);
@@ -127,7 +133,8 @@ public class FastIndex<K, V> implements CloseableResource {
                 logger.debug("Compacting of segment '{}' is done.", segmentId);
             }
         });
-        logger.debug("Optimalizations of '{}' segments is done.", list.size());
+        logger.debug("Compacting of '{}' segments is done.",
+                eligibleSegment.size());
     }
 
     /**
