@@ -44,7 +44,7 @@ public class CompactSupport<K, V> {
             return;
         } else {
             /* Write all keys to index and clean cache and set new pageId */
-            flushToCurrentPageIdSegment();
+            flushToCurrentSegment();
             toSameSegment.add(pair);
             currentSegmentId = pageId;
         }
@@ -54,11 +54,11 @@ public class CompactSupport<K, V> {
         if (currentSegmentId == -1) {
             return;
         }
-        flushToCurrentPageIdSegment();
+        flushToCurrentSegment();
         currentSegmentId = -1;
     }
 
-    private void flushToCurrentPageIdSegment() {
+    private void flushToCurrentSegment() {
         logger.debug("Flushing '{}' key value pairs into segment '{}'.",
                 toSameSegment.size(), currentSegmentId);
         final SimpleDataFile<K, V> sdf = fastIndex.getSegment(currentSegmentId);
