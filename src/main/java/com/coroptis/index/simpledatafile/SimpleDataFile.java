@@ -117,7 +117,6 @@ public class SimpleDataFile<K, V> {
      * @return
      */
     public K split(final String smallerDataFileName) {
-
         long cx = 0;
         long half = getStats().getTotalNumberOfPairs() / 2;
         K maxLowerIndexKey = null;

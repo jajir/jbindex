@@ -66,6 +66,18 @@ public class FastIndex<K, V> implements CloseableResource {
         }
     }
 
+    public void forceCompact() {
+        /*
+         * Defensive copy have to be done, because further splitting will affect
+         * list size. In the future it will be slow.
+         */
+        final List<Integer> eligibleSegmentIds = fastIndexFile
+                .getPagesAsStream().map(pair -> pair.getValue())
+                .collect(Collectors.toList());
+        compactSegmenst(eligibleSegmentIds);
+
+    }
+
     private void compact() {
         // It's stupid more than one pair falls into opened segment.
         logger.debug(
@@ -134,6 +146,22 @@ public class FastIndex<K, V> implements CloseableResource {
             }
         });
         logger.debug("Compacting of '{}' segments is done.",
+                eligibleSegment.size());
+    }
+
+    private void compactSegmenst(final List<Integer> eligibleSegment) {
+        Objects.requireNonNull(eligibleSegment);
+        logger.debug("Start of force compacting of '{}' segments.",
+                eligibleSegment.size());
+        eligibleSegment.forEach(segmentId -> {
+            final SimpleDataFile<K, V> sdf = new SimpleDataFile<>(directory,
+                    getFileName(segmentId), keyTypeDescriptor,
+                    valueTypeDescriptor, valueMerger);
+            logger.debug("Compacting of segment '{}' started.", segmentId);
+            sdf.compact();
+            logger.debug("Compacting of segment '{}' is done.", segmentId);
+        });
+        logger.debug("Force compacting of '{}' segments is done.",
                 eligibleSegment.size());
     }
 

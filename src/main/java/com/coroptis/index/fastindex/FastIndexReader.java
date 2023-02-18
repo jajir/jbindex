@@ -15,40 +15,46 @@ public class FastIndexReader<K, V> implements PairReader<K, V> {
     private SimpleDataFile<K, V> currentSegment;
     private PairReader<K, V> currentReader;
 
-    FastIndexReader(final FastIndex<K, V> fastIndex, final FastIndexFile<K> fastIndexFile) {
-	this.fastIndex = Objects.requireNonNull(fastIndex);
-	this.pageIdsd = fastIndexFile.getPagesAsStream().map(pair -> pair.getValue()).collect(Collectors.toList());
-	loadNextSegment();
+    FastIndexReader(final FastIndex<K, V> fastIndex,
+            final FastIndexFile<K> fastIndexFile) {
+        this.fastIndex = Objects.requireNonNull(fastIndex);
+        this.pageIdsd = fastIndexFile.getPagesAsStream()
+                .map(pair -> pair.getValue()).collect(Collectors.toList());
+        loadNextSegment();
     }
 
     @Override
     public Pair<K, V> read() {
-	if (currentReader == null) {
-	    return null;
-	}
-	final Pair<K, V> out = currentReader.read();
-	if (out == null) {
-	    loadNextSegment();
-	    return read();
-	}
-	return out;
+        if (currentReader == null) {
+            return null;
+        }
+        final Pair<K, V> out = currentReader.read();
+        if (out == null) {
+            loadNextSegment();
+            return read();
+        }
+        return out;
     }
 
     private void loadNextSegment() {
-	if (currentReader != null) {
-	    currentReader.close();
-	    currentReader = null;
-	}
-	if (pageIdsd.size() > 0) {
-	    final Integer segmentId = pageIdsd.remove(0);
-	    currentSegment = fastIndex.getSegment(segmentId);
-	    currentReader = currentSegment.openReader();
-	}
+        optionallyCloseCurrentReader();
+        if (pageIdsd.size() > 0) {
+            final Integer segmentId = pageIdsd.remove(0);
+            currentSegment = fastIndex.getSegment(segmentId);
+            currentReader = currentSegment.openReader();
+        }
     }
 
     @Override
     public void close() {
-	// It's intentionally empty.
+        optionallyCloseCurrentReader();
+    }
+
+    private void optionallyCloseCurrentReader() {
+        if (currentReader != null) {
+            currentReader.close();
+            currentReader = null;
+        }
     }
 
 }
