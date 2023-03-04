@@ -6,13 +6,13 @@ import java.util.stream.Collectors;
 
 import com.coroptis.index.Pair;
 import com.coroptis.index.PairReader;
-import com.coroptis.index.simpledatafile.SimpleDataFile;
+import com.coroptis.index.simpledatafile.SortedStringTable;
 
 public class FastIndexReader<K, V> implements PairReader<K, V> {
 
     private final List<Integer> pageIdsd;
     private final FastIndex<K, V> fastIndex;
-    private SimpleDataFile<K, V> currentSegment;
+    private SortedStringTable<K, V> currentSegment;
     private PairReader<K, V> currentReader;
 
     FastIndexReader(final FastIndex<K, V> fastIndex,

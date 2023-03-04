@@ -20,6 +20,16 @@ import com.coroptis.index.type.TypeDescriptor;
 import com.coroptis.index.unsorteddatafile.UnsortedDataFile;
 import com.coroptis.index.unsorteddatafile.UnsortedDataFileWriter;
 
+/**
+ * It's not thread safe. Access from multiple threads could easily corrupt
+ * index.
+ * 
+ * 
+ * @author honza
+ *
+ * @param <K> key tyoe
+ * @param <V> value type
+ */
 public class SimpleDataFile<K, V> {
 
     private final Logger logger = LoggerFactory.getLogger(SimpleDataFile.class);
@@ -193,7 +203,7 @@ public class SimpleDataFile<K, V> {
      * 
      * @return
      */
-    public K writePairsFromIterator(final PairIterator<K, V> iterator,
+    private K writePairsFromIterator(final PairIterator<K, V> iterator,
             long howManyToCopy) {
         K maxLowerIndexKey = null;
         long cx = 0;

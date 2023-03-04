@@ -22,7 +22,7 @@ public class SortedDataFile<K, V> {
 
     private final TypeReader<V> valueReader;
 
-    private final Comparator<? super K> keyComparator;
+    private final Comparator<K> keyComparator;
 
     private final ConvertorFromBytes<K> keyConvertorFromBytes;
 
@@ -34,7 +34,7 @@ public class SortedDataFile<K, V> {
 
     public SortedDataFile(final Directory directory, final String fileName,
             final TypeWriter<V> valueWriter, final TypeReader<V> valueReader,
-            final Comparator<? super K> keyComparator,
+            final Comparator<K> keyComparator,
             final ConvertorFromBytes<K> keyConvertorFromBytes,
             final ConvertorToBytes<K> keyConvertorToBytes) {
         this.directory = Objects.requireNonNull(directory);

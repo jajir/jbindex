@@ -11,14 +11,14 @@ public class DiffKeyWriter<K> implements TypeWriter<K> {
 
     private final ConvertorToBytes<K> keyTypeWriter;
 
-    private final Comparator<? super K> keyComparator;
+    private final Comparator<K> keyComparator;
 
     private byte[] previousKeyBytes;
 
     private K previousKey;
 
     public DiffKeyWriter(final ConvertorToBytes<K> convertorToBytes,
-            final Comparator<? super K> keyComparator) {
+            final Comparator<K> keyComparator) {
         this.keyTypeWriter = convertorToBytes;
         this.keyComparator = Objects.requireNonNull(keyComparator, "Key comparator can't be null");
         previousKeyBytes = new byte[0];

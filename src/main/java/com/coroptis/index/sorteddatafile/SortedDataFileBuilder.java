@@ -19,7 +19,7 @@ public class SortedDataFileBuilder<K, V> {
 
     private TypeReader<V> valueReader;
 
-    private Comparator<? super K> keyComparator;
+    private Comparator<K> keyComparator;
 
     private ConvertorFromBytes<K> keyConvertorFromBytes;
 
@@ -46,7 +46,7 @@ public class SortedDataFileBuilder<K, V> {
     }
 
     public SortedDataFileBuilder<K, V> withKeyComparator(
-            final Comparator<? super K> keyComparator) {
+            final Comparator<K> keyComparator) {
         this.keyComparator = Objects.requireNonNull(keyComparator);
         return this;
     }

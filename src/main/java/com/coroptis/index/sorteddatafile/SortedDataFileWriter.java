@@ -22,7 +22,7 @@ public class SortedDataFileWriter<K, V> implements PairWriter<K, V> {
 
     public SortedDataFileWriter(final Directory directory, final String fileName,
             final ConvertorToBytes<K> keyConvertorToBytes,
-            final Comparator<? super K> keyComparator, final TypeWriter<V> valueWriter) {
+            final Comparator<K> keyComparator, final TypeWriter<V> valueWriter) {
         Objects.requireNonNull(directory);
         Objects.requireNonNull(fileName);
         this.writer = directory.getFileWriter(fileName);

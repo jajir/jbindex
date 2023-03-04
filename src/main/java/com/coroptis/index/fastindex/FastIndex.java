@@ -2,6 +2,7 @@ package com.coroptis.index.fastindex;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -14,10 +15,20 @@ import com.coroptis.index.basic.ValueMerger;
 import com.coroptis.index.directory.Directory;
 import com.coroptis.index.partiallysorteddatafile.UniqueCache;
 import com.coroptis.index.simpledatafile.MergedPairReader;
-import com.coroptis.index.simpledatafile.SimpleDataFile;
+import com.coroptis.index.simpledatafile.SortedStringTable;
 import com.coroptis.index.sorteddatafile.PairComparator;
 import com.coroptis.index.type.TypeDescriptor;
 
+/**
+ * TODO consider moving writing to writer and reading to reader.
+ * 
+ * 
+ * 
+ * @author honza
+ *
+ * @param <K>
+ * @param <V>
+ */
 public class FastIndex<K, V> implements CloseableResource {
 
     private final Logger logger = LoggerFactory.getLogger(FastIndex.class);
@@ -66,7 +77,15 @@ public class FastIndex<K, V> implements CloseableResource {
         }
     }
 
-    public void forceCompact() {
+    public void forceCompactCache() {
+        /*
+         * Empty cache.
+         */
+        compact();
+    }
+
+    public void forceCompactSegments() {
+        compact();
         /*
          * Defensive copy have to be done, because further splitting will affect
          * list size. In the future it will be slow.
@@ -75,11 +94,9 @@ public class FastIndex<K, V> implements CloseableResource {
                 .getPagesAsStream().map(pair -> pair.getValue())
                 .collect(Collectors.toList());
         compactSegmenst(eligibleSegmentIds);
-
     }
 
     private void compact() {
-        // It's stupid more than one pair falls into opened segment.
         logger.debug(
                 "Cache compacting of '{}' key value pairs in cache started.",
                 cache.size());
@@ -92,17 +109,18 @@ public class FastIndex<K, V> implements CloseableResource {
                 });
         support.compactRest();
         cache.clear();
+        fastIndexFile.flush();
         logger.debug(
                 "Cache compacting is done. Cache contains '{}' key value pairs.",
                 cache.size());
         tryToCopactsSegmenst(support.getEligibleSegments());
     }
 
-    SimpleDataFile<K, V> getSegment(final int pageId) {
-        final SimpleDataFile<K, V> sdf = new SimpleDataFile<>(directory,
+    SortedStringTable<K, V> getSegment(final int pageId) {
+        final SortedStringTable<K, V> sst = SortedStringTable.make(directory,
                 getFileName(pageId), keyTypeDescriptor, valueTypeDescriptor,
                 valueMerger);
-        return sdf;
+        return sst;
     }
 
     /**
@@ -124,20 +142,10 @@ public class FastIndex<K, V> implements CloseableResource {
         Objects.requireNonNull(eligibleSegment);
         logger.debug("Start of compacting of '{}' segments.",
                 eligibleSegment.size());
+        final AtomicBoolean flushFastIndexFile = new AtomicBoolean(false);
         eligibleSegment.forEach(segmentId -> {
-            final SimpleDataFile<K, V> sdf = new SimpleDataFile<>(directory,
-                    getFileName(segmentId), keyTypeDescriptor,
-                    valueTypeDescriptor, valueMerger);
-            if (sdf.getStats()
-                    .getNumberOfPairsInMainFile() > maxNumeberOfKeysInSegment) {
-                logger.debug("Splitting of segment {} started.", segmentId);
-                final int newSegmentId = (int) (fastIndexFile.getPagesAsStream()
-                        .count());
-                final K newPageKey = sdf.split(getFileName(newSegmentId));
-                fastIndexFile.insertSegment(newPageKey, newSegmentId);
-                logger.debug("Splitting of segment '{}' to '{}' is done.",
-                        segmentId, newSegmentId);
-            }
+            final SortedStringTable<K, V> sdf = getSegment(segmentId);
+            flushFastIndexFile.set(optionallySplit(sdf, segmentId));
             if (sdf.getStats()
                     .getNumberOfPairsInCache() > maxNumeberOfKeysInSegmentCache) {
                 logger.debug("Compacting of segment '{}' started.", segmentId);
@@ -145,8 +153,34 @@ public class FastIndex<K, V> implements CloseableResource {
                 logger.debug("Compacting of segment '{}' is done.", segmentId);
             }
         });
+        if (flushFastIndexFile.get()) {
+            fastIndexFile.flush();
+        }
         logger.debug("Compacting of '{}' segments is done.",
                 eligibleSegment.size());
+    }
+
+    /**
+     * If number of keys reach threshold split segment into two.
+     * 
+     * @param sdf       required simple data file
+     * @param segmentId required segment id
+     * @return
+     */
+    private boolean optionallySplit(final SortedStringTable<K, V> sdf,
+            final int segmentId) {
+        if (sdf.getStats()
+                .getNumberOfPairsInMainFile() > maxNumeberOfKeysInSegment) {
+            logger.debug("Splitting of segment {} started.", segmentId);
+            final int newSegmentId = (int) (fastIndexFile.getPagesAsStream()
+                    .count());
+            final K newPageKey = sdf.split(getFileName(newSegmentId));
+            fastIndexFile.insertSegment(newPageKey, newSegmentId);
+            logger.debug("Splitting of segment '{}' to '{}' is done.",
+                    segmentId, newSegmentId);
+            return true;
+        }
+        return false;
     }
 
     private void compactSegmenst(final List<Integer> eligibleSegment) {
@@ -154,12 +188,12 @@ public class FastIndex<K, V> implements CloseableResource {
         logger.debug("Start of force compacting of '{}' segments.",
                 eligibleSegment.size());
         eligibleSegment.forEach(segmentId -> {
-            final SimpleDataFile<K, V> sdf = new SimpleDataFile<>(directory,
-                    getFileName(segmentId), keyTypeDescriptor,
-                    valueTypeDescriptor, valueMerger);
-            logger.debug("Compacting of segment '{}' started.", segmentId);
-            sdf.compact();
-            logger.debug("Compacting of segment '{}' is done.", segmentId);
+            final SortedStringTable<K, V> sdf = getSegment(segmentId);
+            if (sdf.getStats().getNumberOfPairsInCache() > 0) {
+                logger.debug("Compacting of segment '{}' started.", segmentId);
+                sdf.compact();
+                logger.debug("Compacting of segment '{}' is done.", segmentId);
+            }
         });
         logger.debug("Force compacting of '{}' segments is done.",
                 eligibleSegment.size());

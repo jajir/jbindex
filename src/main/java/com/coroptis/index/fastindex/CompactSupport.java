@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
 
 import com.coroptis.index.Pair;
 import com.coroptis.index.PairWriter;
-import com.coroptis.index.simpledatafile.SimpleDataFile;
+import com.coroptis.index.simpledatafile.SortedStringTable;
 
 public class CompactSupport<K, V> {
 
@@ -61,7 +61,8 @@ public class CompactSupport<K, V> {
     private void flushToCurrentSegment() {
         logger.debug("Flushing '{}' key value pairs into segment '{}'.",
                 toSameSegment.size(), currentSegmentId);
-        final SimpleDataFile<K, V> sdf = fastIndex.getSegment(currentSegmentId);
+        final SortedStringTable<K, V> sdf = fastIndex
+                .getSegment(currentSegmentId);
         try (final PairWriter<K, V> writer = sdf.openCacheWriter()) {
             toSameSegment.forEach(writer::put);
         }
