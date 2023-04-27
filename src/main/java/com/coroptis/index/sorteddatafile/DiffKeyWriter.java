@@ -3,13 +3,18 @@ package com.coroptis.index.sorteddatafile;
 import java.util.Comparator;
 import java.util.Objects;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.coroptis.index.directory.FileWriter;
 import com.coroptis.index.type.ConvertorToBytes;
 import com.coroptis.index.type.TypeWriter;
 
 public class DiffKeyWriter<K> implements TypeWriter<K> {
 
-    private final ConvertorToBytes<K> keyTypeWriter;
+    private final Logger logger = LoggerFactory.getLogger(DiffKeyWriter.class);
+    
+    private final ConvertorToBytes<K> convertorToBytes;
 
     private final Comparator<K> keyComparator;
 
@@ -19,10 +24,16 @@ public class DiffKeyWriter<K> implements TypeWriter<K> {
 
     public DiffKeyWriter(final ConvertorToBytes<K> convertorToBytes,
             final Comparator<K> keyComparator) {
-        this.keyTypeWriter = convertorToBytes;
-        this.keyComparator = Objects.requireNonNull(keyComparator, "Key comparator can't be null");
+        this.convertorToBytes = Objects.requireNonNull(convertorToBytes,
+                "Convertor to bytes is null");
+        this.keyComparator = Objects.requireNonNull(keyComparator,
+                "Key comparator can't be null");
         previousKeyBytes = new byte[0];
         previousKey = null;
+        logger.debug(
+                "Initilizing with conventor to bytes '{}' and comparator '{}'",
+                this.convertorToBytes.getClass().getSimpleName(),
+                this.keyComparator.getClass().getSimpleName());
     }
 
     @Override
@@ -35,26 +46,28 @@ public class DiffKeyWriter<K> implements TypeWriter<K> {
         if (previousKey != null) {
             final int cmp = keyComparator.compare(previousKey, key);
             if (cmp == 0) {
-                final String s2 = new String(keyTypeWriter.toBytes(key));
+                final String s2 = new String(convertorToBytes.toBytes(key));
+                final String keyComapratorClassName = keyComparator.getClass().getSimpleName();
                 throw new IllegalArgumentException(String.format(
-                        "Attempt to insers same key as previous. Key is '%s'.",
-                        s2));
+                        "Attempt to insers same key as previous. Key '%s' was comapred with '%s'",
+                        s2, keyComapratorClassName));
             }
             if (cmp > 0) {
                 final String s1 = new String(previousKeyBytes);
-                final String s2 = new String(keyTypeWriter.toBytes(key));
+                final String s2 = new String(convertorToBytes.toBytes(key));
+                final String keyComapratorClassName = keyComparator.getClass().getSimpleName();
                 throw new IllegalArgumentException(String.format(
                         "Attempt to insers key in invalid order. "
-                                + "Previous key is '%s', inserted key is '%s'",
-                        s1, s2));
+                                + "Previous key is '%s', inserted key is '%s' and comparator is '%s'",
+                        s1, s2, keyComapratorClassName));
             }
         }
         if (fullWrite) {
-            final byte[] keyBytes = keyTypeWriter.toBytes(key);
+            final byte[] keyBytes = convertorToBytes.toBytes(key);
 
             return write(fileWriter, 0, keyBytes, key, keyBytes);
         } else {
-            final byte[] keyBytes = keyTypeWriter.toBytes(key);
+            final byte[] keyBytes = convertorToBytes.toBytes(key);
             final int sharedByteLength = howMuchIsSame(previousKeyBytes, keyBytes);
             final byte[] diffBytes = getDiffPart(sharedByteLength, keyBytes);
 
