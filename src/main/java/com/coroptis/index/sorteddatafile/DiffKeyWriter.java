@@ -6,6 +6,7 @@ import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.coroptis.index.ByteTool;
 import com.coroptis.index.directory.FileWriter;
 import com.coroptis.index.type.ConvertorToBytes;
 import com.coroptis.index.type.TypeWriter;
@@ -22,12 +23,15 @@ public class DiffKeyWriter<K> implements TypeWriter<K> {
 
     private K previousKey;
 
+    private final ByteTool byteTool;
+
     public DiffKeyWriter(final ConvertorToBytes<K> convertorToBytes,
             final Comparator<K> keyComparator) {
         this.convertorToBytes = Objects.requireNonNull(convertorToBytes,
                 "Convertor to bytes is null");
         this.keyComparator = Objects.requireNonNull(keyComparator,
                 "Key comparator can't be null");
+        byteTool = new ByteTool();
         previousKeyBytes = new byte[0];
         previousKey = null;
         logger.debug(
@@ -68,8 +72,8 @@ public class DiffKeyWriter<K> implements TypeWriter<K> {
             return write(fileWriter, 0, keyBytes, key, keyBytes);
         } else {
             final byte[] keyBytes = convertorToBytes.toBytes(key);
-            final int sharedByteLength = howMuchIsSame(previousKeyBytes, keyBytes);
-            final byte[] diffBytes = getDiffPart(sharedByteLength, keyBytes);
+            final int sharedByteLength = byteTool.howMuchBytesIsSame(previousKeyBytes, keyBytes);
+            final byte[] diffBytes = byteTool.getRemainingBytesAfterIndex(sharedByteLength, keyBytes);
 
             return write(fileWriter, sharedByteLength, diffBytes, key, keyBytes);
         }
@@ -84,29 +88,6 @@ public class DiffKeyWriter<K> implements TypeWriter<K> {
         previousKeyBytes = keyBytes;
         previousKey = key;
         return 2 + diffBytes.length;
-    }
-
-    int howMuchIsSame(final byte[] previousBytes, final byte[] currentBytes) {
-        int sameBytes = 0;
-        while (true) {
-            if (sameBytes >= previousBytes.length) {
-                return sameBytes;
-            }
-            if (sameBytes >= currentBytes.length) {
-                return sameBytes;
-            }
-            if (previousBytes[sameBytes] == currentBytes[sameBytes]) {
-                sameBytes++;
-            } else {
-                return sameBytes;
-            }
-        }
-    }
-
-    private byte[] getDiffPart(final int sharedBytesLength, final byte[] full) {
-        final byte[] out = new byte[full.length - sharedBytesLength];
-        System.arraycopy(full, sharedBytesLength, out, 0, out.length);
-        return out;
     }
 
 }
