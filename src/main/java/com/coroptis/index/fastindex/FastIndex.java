@@ -44,7 +44,7 @@ public class FastIndex<K, V> implements CloseableResource {
     private final UniqueCache<K, V> cache;
 
     public static <M, N> FastIndexBuilder<M, N> builder() {
-        return new FastIndexBuilder<M, N>();
+        return new FastIndexBuilder<>();
     }
 
     public FastIndex(final Directory directory,
@@ -64,7 +64,7 @@ public class FastIndex<K, V> implements CloseableResource {
         this.keyTypeDescriptor = Objects.requireNonNull(keyTypeDescriptor);
         this.valueTypeDescriptor = Objects.requireNonNull(valueTypeDescriptor);
         this.valueMerger = Objects.requireNonNull(valueMerger);
-        this.fastIndexFile = new FastIndexFile<K>(directory, keyTypeDescriptor);
+        this.fastIndexFile = new FastIndexFile<>(directory, keyTypeDescriptor);
         this.cache = new UniqueCache<>(valueMerger,
                 keyTypeDescriptor.getComparator());
     }
@@ -104,9 +104,7 @@ public class FastIndex<K, V> implements CloseableResource {
                 fastIndexFile);
         cache.getStream()
                 .sorted(new PairComparator<>(keyTypeDescriptor.getComparator()))
-                .forEach(pair -> {
-                    support.compact(pair);
-                });
+                .forEach(support::compact);
         support.compactRest();
         cache.clear();
         fastIndexFile.flush();
@@ -133,7 +131,7 @@ public class FastIndex<K, V> implements CloseableResource {
          * list size. In the future it will be slow.
          */
         final List<Integer> eligibleSegmentIds = fastIndexFile
-                .getPagesAsStream().map(pair -> pair.getValue())
+                .getPagesAsStream().map(Pair::getValue)
                 .collect(Collectors.toList());
         tryToCopactsSegmenst(eligibleSegmentIds);
     }
