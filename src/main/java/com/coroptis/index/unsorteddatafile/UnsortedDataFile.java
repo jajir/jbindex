@@ -11,6 +11,14 @@ import com.coroptis.index.directory.FileReader;
 import com.coroptis.index.type.TypeReader;
 import com.coroptis.index.type.TypeWriter;
 
+/**
+ * Unsorted key value pairs storage file.
+ * 
+ * @author honza
+ *
+ * @param <K> key type
+ * @param <V> value type
+ */
 public class UnsortedDataFile<K, V> {
 
     private final Directory directory;
@@ -52,12 +60,12 @@ public class UnsortedDataFile<K, V> {
     }
 
     public UnsortedDataFileStreamer<K, V> openStreamer() {
-        if(directory.isFileExists(fileName)) {
+        if (directory.isFileExists(fileName)) {
             final UnsortedDataFileSpliterator<K, V> spliterator = new UnsortedDataFileSpliterator<>(
                     openReader());
-            return new UnsortedDataFileStreamer<>(spliterator);            
-        }else {
-            return new UnsortedDataFileStreamer<>(null);                        
+            return new UnsortedDataFileStreamer<>(spliterator);
+        } else {
+            return new UnsortedDataFileStreamer<>(null);
         }
     }
 

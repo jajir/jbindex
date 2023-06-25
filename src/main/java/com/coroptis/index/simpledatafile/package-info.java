@@ -2,7 +2,7 @@
  * 
  */
 /**
- * Package contains simple index file.It consists from parts sorted data file
+ * Package contains simple index file. It consists from parts sorted data file
  * file with changes and map file.
  * 
  * Sorted data file is main place for data. It contains sorted data.

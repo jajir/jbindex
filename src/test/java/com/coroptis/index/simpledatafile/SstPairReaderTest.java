@@ -48,9 +48,10 @@ public class SstPairReaderTest {
        spr.close();
        verify(reader).close();
        assertFalse(spr.isDirty());
-       reset(reader,reader2);
+       reset((Object)reader,reader2);
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void test_setIsDirty() throws Exception {
         when(sdf.openReader()).thenReturn(reader);
@@ -83,9 +84,10 @@ public class SstPairReaderTest {
        spr.close();
        verify(reader2).close();
        assertFalse(spr.isDirty());
-       reset(reader,reader2);
+       reset((Object)reader,(Object)reader2);
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void test_setIsDirty_new_file_have_less_items() throws Exception {
         when(sdf.openReader()).thenReturn(reader);
@@ -118,7 +120,7 @@ public class SstPairReaderTest {
        spr.close();
        verify(reader2).close();
        assertFalse(spr.isDirty());
-       reset(reader,reader2);
+       reset((Object)reader,(Object)reader2);
     }
 
 }

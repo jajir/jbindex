@@ -1,6 +1,9 @@
 /**
  * Storing of unsorted duplicated data.
  * 
+ * Unsorted file doesn't support appending of data. Newly appended data
+ * overwrites old ones.
+ * 
  * Reading operations are allowed on non existing file. Just doesn't return any
  * records.
  * 
