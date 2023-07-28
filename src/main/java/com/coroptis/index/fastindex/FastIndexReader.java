@@ -16,7 +16,7 @@ public class FastIndexReader<K, V> implements PairReader<K, V> {
     private PairReader<K, V> currentReader;
 
     FastIndexReader(final FastIndex<K, V> fastIndex,
-            final FastIndexFile<K> fastIndexFile) {
+            final ScarceIndexFile<K> fastIndexFile) {
         this.fastIndex = Objects.requireNonNull(fastIndex);
         this.pageIdsd = fastIndexFile.getPagesAsStream()
                 .map(pair -> pair.getValue()).collect(Collectors.toList());

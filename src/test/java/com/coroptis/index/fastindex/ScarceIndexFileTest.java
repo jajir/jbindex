@@ -18,9 +18,9 @@ import com.coroptis.index.directory.Directory;
 import com.coroptis.index.directory.MemDirectory;
 import com.coroptis.index.type.TypeDescriptorString;
 
-public class FastIndexFileTest {
+public class ScarceIndexFileTest {
 
-    private final Logger logger = LoggerFactory.getLogger(FastIndex.class);
+    private final Logger logger = LoggerFactory.getLogger(ScarceIndexFileTest.class);
 
     private final TypeDescriptorString stringTd = new TypeDescriptorString();
 
@@ -29,7 +29,7 @@ public class FastIndexFileTest {
     @BeforeEach
     public void prepareData() {
         directory = new MemDirectory();
-        try (final FastIndexFile<String> fif = new FastIndexFile<>(directory,
+        try (final ScarceIndexFile<String> fif = new ScarceIndexFile<>(directory,
                 stringTd)) {
             fif.insertSegment("ahoj", 1);
             fif.insertSegment("betka", 2);
@@ -51,7 +51,7 @@ public class FastIndexFileTest {
     @Test
     public void test_constructor_empty_directory() throws Exception {
         assertThrows(NullPointerException.class, () -> {
-            try (final FastIndexFile<String> fif = new FastIndexFile<>(null,
+            try (final ScarceIndexFile<String> fif = new ScarceIndexFile<>(null,
                     stringTd)) {
             }
         });
@@ -60,15 +60,23 @@ public class FastIndexFileTest {
     @Test
     public void test_constructor_empty_keyTypeDescriptor() throws Exception {
         assertThrows(NullPointerException.class, () -> {
-            try (final FastIndexFile<String> fif = new FastIndexFile<>(
+            try (final ScarceIndexFile<String> fif = new ScarceIndexFile<>(
                     directory, null)) {
             }
         });
     }
 
     @Test
-    public void test_insert_key_into_higher_segment() throws Exception {
-        try (final FastIndexFile<String> fif = new FastIndexFile<>(directory,
+    public void test_insertSegment_duplicate_segmentId() throws Exception {
+        try (final ScarceIndexFile<String> fif = new ScarceIndexFile<>(directory,
+                stringTd)) {
+assertThrows(IllegalArgumentException.class,()->fif.insertSegment("aaa", 1),"Segment id '1' already exists");
+        }
+    }
+
+    @Test
+    public void test_insertKeyToSegment_higher_segment() throws Exception {
+        try (final ScarceIndexFile<String> fif = new ScarceIndexFile<>(directory,
                 stringTd)) {
             assertEquals(4, fif.insertKeyToSegment("zzz"));
             assertEquals(4, fif.findSegmentId("zzz"));
@@ -83,8 +91,24 @@ public class FastIndexFileTest {
     }
 
     @Test
-    public void test_print_data() throws Exception {
-        try (final FastIndexFile<String> fif = new FastIndexFile<>(directory,
+    public void test_insetSegment_normal() throws Exception {
+        try (final ScarceIndexFile<String> fif = new ScarceIndexFile<>(directory,
+                stringTd)) {
+            assertEquals(4, fif.insertKeyToSegment("zzz"));
+            assertEquals(4, fif.findSegmentId("zzz"));
+            assertEquals(4, fif.findSegmentId("zzz"));
+            /*
+             * Verify that higher page key was updated.
+             */
+            final List<Pair<String, Integer>> list = fif.getPagesAsStream()
+                    .collect(Collectors.toList());
+            assertEquals(Pair.of("zzz", 4), list.get(3));
+        }
+    }
+
+    @Test
+    public void test_getPagesAsStream_print_data() throws Exception {
+        try (final ScarceIndexFile<String> fif = new ScarceIndexFile<>(directory,
                 stringTd)) {
             fif.getPagesAsStream().forEach(p -> {
                 logger.debug("Segment '{}'", p.toString());
@@ -93,16 +117,16 @@ public class FastIndexFileTest {
     }
 
     @Test
-    public void test_number_of_segments() throws Exception {
-        try (final FastIndexFile<String> fif = new FastIndexFile<>(directory,
+    public void test_getPagesAsStream_number_of_segments() throws Exception {
+        try (final ScarceIndexFile<String> fif = new ScarceIndexFile<>(directory,
                 stringTd)) {
             assertEquals(4, fif.getPagesAsStream().count());
         }
     }
 
     @Test
-    public void test_correct_page_order() throws Exception {
-        try (final FastIndexFile<String> fif = new FastIndexFile<>(directory,
+    public void test_getPagesAsStream_correct_page_order() throws Exception {
+        try (final ScarceIndexFile<String> fif = new ScarceIndexFile<>(directory,
                 stringTd)) {
             /*
              * Verify that pages are returned as sorted stream.
@@ -117,8 +141,8 @@ public class FastIndexFileTest {
     }
 
     @Test
-    public void test_segment_finding() throws Exception {
-        try (final FastIndexFile<String> fif = new FastIndexFile<>(directory,
+    public void test_findSegmentId() throws Exception {
+        try (final ScarceIndexFile<String> fif = new ScarceIndexFile<>(directory,
                 stringTd)) {
             assertEquals(3, fif.findSegmentId("cuketa"));
             assertEquals(3, fif.findSegmentId("bziknout"));

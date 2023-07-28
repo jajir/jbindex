@@ -1,10 +1,15 @@
 package com.coroptis.index.fastindex;
 
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.TreeMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Stream;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.coroptis.index.CloseableResource;
 import com.coroptis.index.Pair;
@@ -22,15 +27,18 @@ import com.coroptis.index.type.TypeDescriptorInteger;
  *
  * @param <K>
  */
-public class FastIndexFile<K> implements CloseableResource {
+public class ScarceIndexFile<K> implements CloseableResource {
+
+    private final Logger logger = LoggerFactory.getLogger(ScarceIndexFile.class);
 
     private final static String FILE_NAME = "index.map";
 
     private TreeMap<K, Integer> list;
     private final SortedDataFile<K, Integer> sdf;
     private final Comparator<K> keyComparator;
+    private boolean isDirty = false;
 
-    FastIndexFile(final Directory directory,
+    ScarceIndexFile(final Directory directory,
             final TypeDescriptor<K> keyTypeDescriptor) {
         Objects.requireNonNull(directory, "Directory object is null.");
         Objects.requireNonNull(keyTypeDescriptor,
@@ -50,6 +58,24 @@ public class FastIndexFile<K> implements CloseableResource {
                 list.put(pair.getKey(), pair.getValue());
             }
         }
+        sanityCheck();
+    }
+
+    public void sanityCheck(){
+        final HashMap<Integer,K> tmp = new HashMap<Integer,K>();
+        final AtomicBoolean fail= new AtomicBoolean(false);
+        list.forEach((key,segmentId)->{
+            final K oldKey = tmp.get(segmentId);
+            if(oldKey==null){
+                tmp.put(segmentId, key);
+            }else{
+logger.error(String.format("Segment id '%s' is used for segment with key '%s' and segment with key '%s'.", segmentId,key,oldKey));
+fail.set(true);
+}
+        });
+        if(fail.get()){
+            throw new IllegalStateException("Unable to load scarce index, sanity check failed.");
+        }
     }
 
     public Integer findSegmentId(final K key) {
@@ -67,6 +93,7 @@ public class FastIndexFile<K> implements CloseableResource {
              * last segment is smaller than adding one. Because of that key have
              * to be upgraded.
              */
+            isDirty=true;
             return updateMaxKey(key);
         } else {
             return pair.getValue();
@@ -97,9 +124,13 @@ public class FastIndexFile<K> implements CloseableResource {
         }
     }
 
-    public void insertSegment(final K key, final Integer pageId) {
+    public void insertSegment(final K key, final Integer segmentId) {
         Objects.requireNonNull(key, "Key can't be null");
-        list.put(key, pageId);
+        if (list.containsValue(segmentId)){
+            throw new IllegalArgumentException(String.format("Segment id '%s' already exists", segmentId));
+        }
+        list.put(key, segmentId);
+        isDirty=true;
     }
 
     public Stream<Pair<K, Integer>> getPagesAsStream() {
@@ -108,9 +139,11 @@ public class FastIndexFile<K> implements CloseableResource {
     }
 
     public void flush() {
+        if(isDirty){
         try (final SortedDataFileWriter<K, Integer> writer = sdf.openWriter()) {
             list.forEach((k, v) -> writer.put(Pair.of(k, v)));
-        }
+        }}
+        isDirty=false;
     }
 
     @Override

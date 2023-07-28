@@ -40,7 +40,7 @@ public class FastIndex<K, V> implements CloseableResource {
     private final TypeDescriptor<K> keyTypeDescriptor;
     private final TypeDescriptor<V> valueTypeDescriptor;
     private final ValueMerger<K, V> valueMerger;
-    private final FastIndexFile<K> fastIndexFile;
+    private final ScarceIndexFile<K> scarceIndexFile;
     private final UniqueCache<K, V> cache;
 
     public static <M, N> FastIndexBuilder<M, N> builder() {
@@ -64,7 +64,7 @@ public class FastIndex<K, V> implements CloseableResource {
         this.keyTypeDescriptor = Objects.requireNonNull(keyTypeDescriptor);
         this.valueTypeDescriptor = Objects.requireNonNull(valueTypeDescriptor);
         this.valueMerger = Objects.requireNonNull(valueMerger);
-        this.fastIndexFile = new FastIndexFile<>(directory, keyTypeDescriptor);
+        this.scarceIndexFile = new ScarceIndexFile<>(directory, keyTypeDescriptor);
         this.cache = new UniqueCache<>(valueMerger,
                 keyTypeDescriptor.getComparator());
     }
@@ -90,8 +90,8 @@ public class FastIndex<K, V> implements CloseableResource {
          * Defensive copy have to be done, because further splitting will affect
          * list size. In the future it will be slow.
          */
-        final List<Integer> eligibleSegmentIds = fastIndexFile
-                .getPagesAsStream().map(pair -> pair.getValue())
+        final List<Integer> eligibleSegmentIds = scarceIndexFile
+                .getPagesAsStream().map(Pair::getValue)
                 .collect(Collectors.toList());
         compactSegmenst(eligibleSegmentIds);
     }
@@ -101,13 +101,13 @@ public class FastIndex<K, V> implements CloseableResource {
                 "Cache compacting of '{}' key value pairs in cache started.",
                 cache.size());
         final CompactSupport<K, V> support = new CompactSupport<>(this,
-                fastIndexFile);
+                scarceIndexFile);
         cache.getStream()
                 .sorted(new PairComparator<>(keyTypeDescriptor.getComparator()))
                 .forEach(support::compact);
         support.compactRest();
         cache.clear();
-        fastIndexFile.flush();
+        scarceIndexFile.flush();
         logger.debug(
                 "Cache compacting is done. Cache contains '{}' key value pairs.",
                 cache.size());
@@ -130,7 +130,7 @@ public class FastIndex<K, V> implements CloseableResource {
          * Defensive copy have to be done, because further splitting will affect
          * list size. In the future it will be slow.
          */
-        final List<Integer> eligibleSegmentIds = fastIndexFile
+        final List<Integer> eligibleSegmentIds = scarceIndexFile
                 .getPagesAsStream().map(Pair::getValue)
                 .collect(Collectors.toList());
         tryToCopactsSegmenst(eligibleSegmentIds);
@@ -152,7 +152,7 @@ public class FastIndex<K, V> implements CloseableResource {
             }
         });
         if (flushFastIndexFile.get()) {
-            fastIndexFile.flush();
+            scarceIndexFile.flush();
         }
         logger.debug("Compacting of '{}' segments is done.",
                 eligibleSegment.size());
@@ -170,10 +170,10 @@ public class FastIndex<K, V> implements CloseableResource {
         if (sdf.getStats()
                 .getNumberOfPairsInMainFile() > maxNumeberOfKeysInSegment) {
             logger.debug("Splitting of segment {} started.", segmentId);
-            final int newSegmentId = (int) (fastIndexFile.getPagesAsStream()
+            final int newSegmentId = (int) (scarceIndexFile.getPagesAsStream()
                     .count());
             final K newPageKey = sdf.split(getFileName(newSegmentId));
-            fastIndexFile.insertSegment(newPageKey, newSegmentId);
+            scarceIndexFile.insertSegment(newPageKey, newSegmentId);
             logger.debug("Splitting of segment '{}' to '{}' is done.",
                     segmentId, newSegmentId);
             return true;
@@ -204,7 +204,7 @@ public class FastIndex<K, V> implements CloseableResource {
      */
     public PairReader<K, V> openReader() {
         final FastIndexReader<K, V> fastIndexreader = new FastIndexReader<>(
-                this, fastIndexFile);
+                this, scarceIndexFile);
         final PairReader<K, V> cacheReader = cache.openSortedClonedReader();
         final MergedPairReader<K, V> mergedPairReader = new MergedPairReader<>(
                 cacheReader, fastIndexreader, valueMerger,
@@ -223,7 +223,7 @@ public class FastIndex<K, V> implements CloseableResource {
     @Override
     public void close() {
         compact();
-        fastIndexFile.close();
+        scarceIndexFile.close();
     }
 
 }

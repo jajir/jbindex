@@ -16,7 +16,7 @@ public class CompactSupport<K, V> {
     private final Logger logger = LoggerFactory.getLogger(CompactSupport.class);
 
     private final List<Pair<K, V>> toSameSegment = new ArrayList<>();
-    private final FastIndexFile<K> fastIndexFile;
+    private final ScarceIndexFile<K> scarceIndexFile;
     private final FastIndex<K, V> fastIndex;
     private int currentSegmentId = -1;
     /**
@@ -25,15 +25,15 @@ public class CompactSupport<K, V> {
     private List<Integer> eligibleSegments = new ArrayList<>();
 
     CompactSupport(final FastIndex<K, V> fastIndex,
-            final FastIndexFile<K> fastIndexFile) {
+            final ScarceIndexFile<K> scarceIndexFile) {
         this.fastIndex = fastIndex;
-        this.fastIndexFile = fastIndexFile;
+        this.scarceIndexFile = scarceIndexFile;
     }
 
     public void compact(final Pair<K, V> pair) {
         Objects.requireNonNull(pair);
         final K segmentKey = pair.getKey();
-        final int pageId = fastIndexFile.insertKeyToSegment(segmentKey);
+        final int pageId = scarceIndexFile.insertKeyToSegment(segmentKey);
         if (currentSegmentId == -1) {
             currentSegmentId = pageId;
             toSameSegment.add(pair);
