@@ -32,6 +32,9 @@ public class FastIndexFile<K> implements CloseableResource {
 
     FastIndexFile(final Directory directory,
             final TypeDescriptor<K> keyTypeDescriptor) {
+        Objects.requireNonNull(directory, "Directory object is null.");
+        Objects.requireNonNull(keyTypeDescriptor,
+                "Key type comparator is null.");
         final TypeDescriptorInteger itd = new TypeDescriptorInteger();
         this.keyComparator = Objects
                 .requireNonNull(keyTypeDescriptor.getComparator());
