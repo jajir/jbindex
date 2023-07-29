@@ -93,6 +93,10 @@ public class ScarceIndexFile<K> implements CloseableResource {
         return pair == null ? null : pair.getValue();
     }
 
+    public SegmentId findNewSegmentId() {
+        return SegmentId.of((int) (getSegmentsAsStream().count()));
+    }
+
     public int insertKeyToSegment(final K key) {
         Objects.requireNonNull(key, "Key can't be null");
         final Pair<K, Integer> pair = localFindSegmentForKey(key);
@@ -133,6 +137,11 @@ public class ScarceIndexFile<K> implements CloseableResource {
         }
     }
 
+    public void insertSegment(final K key, final SegmentId segmentId) {
+        insertSegment(key, segmentId.getId());
+    }
+
+    @Deprecated
     public void insertSegment(final K key, final Integer segmentId) {
         Objects.requireNonNull(key, "Key can't be null");
         if (list.containsValue(segmentId)) {
@@ -143,7 +152,7 @@ public class ScarceIndexFile<K> implements CloseableResource {
         isDirty = true;
     }
 
-    public Stream<Pair<K, Integer>> getPagesAsStream() {
+    public Stream<Pair<K, Integer>> getSegmentsAsStream() {
         return list.entrySet().stream()
                 .map(entry -> Pair.of(entry.getKey(), entry.getValue()));
     }

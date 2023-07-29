@@ -87,7 +87,7 @@ public class ScarceIndexFileTest {
             /*
              * Verify that higher page key was updated.
              */
-            final List<Pair<String, Integer>> list = fif.getPagesAsStream()
+            final List<Pair<String, Integer>> list = fif.getSegmentsAsStream()
                     .collect(Collectors.toList());
             assertEquals(Pair.of("zzz", 4), list.get(3));
         }
@@ -103,38 +103,38 @@ public class ScarceIndexFileTest {
             /*
              * Verify that higher page key was updated.
              */
-            final List<Pair<String, Integer>> list = fif.getPagesAsStream()
+            final List<Pair<String, Integer>> list = fif.getSegmentsAsStream()
                     .collect(Collectors.toList());
             assertEquals(Pair.of("zzz", 4), list.get(3));
         }
     }
 
     @Test
-    public void test_getPagesAsStream_print_data() throws Exception {
+    public void test_getSegmentsAsStream_print_data() throws Exception {
         try (final ScarceIndexFile<String> fif = new ScarceIndexFile<>(
                 directory, stringTd)) {
-            fif.getPagesAsStream().forEach(p -> {
+            fif.getSegmentsAsStream().forEach(p -> {
                 logger.debug("Segment '{}'", p.toString());
             });
         }
     }
 
     @Test
-    public void test_getPagesAsStream_number_of_segments() throws Exception {
+    public void test_getSegmentsAsStream_number_of_segments() throws Exception {
         try (final ScarceIndexFile<String> fif = new ScarceIndexFile<>(
                 directory, stringTd)) {
-            assertEquals(4, fif.getPagesAsStream().count());
+            assertEquals(4, fif.getSegmentsAsStream().count());
         }
     }
 
     @Test
-    public void test_getPagesAsStream_correct_page_order() throws Exception {
+    public void test_getSegmentsAsStream_correct_page_order() throws Exception {
         try (final ScarceIndexFile<String> fif = new ScarceIndexFile<>(
                 directory, stringTd)) {
             /*
              * Verify that pages are returned as sorted stream.
              */
-            final List<Pair<String, Integer>> list = fif.getPagesAsStream()
+            final List<Pair<String, Integer>> list = fif.getSegmentsAsStream()
                     .collect(Collectors.toList());
             assertEquals(Pair.of("ahoj", 1), list.get(0));
             assertEquals(Pair.of("betka", 2), list.get(1));

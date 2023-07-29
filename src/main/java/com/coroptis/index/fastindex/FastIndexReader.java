@@ -18,7 +18,7 @@ public class FastIndexReader<K, V> implements PairReader<K, V> {
     FastIndexReader(final FastIndex<K, V> fastIndex,
             final ScarceIndexFile<K> scarceIndexFile) {
         this.fastIndex = Objects.requireNonNull(fastIndex);
-        this.pageIdsd = scarceIndexFile.getPagesAsStream()
+        this.pageIdsd = scarceIndexFile.getSegmentsAsStream()
                 .map(pair -> pair.getValue()).collect(Collectors.toList());
         loadNextSegment();
     }
@@ -40,7 +40,7 @@ public class FastIndexReader<K, V> implements PairReader<K, V> {
         optionallyCloseCurrentReader();
         if (pageIdsd.size() > 0) {
             final Integer segmentId = pageIdsd.remove(0);
-            currentSegment = fastIndex.getSegment(segmentId);
+            currentSegment = fastIndex.getSegment(SegmentId.of(segmentId));
             currentReader = currentSegment.openReader();
         }
     }

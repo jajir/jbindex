@@ -22,7 +22,7 @@ public class CompactSupport<K, V> {
     /**
      * List of segment's ids eligible for compacting.
      */
-    private List<Integer> eligibleSegments = new ArrayList<>();
+    private List<SegmentId> eligibleSegments = new ArrayList<>();
 
     CompactSupport(final FastIndex<K, V> fastIndex,
             final ScarceIndexFile<K> scarceIndexFile) {
@@ -62,11 +62,11 @@ public class CompactSupport<K, V> {
         logger.debug("Flushing '{}' key value pairs into segment '{}'.",
                 toSameSegment.size(), currentSegmentId);
         final SortedStringTable<K, V> sdf = fastIndex
-                .getSegment(currentSegmentId);
+                .getSegment(SegmentId.of(currentSegmentId));
         try (final PairWriter<K, V> writer = sdf.openCacheWriter()) {
             toSameSegment.forEach(writer::put);
         }
-        eligibleSegments.add(currentSegmentId);
+        eligibleSegments.add(SegmentId.of(currentSegmentId));
         toSameSegment.clear();
         logger.debug("Flushing to segment '{}' was done.", currentSegmentId);
     }
@@ -77,7 +77,7 @@ public class CompactSupport<K, V> {
      * 
      * @return list of segment eligible form compacting
      */
-    public List<Integer> getEligibleSegments() {
+    public List<SegmentId> getEligibleSegmentIds() {
         return eligibleSegments;
     }
 
