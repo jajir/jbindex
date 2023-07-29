@@ -29,7 +29,8 @@ import com.coroptis.index.type.TypeDescriptorInteger;
  */
 public class ScarceIndexFile<K> implements CloseableResource {
 
-    private final Logger logger = LoggerFactory.getLogger(ScarceIndexFile.class);
+    private final Logger logger = LoggerFactory
+            .getLogger(ScarceIndexFile.class);
 
     private final static String FILE_NAME = "index.map";
 
@@ -61,20 +62,23 @@ public class ScarceIndexFile<K> implements CloseableResource {
         sanityCheck();
     }
 
-    public void sanityCheck(){
-        final HashMap<Integer,K> tmp = new HashMap<Integer,K>();
-        final AtomicBoolean fail= new AtomicBoolean(false);
-        list.forEach((key,segmentId)->{
+    public void sanityCheck() {
+        final HashMap<Integer, K> tmp = new HashMap<Integer, K>();
+        final AtomicBoolean fail = new AtomicBoolean(false);
+        list.forEach((key, segmentId) -> {
             final K oldKey = tmp.get(segmentId);
-            if(oldKey==null){
+            if (oldKey == null) {
                 tmp.put(segmentId, key);
-            }else{
-logger.error(String.format("Segment id '%s' is used for segment with key '%s' and segment with key '%s'.", segmentId,key,oldKey));
-fail.set(true);
-}
+            } else {
+                logger.error(String.format(
+                        "Segment id '%s' is used for segment with key '%s' and segment with key '%s'.",
+                        segmentId, key, oldKey));
+                fail.set(true);
+            }
         });
-        if(fail.get()){
-            throw new IllegalStateException("Unable to load scarce index, sanity check failed.");
+        if (fail.get()) {
+            throw new IllegalStateException(
+                    "Unable to load scarce index, sanity check failed.");
         }
     }
 
@@ -93,7 +97,7 @@ fail.set(true);
              * last segment is smaller than adding one. Because of that key have
              * to be upgraded.
              */
-            isDirty=true;
+            isDirty = true;
             return updateMaxKey(key);
         } else {
             return pair.getValue();
@@ -126,11 +130,12 @@ fail.set(true);
 
     public void insertSegment(final K key, final Integer segmentId) {
         Objects.requireNonNull(key, "Key can't be null");
-        if (list.containsValue(segmentId)){
-            throw new IllegalArgumentException(String.format("Segment id '%s' already exists", segmentId));
+        if (list.containsValue(segmentId)) {
+            throw new IllegalArgumentException(
+                    String.format("Segment id '%s' already exists", segmentId));
         }
         list.put(key, segmentId);
-        isDirty=true;
+        isDirty = true;
     }
 
     public Stream<Pair<K, Integer>> getPagesAsStream() {
@@ -139,11 +144,13 @@ fail.set(true);
     }
 
     public void flush() {
-        if(isDirty){
-        try (final SortedDataFileWriter<K, Integer> writer = sdf.openWriter()) {
-            list.forEach((k, v) -> writer.put(Pair.of(k, v)));
-        }}
-        isDirty=false;
+        if (isDirty) {
+            try (final SortedDataFileWriter<K, Integer> writer = sdf
+                    .openWriter()) {
+                list.forEach((k, v) -> writer.put(Pair.of(k, v)));
+            }
+        }
+        isDirty = false;
     }
 
     @Override

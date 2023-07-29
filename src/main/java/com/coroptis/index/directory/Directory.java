@@ -25,7 +25,7 @@ public interface Directory {
     }
 
     boolean isFileExists(final String fileName);
-    
+
     FileWriter getFileWriter(String fileName, Access access);
 
     boolean deleteFile(String fileName);

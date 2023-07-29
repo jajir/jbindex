@@ -21,19 +21,21 @@ public class PartiallySortedDataFileWriter<K, V> implements CloseableResource {
     private int fileCounter = 0;
     private final UniqueCache<K, V> cache;
 
-    public PartiallySortedDataFileWriter(final String fileName, final ValueMerger<K, V> merger,
-            final int howManySortInMemory, final BasicIndex<K, V> basicIndex,
+    public PartiallySortedDataFileWriter(final String fileName,
+            final ValueMerger<K, V> merger, final int howManySortInMemory,
+            final BasicIndex<K, V> basicIndex,
             final Comparator<K> keyComparator) {
         Objects.requireNonNull(fileName);
         this.howManySortInMemory = Objects.requireNonNull(howManySortInMemory);
         this.basicIndex = Objects.requireNonNull(basicIndex);
         this.sortSupport = new SortSupport<K, V>(basicIndex, merger, fileName);
-        this.cache = new UniqueCache<>(merger,keyComparator);
+        this.cache = new UniqueCache<>(merger, keyComparator);
     }
 
     public void put(final Pair<K, V> pair) {
         if (fileCounter < 0) {
-            throw new IllegalStateException("Attempt to put values into closed index.");
+            throw new IllegalStateException(
+                    "Attempt to put values into closed index.");
         }
         cache.add(pair);
         cx++;

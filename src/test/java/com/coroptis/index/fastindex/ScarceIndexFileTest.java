@@ -20,7 +20,8 @@ import com.coroptis.index.type.TypeDescriptorString;
 
 public class ScarceIndexFileTest {
 
-    private final Logger logger = LoggerFactory.getLogger(ScarceIndexFileTest.class);
+    private final Logger logger = LoggerFactory
+            .getLogger(ScarceIndexFileTest.class);
 
     private final TypeDescriptorString stringTd = new TypeDescriptorString();
 
@@ -29,8 +30,8 @@ public class ScarceIndexFileTest {
     @BeforeEach
     public void prepareData() {
         directory = new MemDirectory();
-        try (final ScarceIndexFile<String> fif = new ScarceIndexFile<>(directory,
-                stringTd)) {
+        try (final ScarceIndexFile<String> fif = new ScarceIndexFile<>(
+                directory, stringTd)) {
             fif.insertSegment("ahoj", 1);
             fif.insertSegment("betka", 2);
             fif.insertSegment("cukrar", 3);
@@ -68,16 +69,18 @@ public class ScarceIndexFileTest {
 
     @Test
     public void test_insertSegment_duplicate_segmentId() throws Exception {
-        try (final ScarceIndexFile<String> fif = new ScarceIndexFile<>(directory,
-                stringTd)) {
-assertThrows(IllegalArgumentException.class,()->fif.insertSegment("aaa", 1),"Segment id '1' already exists");
+        try (final ScarceIndexFile<String> fif = new ScarceIndexFile<>(
+                directory, stringTd)) {
+            assertThrows(IllegalArgumentException.class,
+                    () -> fif.insertSegment("aaa", 1),
+                    "Segment id '1' already exists");
         }
     }
 
     @Test
     public void test_insertKeyToSegment_higher_segment() throws Exception {
-        try (final ScarceIndexFile<String> fif = new ScarceIndexFile<>(directory,
-                stringTd)) {
+        try (final ScarceIndexFile<String> fif = new ScarceIndexFile<>(
+                directory, stringTd)) {
             assertEquals(4, fif.insertKeyToSegment("zzz"));
             assertEquals(4, fif.findSegmentId("zzz"));
             assertEquals(4, fif.findSegmentId("zzz"));
@@ -92,8 +95,8 @@ assertThrows(IllegalArgumentException.class,()->fif.insertSegment("aaa", 1),"Seg
 
     @Test
     public void test_insetSegment_normal() throws Exception {
-        try (final ScarceIndexFile<String> fif = new ScarceIndexFile<>(directory,
-                stringTd)) {
+        try (final ScarceIndexFile<String> fif = new ScarceIndexFile<>(
+                directory, stringTd)) {
             assertEquals(4, fif.insertKeyToSegment("zzz"));
             assertEquals(4, fif.findSegmentId("zzz"));
             assertEquals(4, fif.findSegmentId("zzz"));
@@ -108,8 +111,8 @@ assertThrows(IllegalArgumentException.class,()->fif.insertSegment("aaa", 1),"Seg
 
     @Test
     public void test_getPagesAsStream_print_data() throws Exception {
-        try (final ScarceIndexFile<String> fif = new ScarceIndexFile<>(directory,
-                stringTd)) {
+        try (final ScarceIndexFile<String> fif = new ScarceIndexFile<>(
+                directory, stringTd)) {
             fif.getPagesAsStream().forEach(p -> {
                 logger.debug("Segment '{}'", p.toString());
             });
@@ -118,16 +121,16 @@ assertThrows(IllegalArgumentException.class,()->fif.insertSegment("aaa", 1),"Seg
 
     @Test
     public void test_getPagesAsStream_number_of_segments() throws Exception {
-        try (final ScarceIndexFile<String> fif = new ScarceIndexFile<>(directory,
-                stringTd)) {
+        try (final ScarceIndexFile<String> fif = new ScarceIndexFile<>(
+                directory, stringTd)) {
             assertEquals(4, fif.getPagesAsStream().count());
         }
     }
 
     @Test
     public void test_getPagesAsStream_correct_page_order() throws Exception {
-        try (final ScarceIndexFile<String> fif = new ScarceIndexFile<>(directory,
-                stringTd)) {
+        try (final ScarceIndexFile<String> fif = new ScarceIndexFile<>(
+                directory, stringTd)) {
             /*
              * Verify that pages are returned as sorted stream.
              */
@@ -142,8 +145,8 @@ assertThrows(IllegalArgumentException.class,()->fif.insertSegment("aaa", 1),"Seg
 
     @Test
     public void test_findSegmentId() throws Exception {
-        try (final ScarceIndexFile<String> fif = new ScarceIndexFile<>(directory,
-                stringTd)) {
+        try (final ScarceIndexFile<String> fif = new ScarceIndexFile<>(
+                directory, stringTd)) {
             assertEquals(3, fif.findSegmentId("cuketa"));
             assertEquals(3, fif.findSegmentId("bziknout"));
             assertEquals(4, fif.findSegmentId("kachna"));

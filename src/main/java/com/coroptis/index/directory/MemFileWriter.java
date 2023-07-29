@@ -12,14 +12,15 @@ public class MemFileWriter implements FileWriter {
     private final ByteArrayOutputStream fio;
 
     private final MemDirectory memDirectory;
-    
+
     final Directory.Access access;
 
-    MemFileWriter(final String fileName, final MemDirectory memDirectory, final Directory.Access access) {
+    MemFileWriter(final String fileName, final MemDirectory memDirectory,
+            final Directory.Access access) {
         this.fileName = fileName;
         this.memDirectory = memDirectory;
         this.fio = new ByteArrayOutputStream();
-        this.access=access;
+        this.access = access;
     }
 
     @Override
@@ -29,7 +30,7 @@ public class MemFileWriter implements FileWriter {
         } catch (IOException e) {
             throw new IndexException(e.getMessage(), e);
         }
-        memDirectory.addFile(fileName, fio.toByteArray(),access);
+        memDirectory.addFile(fileName, fio.toByteArray(), access);
     }
 
     @Override

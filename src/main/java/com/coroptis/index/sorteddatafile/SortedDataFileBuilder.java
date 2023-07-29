@@ -25,7 +25,8 @@ public class SortedDataFileBuilder<K, V> {
 
     private ConvertorToBytes<K> keyConvertorToBytes;
 
-    public SortedDataFileBuilder<K, V> withDirectory(final Directory directory) {
+    public SortedDataFileBuilder<K, V> withDirectory(
+            final Directory directory) {
         this.directory = Objects.requireNonNull(directory);
         return this;
     }
@@ -35,12 +36,14 @@ public class SortedDataFileBuilder<K, V> {
         return this;
     }
 
-    public SortedDataFileBuilder<K, V> withValueWriter(final TypeWriter<V> valueWriter) {
+    public SortedDataFileBuilder<K, V> withValueWriter(
+            final TypeWriter<V> valueWriter) {
         this.valueWriter = Objects.requireNonNull(valueWriter);
         return this;
     }
 
-    public SortedDataFileBuilder<K, V> withValueReader(final TypeReader<V> valueReader) {
+    public SortedDataFileBuilder<K, V> withValueReader(
+            final TypeReader<V> valueReader) {
         this.valueReader = Objects.requireNonNull(valueReader);
         return this;
     }
@@ -53,7 +56,8 @@ public class SortedDataFileBuilder<K, V> {
 
     public SortedDataFileBuilder<K, V> withKeyConvertorFromBytes(
             final ConvertorFromBytes<K> keyConvertorFromBytes) {
-        this.keyConvertorFromBytes = Objects.requireNonNull(keyConvertorFromBytes);
+        this.keyConvertorFromBytes = Objects
+                .requireNonNull(keyConvertorFromBytes);
         return this;
     }
 
@@ -64,8 +68,9 @@ public class SortedDataFileBuilder<K, V> {
     }
 
     public SortedDataFile<K, V> build() {
-        return new SortedDataFile<>(directory, fileName, valueWriter, valueReader, keyComparator,
-                keyConvertorFromBytes, keyConvertorToBytes);
+        return new SortedDataFile<>(directory, fileName, valueWriter,
+                valueReader, keyComparator, keyConvertorFromBytes,
+                keyConvertorToBytes);
     }
 
 }

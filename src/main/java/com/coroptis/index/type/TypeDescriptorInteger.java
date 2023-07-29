@@ -76,8 +76,10 @@ public class TypeDescriptorInteger implements TypeDescriptor<Integer> {
 
     private Integer load(final byte[] data, final int from) {
         int pos = from;
-        return data[pos++] << BYTE_SHIFT_24 | (data[pos++] & BYTE_MASK) << BYTE_SHIFT_16
-                | (data[pos++] & BYTE_MASK) << BYTE_SHIFT_8 | (data[pos] & BYTE_MASK);
+        return data[pos++] << BYTE_SHIFT_24
+                | (data[pos++] & BYTE_MASK) << BYTE_SHIFT_16
+                | (data[pos++] & BYTE_MASK) << BYTE_SHIFT_8
+                | (data[pos] & BYTE_MASK);
     }
 
     @Override

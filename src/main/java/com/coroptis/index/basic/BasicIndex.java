@@ -35,13 +35,17 @@ public class BasicIndex<K, V> {
     private TypeDescriptor<K> keyTypeDescriptor;
     private TypeDescriptor<V> valueTypeDescriptor;
 
-    public BasicIndex(final Directory directory, TypeDescriptor<K> keyTypeDescriptor,
+    public BasicIndex(final Directory directory,
+            TypeDescriptor<K> keyTypeDescriptor,
             TypeDescriptor<V> valueTypeDescriptor) {
-        this(directory, new DefaultValueMerger<>(), keyTypeDescriptor, valueTypeDescriptor);
+        this(directory, new DefaultValueMerger<>(), keyTypeDescriptor,
+                valueTypeDescriptor);
     }
 
-    public BasicIndex(final Directory directory, final ValueMerger<K, V> valueMerger,
-            TypeDescriptor<K> keyTypeDescriptor, TypeDescriptor<V> valueTypeDescriptor) {
+    public BasicIndex(final Directory directory,
+            final ValueMerger<K, V> valueMerger,
+            TypeDescriptor<K> keyTypeDescriptor,
+            TypeDescriptor<V> valueTypeDescriptor) {
         this.directory = Objects.requireNonNull(directory);
         this.valueMerger = Objects.requireNonNull(valueMerger);
         this.keyTypeDescriptor = Objects.requireNonNull(keyTypeDescriptor);
@@ -86,9 +90,10 @@ public class BasicIndex<K, V> {
 
     public UnsortedDataFile<K, V> getUnsortedFile(final String fileName) {
         final UnsortedDataFile<K, V> out = UnsortedDataFile.<K, V>builder()
-                .withDirectory(getDirectory()).withFileName(fileName).withKeyReader(getKeyReader())
-                .withValueReader(getValueReader()).withKeyWriter(getKeyWriter())
-                .withValueWriter(getValueWriter()).build();
+                .withDirectory(getDirectory()).withFileName(fileName)
+                .withKeyReader(getKeyReader()).withValueReader(getValueReader())
+                .withKeyWriter(getKeyWriter()).withValueWriter(getValueWriter())
+                .build();
         return out;
     }
 
@@ -97,45 +102,54 @@ public class BasicIndex<K, V> {
                 .withDirectory(getDirectory()).withFileName(fileName)
                 .withKeyConvertorFromBytes(getKeyConvertorFromBytes())
                 .withKeyComparator(getKeyComparator())
-                .withKeyConvertorToBytes(getKeyConvertorToBytes()).withValueReader(getValueReader())
+                .withKeyConvertorToBytes(getKeyConvertorToBytes())
+                .withValueReader(getValueReader())
                 .withValueWriter(getValueWriter()).build();
         return out;
     }
 
-    public PartiallySortedDataFile<K, V> getPartiallySortedDataFile(final String fileName) {
-        final PartiallySortedDataFile<K, V> out = PartiallySortedDataFile.<K, V>builder()
-                .withFileName(fileName).withKeyComparator(getKeyComparator()).withBasicIndex(this)
+    public PartiallySortedDataFile<K, V> getPartiallySortedDataFile(
+            final String fileName) {
+        final PartiallySortedDataFile<K, V> out = PartiallySortedDataFile
+                .<K, V>builder().withFileName(fileName)
+                .withKeyComparator(getKeyComparator()).withBasicIndex(this)
                 .withValueMerger(valueMerger).build();
         return out;
     }
 
     /**
      * When it's called sorting of given file starts. For each record in correct
-     * order will be called given consumer. When method call returns than there are
-     * no more records to sort.
+     * order will be called given consumer. When method call returns than there
+     * are no more records to sort.
      * 
      * @param unsortedFileName required unsorted file name
-     * @param consumer         required consumer. All sorted data will be passed to
-     *                         consumer.
+     * @param consumer         required consumer. All sorted data will be passed
+     *                         to consumer.
      */
     public void consumeSortedData(final String unsortedFileName,
-            final Consumer<Pair<K, V>> consumer, final Integer howManySortInMemory) {
-        final UnsortedDataFileSorter<K, V> sorter = new UnsortedDataFileSorter<>(unsortedFileName,
-                valueMerger, getKeyComparator(), howManySortInMemory, this);
+            final Consumer<Pair<K, V>> consumer,
+            final Integer howManySortInMemory) {
+        final UnsortedDataFileSorter<K, V> sorter = new UnsortedDataFileSorter<>(
+                unsortedFileName, valueMerger, getKeyComparator(),
+                howManySortInMemory, this);
         sorter.consumeSortedData(consumer);
     }
 
-    public void consumeSortedDataFromPartialySortedDataFile(final String partialySortedFileName,
-            final Consumer<Pair<K, V>> consumer, final Integer howManySortInMemory) {
+    public void consumeSortedDataFromPartialySortedDataFile(
+            final String partialySortedFileName,
+            final Consumer<Pair<K, V>> consumer,
+            final Integer howManySortInMemory) {
         final UnsortedDataFileSorter<K, V> sorter = new UnsortedDataFileSorter<>(
-                partialySortedFileName, valueMerger, getKeyComparator(), howManySortInMemory, this);
+                partialySortedFileName, valueMerger, getKeyComparator(),
+                howManySortInMemory, this);
         sorter.consumePreSortedData(consumer);
     }
 
     public boolean deleteFile(final String fileName) {
         if (!directory.deleteFile(fileName)) {
-            throw new IndexException(String.format("Unable to delte file '%s' in directory %s",
-                    fileName, directory.toString()));
+            throw new IndexException(
+                    String.format("Unable to delte file '%s' in directory %s",
+                            fileName, directory.toString()));
         }
         return directory.deleteFile(fileName);
     }

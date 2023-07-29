@@ -62,13 +62,13 @@ public class UniqueCache<K, V> {
         return new UniqueCacheReader<>(getStream().iterator());
     }
 
-    public List<Pair<K, V>> getAsSortedList(){
+    public List<Pair<K, V>> getAsSortedList() {
         return map.entrySet().stream()
                 .map(entry -> new Pair<K, V>(entry.getKey(), entry.getValue()))
                 .sorted(new PairComparator<>(keyComparator))
-                .collect(Collectors.toList());        
+                .collect(Collectors.toList());
     }
-    
+
     /**
      * It's unsorted.
      * 

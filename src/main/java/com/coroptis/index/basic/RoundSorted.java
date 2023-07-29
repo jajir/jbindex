@@ -13,7 +13,8 @@ public class RoundSorted<K, V> {
     private final BasicIndex<K, V> basicIndex;
     private final int howManyFilesMergeAtOnce;
 
-    RoundSorted(final BasicIndex<K, V> basicIndex, final SortSupport<K, V> sortSupport,
+    RoundSorted(final BasicIndex<K, V> basicIndex,
+            final SortSupport<K, V> sortSupport,
             final int howManyFilesMergeAtOnce) {
         this.sortSupport = Objects.requireNonNull(sortSupport);
         this.basicIndex = Objects.requireNonNull(basicIndex);
@@ -28,7 +29,8 @@ public class RoundSorted<K, V> {
             return false;
         }
 
-        final int howManyFilesShouldBeProduces = howManyFilesShouldBeProduces(filesToMerge.size());
+        final int howManyFilesShouldBeProduces = howManyFilesShouldBeProduces(
+                filesToMerge.size());
         final boolean isFinalMergingRound = howManyFilesShouldBeProduces == 1;
 
         for (int i = 0; i < howManyFilesShouldBeProduces; i++) {
@@ -44,12 +46,14 @@ public class RoundSorted<K, V> {
                 /*
                  * When it's final merging round data should be send to caller.
                  */
-                sortSupport.mergeSortedFiles(filesToMergeLocaly, consumer::accept);
+                sortSupport.mergeSortedFiles(filesToMergeLocaly,
+                        consumer::accept);
             } else {
                 sortSupport.mergeSortedFiles(filesToMergeLocaly,
                         sortSupport.makeFileName(roundNo + 1, i));
             }
-            filesToMergeLocaly.forEach(fileName -> basicIndex.deleteFile(fileName));
+            filesToMergeLocaly
+                    .forEach(fileName -> basicIndex.deleteFile(fileName));
         }
 
         return !isFinalMergingRound;
@@ -63,7 +67,8 @@ public class RoundSorted<K, V> {
      * @return
      */
     private int howManyFilesShouldBeProduces(final int numberOfFiles) {
-        return (int) Math.ceil(((float) numberOfFiles) / ((float) howManyFilesMergeAtOnce));
+        return (int) Math.ceil(
+                ((float) numberOfFiles) / ((float) howManyFilesMergeAtOnce));
     }
 
 }

@@ -18,7 +18,7 @@ public class PairReaderIterator<K, V>
         this.pairFileReader = Objects.requireNonNull(pairFileReader);
         tryReadNext();
     }
-    
+
     public Optional<Pair<K, V>> readCurrent() {
         return Optional.ofNullable(pair);
     }

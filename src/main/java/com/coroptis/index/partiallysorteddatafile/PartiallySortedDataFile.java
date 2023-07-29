@@ -21,7 +21,8 @@ public class PartiallySortedDataFile<K, V> {
         return new PartiallySortedDataFileBuilder<M, N>();
     }
 
-    public PartiallySortedDataFile(final String fileName, final Comparator<K> keyComparator,
+    public PartiallySortedDataFile(final String fileName,
+            final Comparator<K> keyComparator,
             final BasicIndex<K, V> basicIndex, final ValueMerger<K, V> merger) {
         this.fileName = Objects.requireNonNull(fileName);
         this.keyComparator = Objects.requireNonNull(keyComparator);
@@ -30,15 +31,18 @@ public class PartiallySortedDataFile<K, V> {
     }
 
     public PartiallySortedDataFileReader<K, V> openReader() {
-        final SortSupport<K, V> sortSupport = new SortSupport<>(basicIndex, merger, fileName);
+        final SortSupport<K, V> sortSupport = new SortSupport<>(basicIndex,
+                merger, fileName);
         final PartiallySortedDataFileReader<K, V> reader = new PartiallySortedDataFileReader<>(
                 basicIndex, sortSupport);
         return reader;
     }
 
-    public PartiallySortedDataFileWriter<K, V> openWriter(int howManySortInMemory) {
+    public PartiallySortedDataFileWriter<K, V> openWriter(
+            int howManySortInMemory) {
         final PartiallySortedDataFileWriter<K, V> writer = new PartiallySortedDataFileWriter<>(
-                fileName, merger, howManySortInMemory, basicIndex, keyComparator);
+                fileName, merger, howManySortInMemory, basicIndex,
+                keyComparator);
         return writer;
     }
 

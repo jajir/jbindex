@@ -33,10 +33,10 @@ public class MemFileReader implements FileReader {
             if (newPosition > data.length) {
                 newPosition = data.length;
             }
-            final int toReadBytes = newPosition-position;
+            final int toReadBytes = newPosition - position;
             System.arraycopy(data, position, bytes, 0, toReadBytes);
             position = newPosition;
-            return toReadBytes;            
+            return toReadBytes;
         } else {
             return -1;
         }

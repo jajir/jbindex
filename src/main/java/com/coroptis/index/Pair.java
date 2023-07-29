@@ -53,7 +53,8 @@ public class Pair<K, V> {
         if (getClass() != obj.getClass())
             return false;
         Pair<K, V> other = (Pair<K, V>) obj;
-        return Objects.equals(key, other.key) && Objects.equals(value, other.value);
+        return Objects.equals(key, other.key)
+                && Objects.equals(value, other.value);
     }
 
 }

@@ -7,8 +7,7 @@ import com.coroptis.index.PairReader;
 import com.coroptis.index.directory.FileReader;
 import com.coroptis.index.type.TypeReader;
 
-public class SortedDataFileReader<K, V>
-        implements PairReader<K, V> {
+public class SortedDataFileReader<K, V> implements PairReader<K, V> {
 
     private final TypeReader<K> keyTypeReader;
     private final TypeReader<V> valueTypeReader;

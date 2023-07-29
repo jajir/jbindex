@@ -14,7 +14,7 @@ import com.coroptis.index.type.TypeWriter;
 public class DiffKeyWriter<K> implements TypeWriter<K> {
 
     private final Logger logger = LoggerFactory.getLogger(DiffKeyWriter.class);
-    
+
     private final ConvertorToBytes<K> convertorToBytes;
 
     private final Comparator<K> keyComparator;
@@ -45,13 +45,15 @@ public class DiffKeyWriter<K> implements TypeWriter<K> {
         return write(fileWriter, key, false);
     }
 
-    public int write(final FileWriter fileWriter, final K key, final boolean fullWrite) {
+    public int write(final FileWriter fileWriter, final K key,
+            final boolean fullWrite) {
         Objects.requireNonNull(key, "key can't be null");
         if (previousKey != null) {
             final int cmp = keyComparator.compare(previousKey, key);
             if (cmp == 0) {
                 final String s2 = new String(convertorToBytes.toBytes(key));
-                final String keyComapratorClassName = keyComparator.getClass().getSimpleName();
+                final String keyComapratorClassName = keyComparator.getClass()
+                        .getSimpleName();
                 throw new IllegalArgumentException(String.format(
                         "Attempt to insers same key as previous. Key '%s' was comapred with '%s'",
                         s2, keyComapratorClassName));
@@ -59,7 +61,8 @@ public class DiffKeyWriter<K> implements TypeWriter<K> {
             if (cmp > 0) {
                 final String s1 = new String(previousKeyBytes);
                 final String s2 = new String(convertorToBytes.toBytes(key));
-                final String keyComapratorClassName = keyComparator.getClass().getSimpleName();
+                final String keyComapratorClassName = keyComparator.getClass()
+                        .getSimpleName();
                 throw new IllegalArgumentException(String.format(
                         "Attempt to insers key in invalid order. "
                                 + "Previous key is '%s', inserted key is '%s' and comparator is '%s'",
@@ -72,10 +75,13 @@ public class DiffKeyWriter<K> implements TypeWriter<K> {
             return write(fileWriter, 0, keyBytes, key, keyBytes);
         } else {
             final byte[] keyBytes = convertorToBytes.toBytes(key);
-            final int sharedByteLength = byteTool.howMuchBytesIsSame(previousKeyBytes, keyBytes);
-            final byte[] diffBytes = byteTool.getRemainingBytesAfterIndex(sharedByteLength, keyBytes);
+            final int sharedByteLength = byteTool
+                    .howMuchBytesIsSame(previousKeyBytes, keyBytes);
+            final byte[] diffBytes = byteTool
+                    .getRemainingBytesAfterIndex(sharedByteLength, keyBytes);
 
-            return write(fileWriter, sharedByteLength, diffBytes, key, keyBytes);
+            return write(fileWriter, sharedByteLength, diffBytes, key,
+                    keyBytes);
         }
     }
 

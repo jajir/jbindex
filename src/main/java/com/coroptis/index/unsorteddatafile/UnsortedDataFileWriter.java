@@ -15,9 +15,9 @@ public class UnsortedDataFileWriter<K, V> implements PairWriter<K, V> {
     private final TypeWriter<V> valueWriter;
     private final FileWriter fileWriter;
 
-    public UnsortedDataFileWriter(final Directory directory, final String fileName,
-            final TypeWriter<K> keyWriter, final TypeWriter<V> valueWriter,
-            final Access access) {
+    public UnsortedDataFileWriter(final Directory directory,
+            final String fileName, final TypeWriter<K> keyWriter,
+            final TypeWriter<V> valueWriter, final Access access) {
         this.keyWriter = Objects.requireNonNull(keyWriter);
         this.valueWriter = Objects.requireNonNull(valueWriter);
         Objects.requireNonNull(directory);

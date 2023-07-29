@@ -34,15 +34,17 @@ class UnsortedDataFileSorter<K, V> {
     private final SortSupport<K, V> sortSupport;
     private final RoundSorted<K, V> roundSorter;
 
-    UnsortedDataFileSorter(final String unsortedFileName, final ValueMerger<K, V> merger,
-            final Comparator<K> keyComparator, final Integer howManySortInMemory,
+    UnsortedDataFileSorter(final String unsortedFileName,
+            final ValueMerger<K, V> merger, final Comparator<K> keyComparator,
+            final Integer howManySortInMemory,
             final BasicIndex<K, V> basicIndex) {
         this.unsortedFileName = Objects.requireNonNull(unsortedFileName);
         this.merger = Objects.requireNonNull(merger);
         this.howManySortInMemory = Objects.requireNonNull(howManySortInMemory);
         this.basicIndex = Objects.requireNonNull(basicIndex);
         this.keyComparator = Objects.requireNonNull(keyComparator);
-        this.sortSupport = new SortSupport<>(basicIndex, merger, unsortedFileName);
+        this.sortSupport = new SortSupport<>(basicIndex, merger,
+                unsortedFileName);
         this.roundSorter = new RoundSorted<>(basicIndex, sortSupport,
                 HOW_MANY_FILES_TO_MERGE_AT_ONCE);
     }
@@ -62,10 +64,12 @@ class UnsortedDataFileSorter<K, V> {
 
     private void splitIntoSortedIndexes() {
         try (final PartiallySortedDataFileWriter<K, V> writer = new PartiallySortedDataFileWriter<>(
-                unsortedFileName, merger, howManySortInMemory, basicIndex, keyComparator)) {
+                unsortedFileName, merger, howManySortInMemory, basicIndex,
+                keyComparator)) {
             final UnsortedDataFile<K, V> unsortedFile = basicIndex
                     .getUnsortedFile(unsortedFileName);
-            try (final PairIterator<K, V> reader = unsortedFile.openIterator()) {
+            try (final PairIterator<K, V> reader = unsortedFile
+                    .openIterator()) {
                 while (reader.hasNext()) {
                     final Pair<K, V> pair = reader.readCurrent().get();
                     writer.put(pair);

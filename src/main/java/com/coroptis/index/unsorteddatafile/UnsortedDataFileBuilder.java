@@ -20,7 +20,8 @@ public class UnsortedDataFileBuilder<K, V> {
 
     private TypeReader<V> valueReader;
 
-    public UnsortedDataFileBuilder<K, V> withDirectory(final Directory directory) {
+    public UnsortedDataFileBuilder<K, V> withDirectory(
+            final Directory directory) {
         this.directory = Objects.requireNonNull(directory);
         return this;
     }
@@ -30,29 +31,33 @@ public class UnsortedDataFileBuilder<K, V> {
         return this;
     }
 
-    public UnsortedDataFileBuilder<K, V> withKeyWriter(final TypeWriter<K> keyWriter) {
+    public UnsortedDataFileBuilder<K, V> withKeyWriter(
+            final TypeWriter<K> keyWriter) {
         this.keyWriter = Objects.requireNonNull(keyWriter);
         return this;
     }
 
-    public UnsortedDataFileBuilder<K, V> withValueWriter(final TypeWriter<V> valueWriter) {
+    public UnsortedDataFileBuilder<K, V> withValueWriter(
+            final TypeWriter<V> valueWriter) {
         this.valueWriter = Objects.requireNonNull(valueWriter);
         return this;
     }
 
-    public UnsortedDataFileBuilder<K, V> withKeyReader(final TypeReader<K> keyReader) {
+    public UnsortedDataFileBuilder<K, V> withKeyReader(
+            final TypeReader<K> keyReader) {
         this.keyReader = Objects.requireNonNull(keyReader);
         return this;
     }
 
-    public UnsortedDataFileBuilder<K, V> withValueReader(final TypeReader<V> valueReader) {
+    public UnsortedDataFileBuilder<K, V> withValueReader(
+            final TypeReader<V> valueReader) {
         this.valueReader = Objects.requireNonNull(valueReader);
         return this;
     }
 
     public UnsortedDataFile<K, V> build() {
-        return new UnsortedDataFile<>(directory, fileName, keyWriter, valueWriter, keyReader,
-                valueReader);
+        return new UnsortedDataFile<>(directory, fileName, keyWriter,
+                valueWriter, keyReader, valueReader);
     }
 
 }

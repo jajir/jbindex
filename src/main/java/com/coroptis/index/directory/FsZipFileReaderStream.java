@@ -54,8 +54,10 @@ public class FsZipFileReaderStream implements FileReader {
         try {
             long skippedBytes = bis.skip(bytesToSkip);
             if (skippedBytes != bytesToSkip) {
-                throw new IndexException(String.format("In file should be '%s' bytes skipped but "
-                        + "actually was skipped '%s' bytes.", bytesToSkip, skippedBytes));
+                throw new IndexException(String.format(
+                        "In file should be '%s' bytes skipped but "
+                                + "actually was skipped '%s' bytes.",
+                        bytesToSkip, skippedBytes));
             }
 
         } catch (IOException e) {

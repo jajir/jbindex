@@ -22,7 +22,7 @@ public class CacheSortedReader<K, V> implements PairReader<K, V> {
             .getLogger(CacheSortedReader.class);
 
     private final List<Pair<K, V>> sortedPairs;
-    
+
     private int indexToReturn = 0;
 
     CacheSortedReader(final ValueMerger<K, V> merger,
@@ -40,8 +40,7 @@ public class CacheSortedReader<K, V> implements PairReader<K, V> {
         sortedPairs = cache.getStream().sorted(pairComparator)
                 .collect(Collectors.toList());
         cache.clear();
-        logger.debug(
-                "Initilization is done with '{}' key value pairs.",
+        logger.debug("Initilization is done with '{}' key value pairs.",
                 sortedPairs.size());
     }
 

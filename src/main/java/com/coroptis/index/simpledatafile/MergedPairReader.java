@@ -15,8 +15,7 @@ public class MergedPairReader<K, V> implements PairReader<K, V> {
     private final ValueMerger<K, V> valueMerger;
 
     public MergedPairReader(final PairReader<K, V> reader1,
-            final PairReader<K, V> reader2,
-            final ValueMerger<K, V> valueMerger,
+            final PairReader<K, V> reader2, final ValueMerger<K, V> valueMerger,
             final Comparator<K> keyComparator) {
         this.iterator1 = new PairReaderIterator<>(reader1);
         this.iterator2 = new PairReaderIterator<>(reader2);

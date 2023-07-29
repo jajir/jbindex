@@ -16,7 +16,8 @@ public class PartiallySortedDataFileBuilder<K, V> {
 
     private ValueMerger<K, V> merger;
 
-    public PartiallySortedDataFileBuilder<K, V> withFileName(final String file) {
+    public PartiallySortedDataFileBuilder<K, V> withFileName(
+            final String file) {
         this.fileName = Objects.requireNonNull(file);
         return this;
     }
@@ -27,18 +28,21 @@ public class PartiallySortedDataFileBuilder<K, V> {
         return this;
     }
 
-    public PartiallySortedDataFileBuilder<K, V> withBasicIndex(final BasicIndex<K, V> basicIndex) {
+    public PartiallySortedDataFileBuilder<K, V> withBasicIndex(
+            final BasicIndex<K, V> basicIndex) {
         this.basicIndex = Objects.requireNonNull(basicIndex);
         return this;
     }
 
-    public PartiallySortedDataFileBuilder<K, V> withValueMerger(final ValueMerger<K, V> merger) {
+    public PartiallySortedDataFileBuilder<K, V> withValueMerger(
+            final ValueMerger<K, V> merger) {
         this.merger = Objects.requireNonNull(merger);
         return this;
     }
 
     public PartiallySortedDataFile<K, V> build() {
-        return new PartiallySortedDataFile<>(fileName, keyComparator, basicIndex, merger);
+        return new PartiallySortedDataFile<>(fileName, keyComparator,
+                basicIndex, merger);
     }
 
 }

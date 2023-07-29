@@ -11,7 +11,8 @@ public class BasicIndexBuilder<K, V> {
     private ValueMerger<K, V> valueMerger;
 
     public BasicIndex<K, V> buid() {
-        return new BasicIndex<>(directory, valueMerger, keyTypeDescriptor, valueTypeDescriptor);
+        return new BasicIndex<>(directory, valueMerger, keyTypeDescriptor,
+                valueTypeDescriptor);
     }
 
     public BasicIndexBuilder<K, V> directory(final Directory directory) {
@@ -19,7 +20,8 @@ public class BasicIndexBuilder<K, V> {
         return this;
     }
 
-    public BasicIndexBuilder<K, V> keyTypeDescriptor(final TypeDescriptor<K> keyTypeDescriptor) {
+    public BasicIndexBuilder<K, V> keyTypeDescriptor(
+            final TypeDescriptor<K> keyTypeDescriptor) {
         this.keyTypeDescriptor = keyTypeDescriptor;
         return this;
     }
@@ -30,7 +32,8 @@ public class BasicIndexBuilder<K, V> {
         return this;
     }
 
-    public BasicIndexBuilder<K, V> valueMerger(final ValueMerger<K, V> valueMerger) {
+    public BasicIndexBuilder<K, V> valueMerger(
+            final ValueMerger<K, V> valueMerger) {
         this.valueMerger = valueMerger;
         return this;
     }

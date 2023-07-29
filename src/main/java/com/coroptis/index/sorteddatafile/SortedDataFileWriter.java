@@ -20,9 +20,11 @@ public class SortedDataFileWriter<K, V> implements PairWriter<K, V> {
 
     private int position;
 
-    public SortedDataFileWriter(final Directory directory, final String fileName,
+    public SortedDataFileWriter(final Directory directory,
+            final String fileName,
             final ConvertorToBytes<K> keyConvertorToBytes,
-            final Comparator<K> keyComparator, final TypeWriter<V> valueWriter) {
+            final Comparator<K> keyComparator,
+            final TypeWriter<V> valueWriter) {
         Objects.requireNonNull(directory);
         Objects.requireNonNull(fileName);
         this.writer = directory.getFileWriter(fileName);
@@ -40,9 +42,11 @@ public class SortedDataFileWriter<K, V> implements PairWriter<K, V> {
      * @return position of end of record.
      */
     public int put(final Pair<K, V> pair, final boolean fullWrite) {
-        final int diffKeyLength = diffKeyWriter.write(writer, pair.getKey(), fullWrite);
+        final int diffKeyLength = diffKeyWriter.write(writer, pair.getKey(),
+                fullWrite);
 
-        final int writenBytesInValue = valueWriter.write(writer, pair.getValue());
+        final int writenBytesInValue = valueWriter.write(writer,
+                pair.getValue());
 
         int lastPosition = position;
         position = position + diffKeyLength + writenBytesInValue;

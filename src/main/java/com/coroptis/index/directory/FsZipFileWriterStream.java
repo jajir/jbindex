@@ -17,8 +17,8 @@ public class FsZipFileWriterStream implements FileWriter {
 
     FsZipFileWriterStream(final File file) {
         try {
-            this.fio = new ZipOutputStream(
-                    new BufferedOutputStream(new FileOutputStream(file), BUFFER_SIZE));
+            this.fio = new ZipOutputStream(new BufferedOutputStream(
+                    new FileOutputStream(file), BUFFER_SIZE));
             fio.setMethod(ZipOutputStream.DEFLATED);
             fio.setLevel(9);
             fio.putNextEntry(new ZipEntry("default.dat"));

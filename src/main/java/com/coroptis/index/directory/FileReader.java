@@ -10,12 +10,12 @@ import com.coroptis.index.CloseableResource;
  * 
  */
 public interface FileReader extends CloseableResource {
-    
+
     /**
      * Read one byte. When byte is not available than return -1.
      *
-     * @return read byte as int value from 0 to 255 (inclusive). when value -1 is
-     *         returned that end of file was reached.
+     * @return read byte as int value from 0 to 255 (inclusive). when value -1
+     *         is returned that end of file was reached.
      */
     int read();
 
