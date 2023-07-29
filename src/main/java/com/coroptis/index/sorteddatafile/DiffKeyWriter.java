@@ -34,7 +34,7 @@ public class DiffKeyWriter<K> implements TypeWriter<K> {
         byteTool = new ByteTool();
         previousKeyBytes = new byte[0];
         previousKey = null;
-        logger.debug(
+        logger.trace(
                 "Initilizing with conventor to bytes '{}' and comparator '{}'",
                 this.convertorToBytes.getClass().getSimpleName(),
                 this.keyComparator.getClass().getSimpleName());

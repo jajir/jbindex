@@ -21,7 +21,11 @@ import com.coroptis.index.type.TypeDescriptor;
 import com.coroptis.index.type.TypeDescriptorInteger;
 
 /**
- * Provide information about keys and particular index files.
+ * Provide information about keys and particular index files. Each key
+ * represents part of index equal or smaller to given key. Last key represents
+ * higher key in index. When new value in index is entered it should be called
+ * {@link #insertKeyToSegment(Object)}. This method update higher key value when
+ * it's necessary.
  * 
  * @author honza
  *
@@ -71,7 +75,8 @@ public class ScarceIndexFile<K> implements CloseableResource {
                 tmp.put(segmentId, key);
             } else {
                 logger.error(String.format(
-                        "Segment id '%s' is used for segment with key '%s' and segment with key '%s'.",
+                        "Segment id '%s' is used for segment with "
+                                + "key '%s' and segment with key '%s'.",
                         segmentId, key, oldKey));
                 fail.set(true);
             }

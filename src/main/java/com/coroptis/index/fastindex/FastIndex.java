@@ -2,7 +2,6 @@ package com.coroptis.index.fastindex;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -20,7 +19,10 @@ import com.coroptis.index.sorteddatafile.PairComparator;
 import com.coroptis.index.type.TypeDescriptor;
 
 /**
- * TODO consider moving writing to writer and reading to reader.
+ * Main end user class.
+ * 
+ * 
+ * Consider moving writing to writer and reading to reader.
  * 
  * 
  * 
@@ -141,10 +143,9 @@ public class FastIndex<K, V> implements CloseableResource {
         Objects.requireNonNull(eligibleSegment);
         logger.debug("Start of compacting of '{}' segments.",
                 eligibleSegment.size());
-        final AtomicBoolean flushFastIndexFile = new AtomicBoolean(false);
         eligibleSegment.forEach(segmentId -> {
             final SortedStringTable<K, V> sdf = getSegment(segmentId);
-            flushFastIndexFile.set(optionallySplit(sdf, segmentId));
+            optionallySplit(sdf, segmentId);
             if (sdf.getStats()
                     .getNumberOfPairsInCache() > maxNumeberOfKeysInSegmentCache) {
                 logger.debug("Compacting of segment '{}' started.", segmentId);
@@ -152,9 +153,7 @@ public class FastIndex<K, V> implements CloseableResource {
                 logger.debug("Compacting of segment '{}' is done.", segmentId);
             }
         });
-        if (flushFastIndexFile.get()) {
-            scarceIndexFile.flush();
-        }
+        scarceIndexFile.flush();
         logger.debug("Compacting of '{}' segments is done.",
                 eligibleSegment.size());
     }

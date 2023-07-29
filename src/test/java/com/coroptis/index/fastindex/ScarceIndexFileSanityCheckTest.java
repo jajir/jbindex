@@ -17,6 +17,11 @@ public class ScarceIndexFileSanityCheckTest {
     private final TypeDescriptorInteger integerTd = new TypeDescriptorInteger();
     private final Directory directory = new MemDirectory();
 
+    /**
+     * Verify that loading of corrupted scarce index fails.
+     * 
+     * @throws Exception
+     */
     @Test
     public void test_sanityCheck() throws Exception {
         final SortedDataFile<String, Integer> sdf = new SortedDataFile<>(
