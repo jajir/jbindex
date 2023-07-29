@@ -32,10 +32,10 @@ public class ScarceIndexFileTest {
         directory = new MemDirectory();
         try (final ScarceIndexFile<String> fif = new ScarceIndexFile<>(
                 directory, stringTd)) {
-            fif.insertSegment("ahoj", 1);
-            fif.insertSegment("betka", 2);
-            fif.insertSegment("cukrar", 3);
-            fif.insertSegment("dikobraz", 4);
+            fif.insertSegment("ahoj", SegmentId.of(1));
+            fif.insertSegment("betka", SegmentId.of(2));
+            fif.insertSegment("cukrar", SegmentId.of(3));
+            fif.insertSegment("dikobraz", SegmentId.of(4));
             /*
              * Inserting of new higher key, should not add segment. In should
              * update key in higher segment key.
@@ -72,8 +72,8 @@ public class ScarceIndexFileTest {
         try (final ScarceIndexFile<String> fif = new ScarceIndexFile<>(
                 directory, stringTd)) {
             assertThrows(IllegalArgumentException.class,
-                    () -> fif.insertSegment("aaa", 1),
-                    "Segment id '1' already exists");
+                    () -> fif.insertSegment("aaa", SegmentId.of(1)),
+                    "Segment id 'segment-00001' already exists");
         }
     }
 

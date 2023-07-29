@@ -138,17 +138,12 @@ public class ScarceIndexFile<K> implements CloseableResource {
     }
 
     public void insertSegment(final K key, final SegmentId segmentId) {
-        insertSegment(key, segmentId.getId());
-    }
-
-    @Deprecated
-    public void insertSegment(final K key, final Integer segmentId) {
         Objects.requireNonNull(key, "Key can't be null");
-        if (list.containsValue(segmentId)) {
+        if (list.containsValue(segmentId.getId())) {
             throw new IllegalArgumentException(
                     String.format("Segment id '%s' already exists", segmentId));
         }
-        list.put(key, segmentId);
+        list.put(key, segmentId.getId());
         isDirty = true;
     }
 
