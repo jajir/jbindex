@@ -14,4 +14,4 @@
  * @author jajir
  *
  */
-package com.coroptis.index.sorteddatafile;
+package com.coroptis.index.sst;

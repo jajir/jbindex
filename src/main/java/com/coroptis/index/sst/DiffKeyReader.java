@@ -1,4 +1,4 @@
-package com.coroptis.index.sorteddatafile;
+package com.coroptis.index.sst;
 
 import com.coroptis.index.IndexException;
 import com.coroptis.index.directory.FileReader;

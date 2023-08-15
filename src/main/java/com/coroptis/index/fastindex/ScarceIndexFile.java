@@ -15,8 +15,8 @@ import com.coroptis.index.CloseableResource;
 import com.coroptis.index.Pair;
 import com.coroptis.index.PairIterator;
 import com.coroptis.index.directory.Directory;
-import com.coroptis.index.sorteddatafile.SortedDataFile;
-import com.coroptis.index.sorteddatafile.SortedDataFileWriter;
+import com.coroptis.index.sst.SortedDataFile;
+import com.coroptis.index.sst.SortedDataFileWriter;
 import com.coroptis.index.type.TypeDescriptor;
 import com.coroptis.index.type.TypeDescriptorInteger;
 

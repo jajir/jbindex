@@ -1,4 +1,4 @@
-package com.coroptis.index.sorteddatafile;
+package com.coroptis.index.sst;
 
 import java.util.Comparator;
 import java.util.Objects;

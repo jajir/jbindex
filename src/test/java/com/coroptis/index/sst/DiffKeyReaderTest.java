@@ -1,4 +1,4 @@
-package com.coroptis.index.sorteddatafile;
+package com.coroptis.index.sst;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -12,6 +12,7 @@ import org.mockito.invocation.InvocationOnMock;
 
 import com.coroptis.index.IndexException;
 import com.coroptis.index.directory.FileReader;
+import com.coroptis.index.sst.DiffKeyReader;
 import com.coroptis.index.type.TypeDescriptor;
 import com.coroptis.index.type.TypeDescriptorString;
 

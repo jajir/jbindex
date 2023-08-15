@@ -10,7 +10,7 @@ import java.util.stream.Stream;
 import com.coroptis.index.Pair;
 import com.coroptis.index.PairReader;
 import com.coroptis.index.basic.ValueMerger;
-import com.coroptis.index.sorteddatafile.PairComparator;
+import com.coroptis.index.sst.PairComparator;
 
 public class UniqueCache<K, V> {
 

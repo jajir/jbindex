@@ -1,4 +1,4 @@
-package com.coroptis.index.sorteddatafile;
+package com.coroptis.index.sst;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 
 import com.coroptis.index.directory.FileWriter;
 import com.coroptis.index.directory.MemDirectory;
+import com.coroptis.index.sst.DiffKeyWriter;
 import com.coroptis.index.type.TypeDescriptorInteger;
 
 public class DiffKeyWriterTest {

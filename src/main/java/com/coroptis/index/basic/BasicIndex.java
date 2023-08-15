@@ -9,7 +9,7 @@ import com.coroptis.index.IndexException;
 import com.coroptis.index.Pair;
 import com.coroptis.index.directory.Directory;
 import com.coroptis.index.partiallysorteddatafile.PartiallySortedDataFile;
-import com.coroptis.index.sorteddatafile.SortedDataFile;
+import com.coroptis.index.sst.SortedDataFile;
 import com.coroptis.index.type.ConvertorFromBytes;
 import com.coroptis.index.type.ConvertorToBytes;
 import com.coroptis.index.type.TypeDescriptor;

@@ -1,4 +1,4 @@
-package com.coroptis.index.sorteddatafile;
+package com.coroptis.index.sst;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -14,6 +14,8 @@ import com.coroptis.index.basic.BasicIndex;
 import com.coroptis.index.directory.Directory;
 import com.coroptis.index.directory.FsDirectory;
 import com.coroptis.index.directory.MemDirectory;
+import com.coroptis.index.sst.SortedDataFile;
+import com.coroptis.index.sst.SortedDataFileWriter;
 import com.coroptis.index.type.TypeDescriptorByte;
 import com.coroptis.index.type.TypeDescriptorString;
 

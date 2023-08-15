@@ -12,7 +12,7 @@ import com.coroptis.index.Pair;
 import com.coroptis.index.PairReader;
 import com.coroptis.index.basic.ValueMerger;
 import com.coroptis.index.partiallysorteddatafile.UniqueCache;
-import com.coroptis.index.sorteddatafile.PairComparator;
+import com.coroptis.index.sst.PairComparator;
 import com.coroptis.index.unsorteddatafile.UnsortedDataFile;
 import com.coroptis.index.unsorteddatafile.UnsortedDataFileStreamer;
 
