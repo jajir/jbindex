@@ -22,12 +22,15 @@ public class ByteToolTest {
         testBytes("", "ahoj", 0);
         testBytes("ahoj", "", 0);
         testBytes("", "", 0);
-     
-        assertThrows(NullPointerException.class, () -> bt.howMuchBytesIsSame("".getBytes(), null));
-        assertThrows(NullPointerException.class, () -> bt.howMuchBytesIsSame(null,"".getBytes()));
+
+        assertThrows(NullPointerException.class,
+                () -> bt.howMuchBytesIsSame("".getBytes(), null));
+        assertThrows(NullPointerException.class,
+                () -> bt.howMuchBytesIsSame(null, "".getBytes()));
     }
 
-    private void testBytes(final String a, final String b, final int expectedBytes) {
+    private void testBytes(final String a, final String b,
+            final int expectedBytes) {
         final byte[] a1 = a.getBytes();
         final byte[] b1 = b.getBytes();
         final int ret = bt.howMuchBytesIsSame(a1, b1);
@@ -40,12 +43,15 @@ public class ByteToolTest {
         testFunction(0, "ahoj", "ahoj");
         testFunction(4, "ahoj", "");
 
-        assertThrows(NegativeArraySizeException.class, () -> bt.getRemainingBytesAfterIndex(5, "ahoj".getBytes()));
+        assertThrows(NegativeArraySizeException.class,
+                () -> bt.getRemainingBytesAfterIndex(5, "ahoj".getBytes()));
     }
 
-    private void testFunction(final int sharedLength, final String str, final String expectedResult) {
+    private void testFunction(final int sharedLength, final String str,
+            final String expectedResult) {
         final byte[] a1 = str.getBytes();
-        final byte[] retBytes = bt.getRemainingBytesAfterIndex(sharedLength, a1);
+        final byte[] retBytes = bt.getRemainingBytesAfterIndex(sharedLength,
+                a1);
         final String ret = new String(retBytes);
         assertEquals(expectedResult, ret);
     }

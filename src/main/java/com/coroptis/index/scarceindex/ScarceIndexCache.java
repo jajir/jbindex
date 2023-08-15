@@ -1,6 +1,5 @@
 package com.coroptis.index.scarceindex;
 
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -11,16 +10,9 @@ import java.util.stream.Stream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.coroptis.index.CloseableResource;
 import com.coroptis.index.Pair;
-import com.coroptis.index.PairIterator;
 import com.coroptis.index.datatype.TypeDescriptor;
-import com.coroptis.index.datatype.TypeDescriptorInteger;
-import com.coroptis.index.directory.Directory;
-import com.coroptis.index.fastindex.ScarceIndexFileOld;
 import com.coroptis.index.segment.SegmentId;
-import com.coroptis.index.sstfile.SstFile;
-import com.coroptis.index.sstfile.SstFileWriter;
 
 /**
  * Provide information about keys and particular index files. Each key
@@ -34,21 +26,19 @@ import com.coroptis.index.sstfile.SstFileWriter;
  * @param <K>
  */
 public class ScarceIndexCache<K> {
-    
+
     private final Logger logger = LoggerFactory
             .getLogger(ScarceIndexCache.class);
 
     private final TreeMap<K, Integer> list;
 
-    ScarceIndexCache(
-            final TypeDescriptor<K> keyTypeDescriptor) {
-        Objects
-                .requireNonNull(keyTypeDescriptor.getComparator());
+    ScarceIndexCache(final TypeDescriptor<K> keyTypeDescriptor) {
+        Objects.requireNonNull(keyTypeDescriptor.getComparator());
         this.list = new TreeMap<>(keyTypeDescriptor.getComparator());
     }
 
-    void put(final Pair<K, Integer> pair){
-        Objects.requireNonNull(pair,"Pair is null.");
+    void put(final Pair<K, Integer> pair) {
+        Objects.requireNonNull(pair, "Pair is null.");
         list.put(pair.getKey(), pair.getValue());
     }
 
@@ -93,7 +83,7 @@ public class ScarceIndexCache<K> {
         }
     }
 
-    public void clear(){
+    public void clear() {
         list.clear();
     }
 

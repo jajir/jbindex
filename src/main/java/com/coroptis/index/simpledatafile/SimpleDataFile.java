@@ -14,9 +14,9 @@ import com.coroptis.index.basic.ValueMerger;
 import com.coroptis.index.datatype.TypeDescriptor;
 import com.coroptis.index.directory.Directory;
 import com.coroptis.index.directory.Directory.Access;
+import com.coroptis.index.directory.Props;
 import com.coroptis.index.sstfile.SstFile;
 import com.coroptis.index.sstfile.SstFileWriter;
-import com.coroptis.index.directory.Props;
 import com.coroptis.index.unsorteddatafile.UnsortedDataFile;
 import com.coroptis.index.unsorteddatafile.UnsortedDataFileWriter;
 
@@ -207,8 +207,8 @@ public class SimpleDataFile<K, V> {
             long howManyToCopy) {
         K maxLowerIndexKey = null;
         long cx = 0;
-        try (final SstFileWriter<K, V> writer = getSortedFile(
-                getMainFileName()).openWriter()) {
+        try (final SstFileWriter<K, V> writer = getSortedFile(getMainFileName())
+                .openWriter()) {
             while (cx < howManyToCopy) {
                 final Pair<K, V> pair = iterator.next();
                 writer.put(pair);

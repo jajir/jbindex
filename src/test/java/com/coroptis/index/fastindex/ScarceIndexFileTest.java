@@ -53,8 +53,8 @@ public class ScarceIndexFileTest {
     @Test
     public void test_constructor_empty_directory() throws Exception {
         assertThrows(NullPointerException.class, () -> {
-            try (final ScarceIndexFileOld<String> fif = new ScarceIndexFileOld<>(null,
-                    stringTd)) {
+            try (final ScarceIndexFileOld<String> fif = new ScarceIndexFileOld<>(
+                    null, stringTd)) {
             }
         });
     }

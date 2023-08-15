@@ -9,7 +9,6 @@ import org.junit.jupiter.api.Test;
 import com.coroptis.index.datatype.TypeDescriptorInteger;
 import com.coroptis.index.directory.FileWriter;
 import com.coroptis.index.directory.MemDirectory;
-import com.coroptis.index.sstfile.DiffKeyWriter;
 
 public class DiffKeyWriterTest {
 

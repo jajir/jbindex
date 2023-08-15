@@ -14,7 +14,6 @@ import com.coroptis.index.IndexException;
 import com.coroptis.index.datatype.TypeDescriptor;
 import com.coroptis.index.datatype.TypeDescriptorString;
 import com.coroptis.index.directory.FileReader;
-import com.coroptis.index.sstfile.DiffKeyReader;
 
 public class DiffKeyReaderTest {
 
@@ -62,7 +61,8 @@ public class DiffKeyReaderTest {
     }
 
     @Test
-    public void test_reading_first_fail_when_just_part_of_data_is_read() throws Exception {
+    public void test_reading_first_fail_when_just_part_of_data_is_read()
+            throws Exception {
         final DiffKeyReader<String> reader = new DiffKeyReader<>(
                 tds.getConvertorFromBytes());
 
@@ -118,7 +118,8 @@ public class DiffKeyReaderTest {
     }
 
     @Test
-    public void test_reading_more_records_second_reading_load_part_of_bytes() throws Exception {
+    public void test_reading_more_records_second_reading_load_part_of_bytes()
+            throws Exception {
         final DiffKeyReader<String> reader = new DiffKeyReader<>(
                 tds.getConvertorFromBytes());
 

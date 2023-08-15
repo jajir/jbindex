@@ -69,8 +69,7 @@ public class FastIndex<K, V> implements CloseableResource {
         this.valueMerger = Objects.requireNonNull(valueMerger);
         this.scarceIndexFile = new ScarceIndexFileOld<>(directory,
                 keyTypeDescriptor);
-        this.cache = new UniqueCache<>(
-                keyTypeDescriptor.getComparator());
+        this.cache = new UniqueCache<>(keyTypeDescriptor.getComparator());
     }
 
     public void put(final Pair<K, V> pair) {

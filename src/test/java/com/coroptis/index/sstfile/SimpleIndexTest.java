@@ -8,16 +8,14 @@ import java.util.Comparator;
 
 import org.junit.jupiter.api.Test;
 
-import com.coroptis.index.PairReader;
 import com.coroptis.index.Pair;
+import com.coroptis.index.PairReader;
 import com.coroptis.index.basic.BasicIndex;
 import com.coroptis.index.datatype.TypeDescriptorByte;
 import com.coroptis.index.datatype.TypeDescriptorString;
 import com.coroptis.index.directory.Directory;
 import com.coroptis.index.directory.FsDirectory;
 import com.coroptis.index.directory.MemDirectory;
-import com.coroptis.index.sstfile.SstFile;
-import com.coroptis.index.sstfile.SstFileWriter;
 
 public class SimpleIndexTest {
 
@@ -57,8 +55,7 @@ public class SimpleIndexTest {
                 new TypeDescriptorString(), new TypeDescriptorByte());
         final SstFile<String, Byte> sortedFile = index
                 .getSortedDataFile(FILE_NAME);
-        try (final SstFileWriter<String, Byte> siw = sortedFile
-                .openWriter()) {
+        try (final SstFileWriter<String, Byte> siw = sortedFile.openWriter()) {
             assertEquals(0,
                     siw.put(new Pair<String, Byte>("aaa", (byte) 0), false));
             assertEquals(6,

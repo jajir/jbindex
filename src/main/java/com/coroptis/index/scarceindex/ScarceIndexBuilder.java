@@ -13,8 +13,8 @@ public class ScarceIndexBuilder<K> {
 
     private String fileName;
 
-    ScarceIndexBuilder(){
-        //just keep constructor with limited visibility
+    ScarceIndexBuilder() {
+        // just keep constructor with limited visibility
     }
 
     public ScarceIndexBuilder<K> withKeyTypeDescriptor(
@@ -23,8 +23,7 @@ public class ScarceIndexBuilder<K> {
         return this;
     }
 
-    public ScarceIndexBuilder<K> withDirectory(
-            final Directory directory) {
+    public ScarceIndexBuilder<K> withDirectory(final Directory directory) {
         this.directory = Objects.requireNonNull(directory);
         return this;
     }
@@ -34,8 +33,8 @@ public class ScarceIndexBuilder<K> {
         return this;
     }
 
-    public ScarceIndex<K> build(){
-        return new ScarceIndex<K>(directory,fileName,keyTypeDescriptor);
+    public ScarceIndex<K> build() {
+        return new ScarceIndex<K>(directory, fileName, keyTypeDescriptor);
     }
 
 }

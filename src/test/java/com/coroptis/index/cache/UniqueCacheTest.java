@@ -9,8 +9,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.coroptis.index.Pair;
-import com.coroptis.index.basic.ValueMerger;
-import com.coroptis.index.cache.UniqueCache;
 
 public class UniqueCacheTest {
 

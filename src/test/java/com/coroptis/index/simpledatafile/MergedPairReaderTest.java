@@ -15,12 +15,10 @@ import com.coroptis.index.PairReader;
 public class MergedPairReaderTest {
 
     @SuppressWarnings("unchecked")
-    private final PairReader<Integer, String> reader1 = mock(
-            PairReader.class);
+    private final PairReader<Integer, String> reader1 = mock(PairReader.class);
 
     @SuppressWarnings("unchecked")
-    private final PairReader<Integer, String> reader2 = mock(
-            PairReader.class);
+    private final PairReader<Integer, String> reader2 = mock(PairReader.class);
 
     @Test
     public void test_reader2_is_empty() throws Exception {

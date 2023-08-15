@@ -41,7 +41,6 @@ public class TypeDescriptorByte implements TypeDescriptor<Byte> {
         return (i1, i2) -> i2 - i1;
     }
 
-
     @Override
     public Byte getTombstone() {
         return TOMBSTONE_VALUE;

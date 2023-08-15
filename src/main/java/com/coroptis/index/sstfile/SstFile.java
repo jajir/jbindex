@@ -59,8 +59,8 @@ public class SstFile<K, V> {
         }
         final DiffKeyReader<K> diffKeyReader = new DiffKeyReader<K>(
                 keyConvertorFromBytes);
-        final SstFileReader<K, V> reader = new SstFileReader<>(
-                diffKeyReader, valueReader, directory.getFileReader(fileName));
+        final SstFileReader<K, V> reader = new SstFileReader<>(diffKeyReader,
+                valueReader, directory.getFileReader(fileName));
         return reader;
     }
 
@@ -71,9 +71,8 @@ public class SstFile<K, V> {
     }
 
     public SstFileWriter<K, V> openWriter() {
-        final SstFileWriter<K, V> writer = new SstFileWriter<>(
-                directory, fileName, keyConvertorToBytes, keyComparator,
-                valueWriter);
+        final SstFileWriter<K, V> writer = new SstFileWriter<>(directory,
+                fileName, keyConvertorToBytes, keyComparator, valueWriter);
         return writer;
     }
 

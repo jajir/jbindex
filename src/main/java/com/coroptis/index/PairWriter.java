@@ -18,8 +18,8 @@ public interface PairWriter<K, V> extends CloseableResource {
      */
     void put(Pair<K, V> pair);
 
-    default void put(final K key, final V value){
-        put(Pair.of(key,value));
+    default void put(final K key, final V value) {
+        put(Pair.of(key, value));
     }
 
 }

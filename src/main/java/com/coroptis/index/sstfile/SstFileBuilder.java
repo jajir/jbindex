@@ -25,8 +25,7 @@ public class SstFileBuilder<K, V> {
 
     private ConvertorToBytes<K> keyConvertorToBytes;
 
-    public SstFileBuilder<K, V> withDirectory(
-            final Directory directory) {
+    public SstFileBuilder<K, V> withDirectory(final Directory directory) {
         this.directory = Objects.requireNonNull(directory);
         return this;
     }
@@ -68,9 +67,8 @@ public class SstFileBuilder<K, V> {
     }
 
     public SstFile<K, V> build() {
-        return new SstFile<>(directory, fileName, valueWriter,
-                valueReader, keyComparator, keyConvertorFromBytes,
-                keyConvertorToBytes);
+        return new SstFile<>(directory, fileName, valueWriter, valueReader,
+                keyComparator, keyConvertorFromBytes, keyConvertorToBytes);
     }
 
 }

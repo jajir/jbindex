@@ -24,14 +24,13 @@ public class ScarceIndexFileSanityCheckTest {
      */
     @Test
     public void test_sanityCheck() throws Exception {
-        final SstFile<String, Integer> sdf = new SstFile<>(
-                directory, "index.map", integerTd.getTypeWriter(),
+        final SstFile<String, Integer> sdf = new SstFile<>(directory,
+                "index.map", integerTd.getTypeWriter(),
                 integerTd.getTypeReader(), stringTd.getComparator(),
                 stringTd.getConvertorFromBytes(),
                 stringTd.getConvertorToBytes());
 
-        try (final SstFileWriter<String, Integer> writer = sdf
-                .openWriter()) {
+        try (final SstFileWriter<String, Integer> writer = sdf.openWriter()) {
             writer.put(Pair.of("aaa", 1));
             writer.put(Pair.of("bbb", 2));
             writer.put(Pair.of("ccc", 3));

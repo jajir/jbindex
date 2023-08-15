@@ -7,15 +7,12 @@ import java.util.Comparator;
 
 import org.junit.jupiter.api.Test;
 
-import com.coroptis.index.datatype.ConvertorFromBytes;
-import com.coroptis.index.datatype.ConvertorToBytes;
-import com.coroptis.index.datatype.TypeDescriptorInteger;
-
 public class TypeDescriptorIntegerTest {
 
     private final TypeDescriptorInteger ti = new TypeDescriptorInteger();
     private final ConvertorToBytes<Integer> toBytes = ti.getConvertorToBytes();
-    private final ConvertorFromBytes<Integer> fromBytes = ti.getConvertorFromBytes();
+    private final ConvertorFromBytes<Integer> fromBytes = ti
+            .getConvertorFromBytes();
 
     @Test
     public void test_convertorto_bytes() throws Exception {
@@ -28,15 +25,15 @@ public class TypeDescriptorIntegerTest {
     private void assertEqualsBytes(Integer number) {
         final byte[] bytes = toBytes.toBytes(number);
         final Integer ret = fromBytes.fromBytes(bytes);
-        assertEquals(number, ret,
-                String.format("Expected '%s' byt returned was '%s'", number, ret));
+        assertEquals(number, ret, String
+                .format("Expected '%s' byt returned was '%s'", number, ret));
     }
-    
+
     @Test
     public void test_compare() throws Exception {
         final Comparator<Integer> cmp = ti.getComparator();
-        assertTrue(cmp.compare(0, 0)==0);
-        assertTrue(cmp.compare(3, 12)<0);
-        assertTrue(cmp.compare(3, 2)>0);
+        assertTrue(cmp.compare(0, 0) == 0);
+        assertTrue(cmp.compare(3, 12) < 0);
+        assertTrue(cmp.compare(3, 2) > 0);
     }
 }

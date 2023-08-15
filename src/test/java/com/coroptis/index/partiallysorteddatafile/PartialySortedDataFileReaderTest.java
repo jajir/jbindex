@@ -19,22 +19,26 @@ import com.coroptis.index.sstfile.SstFile;
 public class PartialySortedDataFileReaderTest {
 
     @SuppressWarnings("unchecked")
-    private final BasicIndex<Integer, String> basicIndex = mock(BasicIndex.class);
+    private final BasicIndex<Integer, String> basicIndex = mock(
+            BasicIndex.class);
 
     @SuppressWarnings("unchecked")
-    private final SortSupport<Integer, String> sortSupport = mock(SortSupport.class);
+    private final SortSupport<Integer, String> sortSupport = mock(
+            SortSupport.class);
 
     @SuppressWarnings("unchecked")
     private final SstFile<Integer, String> dataFile0 = mock(SstFile.class);
 
     @SuppressWarnings("unchecked")
-    private final PairReader<Integer, String> dataFileReader0 = mock(PairReader.class);
+    private final PairReader<Integer, String> dataFileReader0 = mock(
+            PairReader.class);
 
     @SuppressWarnings("unchecked")
     private final SstFile<Integer, String> dataFile1 = mock(SstFile.class);
 
     @SuppressWarnings("unchecked")
-    private final PairReader<Integer, String> dataFileReader1 = mock(PairReader.class);
+    private final PairReader<Integer, String> dataFileReader1 = mock(
+            PairReader.class);
 
     final String[] files = new String[] { "file-0", "file-1" };
 

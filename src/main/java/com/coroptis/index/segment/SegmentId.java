@@ -39,7 +39,7 @@ public class SegmentId {
         }
         return "segment-" + name;
     }
-    
+
     @Override
     public String toString() {
         return getName();

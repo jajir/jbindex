@@ -7,7 +7,7 @@ public class TypeDescriptorLong implements TypeDescriptor<Long> {
     /**
      * Thombstone value, use can't use it.
      */
-    private final static Long TOMBSTONE_VALUE = Long.MIN_VALUE+1;
+    private final static Long TOMBSTONE_VALUE = Long.MIN_VALUE + 1;
 
     /**
      * How many bytes is required to store Integer.
@@ -127,7 +127,6 @@ public class TypeDescriptorLong implements TypeDescriptor<Long> {
         return (i1, i2) -> i1 == i2 ? 0 : i1 < i2 ? -1 : 1;
     }
 
-    
     @Override
     public Long getTombstone() {
         return TOMBSTONE_VALUE;

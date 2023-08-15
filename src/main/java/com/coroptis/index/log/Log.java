@@ -5,7 +5,6 @@ import java.util.Objects;
 import com.coroptis.index.datatype.TypeReader;
 import com.coroptis.index.datatype.TypeWriter;
 import com.coroptis.index.directory.Directory;
-import com.coroptis.index.unsorteddatafile.UnsortedDataFileBuilder;
 
 /**
  * Unsorted key value pairs log file.
@@ -18,7 +17,8 @@ import com.coroptis.index.unsorteddatafile.UnsortedDataFileBuilder;
 public class Log<K, V> {
 
     /**
-     * Log data will be stored in directory in filename 'filename' + '.' + 'log'. For example 'segment-00012.log'. 
+     * Log data will be stored in directory in filename 'filename' + '.' +
+     * 'log'. For example 'segment-00012.log'.
      */
     private final static String LOG_FILE_EXTENSION = "log";
 

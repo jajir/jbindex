@@ -8,8 +8,7 @@ import java.util.function.Consumer;
 import com.coroptis.index.Pair;
 import com.coroptis.index.PairReader;
 
-public class SstFileSpliterator<K, V>
-        implements Spliterator<Pair<K, V>> {
+public class SstFileSpliterator<K, V> implements Spliterator<Pair<K, V>> {
 
     private final PairReader<K, V> pairReader;
 

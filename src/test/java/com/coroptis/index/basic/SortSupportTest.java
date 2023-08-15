@@ -1,6 +1,7 @@
 package com.coroptis.index.basic;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -16,13 +17,15 @@ public class SortSupportTest {
     private final BasicIndex<Integer, String> index = mock(BasicIndex.class);
 
     @SuppressWarnings("unchecked")
-    private final ValueMerger<Integer, String> valueMerger = mock(ValueMerger.class);
+    private final ValueMerger<Integer, String> valueMerger = mock(
+            ValueMerger.class);
 
     private final Directory dir = mock(Directory.class);
 
     @Test
     void test_getFilesInRound_0_extension() throws Exception {
-        final SortSupport<Integer, String> sortSupport = makeSortSupport_extension("round.dat");
+        final SortSupport<Integer, String> sortSupport = makeSortSupport_extension(
+                "round.dat");
 
         final List<String> fileNames = sortSupport.getFilesInRound(0);
         assertEquals(5, fileNames.size());
@@ -35,7 +38,8 @@ public class SortSupportTest {
 
     @Test
     void test_getFilesInRound_0() throws Exception {
-        final SortSupport<Integer, String> sortSupport = makeSortSupport("round");
+        final SortSupport<Integer, String> sortSupport = makeSortSupport(
+                "round");
 
         final List<String> fileNames = sortSupport.getFilesInRound(0);
         assertEquals(5, fileNames.size());
@@ -48,7 +52,8 @@ public class SortSupportTest {
 
     @Test
     void test_getFilesInRound_1() throws Exception {
-        final SortSupport<Integer, String> sortSupport = makeSortSupport("round");
+        final SortSupport<Integer, String> sortSupport = makeSortSupport(
+                "round");
 
         final List<String> fileNames = sortSupport.getFilesInRound(1);
         assertEquals(2, fileNames.size());

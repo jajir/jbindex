@@ -5,14 +5,14 @@ import java.util.Objects;
 import com.coroptis.index.datatype.TypeDescriptor;
 import com.coroptis.index.directory.Directory;
 
-public class SegmentBuilder<K,V> {
+public class SegmentBuilder<K, V> {
 
     private Directory directory;
     private SegmentId id;
     private TypeDescriptor<K> keyTypeDescriptor;
     private TypeDescriptor<V> valueTypeDescriptor;
 
-    SegmentBuilder(){
+    SegmentBuilder() {
 
     }
 
@@ -33,8 +33,7 @@ public class SegmentBuilder<K,V> {
         return this;
     }
 
-    public SegmentBuilder<K, V> withId(
-            final Integer id) {
+    public SegmentBuilder<K, V> withId(final Integer id) {
         this.id = SegmentId.of(Objects.requireNonNull(id));
         return this;
     }

@@ -67,8 +67,7 @@ public class SortSupport<K, V> {
             final String producedFile) {
         final SstFile<K, V> sortedFile = basicIndex
                 .getSortedDataFile(producedFile);
-        try (final SstFileWriter<K, V> indexWriter = sortedFile
-                .openWriter()) {
+        try (final SstFileWriter<K, V> indexWriter = sortedFile.openWriter()) {
             mergeSortedFiles(filesToMergeLocaly, pair -> indexWriter.put(pair));
         }
     }

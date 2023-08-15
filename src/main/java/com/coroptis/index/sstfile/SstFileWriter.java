@@ -20,8 +20,7 @@ public class SstFileWriter<K, V> implements PairWriter<K, V> {
 
     private int position;
 
-    public SstFileWriter(final Directory directory,
-            final String fileName,
+    public SstFileWriter(final Directory directory, final String fileName,
             final ConvertorToBytes<K> keyConvertorToBytes,
             final Comparator<K> keyComparator,
             final TypeWriter<V> valueWriter) {

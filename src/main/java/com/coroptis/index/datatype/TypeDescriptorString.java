@@ -39,7 +39,7 @@ public class TypeDescriptorString implements TypeDescriptor<String> {
     public Comparator<String> getComparator() {
         return (s1, s2) -> s1.compareTo(s2);
     }
-    
+
     @Override
     public String getTombstone() {
         return TOMBSTONE_VALUE;

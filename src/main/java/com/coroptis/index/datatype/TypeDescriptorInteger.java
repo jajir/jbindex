@@ -92,11 +92,9 @@ public class TypeDescriptorInteger implements TypeDescriptor<Integer> {
         return (i1, i2) -> i1 - i2;
     }
 
-    
     @Override
     public Integer getTombstone() {
         return TOMBSTONE_VALUE;
     }
-
 
 }

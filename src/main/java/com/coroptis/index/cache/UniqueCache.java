@@ -10,16 +10,17 @@ import java.util.stream.Stream;
 import com.coroptis.index.Pair;
 import com.coroptis.index.PairReader;
 import com.coroptis.index.sstfile.PairComparator;
+
 /**
- * Cache for index operation. When there are two operations with same key value than jast lastest is stored. Because just last one is valid.
+ * Cache for index operation. When there are two operations with same key value
+ * than jast lastest is stored. Because just last one is valid.
  */
 public class UniqueCache<K, V> {
 
     private final Comparator<K> keyComparator;
     private final TreeMap<K, V> map;
 
-    public UniqueCache(
-            final Comparator<K> keyComparator) {
+    public UniqueCache(final Comparator<K> keyComparator) {
         this.keyComparator = Objects.requireNonNull(keyComparator);
         this.map = new TreeMap<>(keyComparator);
     }
@@ -31,8 +32,8 @@ public class UniqueCache<K, V> {
         map.merge(pair.getKey(), pair.getValue(), (oldVal, newVal) -> newVal);
     }
 
-    public V get(final K key){
-        Objects.requireNonNull(key,"Key cant be null");
+    public V get(final K key) {
+        Objects.requireNonNull(key, "Key cant be null");
         return map.get(key);
     }
 

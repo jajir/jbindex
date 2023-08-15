@@ -51,10 +51,8 @@ public class PartiallySortedDataFileWriter<K, V> implements CloseableResource {
             return;
         }
         final String fileName = sortSupport.makeFileName(0, fileCounter);
-        final SstFile<K, V> sortedFile = basicIndex
-                .getSortedDataFile(fileName);
-        try (final SstFileWriter<K, V> writer = sortedFile
-                .openWriter()) {
+        final SstFile<K, V> sortedFile = basicIndex.getSortedDataFile(fileName);
+        try (final SstFileWriter<K, V> writer = sortedFile.openWriter()) {
             cache.getAsSortedList().forEach(writer::put);
         }
         cache.clear();

@@ -52,9 +52,8 @@ public class ScarceIndexFileOld<K> implements CloseableResource {
         final TypeDescriptorInteger itd = new TypeDescriptorInteger();
         this.keyComparator = Objects
                 .requireNonNull(keyTypeDescriptor.getComparator());
-        this.sdf = new SstFile<>(directory, FILE_NAME,
-                itd.getTypeWriter(), itd.getTypeReader(),
-                keyTypeDescriptor.getComparator(),
+        this.sdf = new SstFile<>(directory, FILE_NAME, itd.getTypeWriter(),
+                itd.getTypeReader(), keyTypeDescriptor.getComparator(),
                 keyTypeDescriptor.getConvertorFromBytes(),
                 keyTypeDescriptor.getConvertorToBytes());
         this.list = new TreeMap<>(keyComparator);
@@ -155,8 +154,7 @@ public class ScarceIndexFileOld<K> implements CloseableResource {
 
     public void flush() {
         if (isDirty) {
-            try (final SstFileWriter<K, Integer> writer = sdf
-                    .openWriter()) {
+            try (final SstFileWriter<K, Integer> writer = sdf.openWriter()) {
                 list.forEach((k, v) -> writer.put(Pair.of(k, v)));
             }
         }

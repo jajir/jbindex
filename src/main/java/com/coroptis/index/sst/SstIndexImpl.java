@@ -1,6 +1,5 @@
 package com.coroptis.index.sst;
 
-import java.util.Comparator;
 import java.util.Objects;
 
 import com.coroptis.index.CloseableResource;
@@ -10,7 +9,7 @@ import com.coroptis.index.cache.UniqueCache;
 import com.coroptis.index.datatype.TypeDescriptor;
 import com.coroptis.index.directory.Directory;
 
-public class SstIndexImpl<K,V> implements Index<K,V>, CloseableResource {
+public class SstIndexImpl<K, V> implements Index<K, V>, CloseableResource {
 
     private final long maxNumberOfKeysInCache;
     private final long maxNumeberOfKeysInSegmentCache;
@@ -18,7 +17,7 @@ public class SstIndexImpl<K,V> implements Index<K,V>, CloseableResource {
     private final Directory directory;
     private final TypeDescriptor<K> keyTypeDescriptor;
     private final TypeDescriptor<V> valueTypeDescriptor;
-    private final UniqueCache<K,V> cache;
+    private final UniqueCache<K, V> cache;
 
     public SstIndexImpl(final Directory directory,
             final ValueMerger<K, V> valueMerger,
@@ -37,30 +36,32 @@ public class SstIndexImpl<K,V> implements Index<K,V>, CloseableResource {
         this.maxNumeberOfKeysInSegment = Objects
                 .requireNonNull(maxNumeberOfKeysInSegment);
 
-        this.cache = new UniqueCache<K,V>(this.keyTypeDescriptor.getComparator());
+        this.cache = new UniqueCache<K, V>(
+                this.keyTypeDescriptor.getComparator());
     }
 
     @Override
-    public void put(final K key,final V value) {
-        Objects.requireNonNull(key,"Key cant be null");
-        Objects.requireNonNull(value,"Value cant be null");
+    public void put(final K key, final V value) {
+        Objects.requireNonNull(key, "Key cant be null");
+        Objects.requireNonNull(value, "Value cant be null");
 
-        if ( valueTypeDescriptor.isTombstone(value)){
-            throw new IllegalArgumentException(String.format("Can't insert thombstone value '%s' into index", value));
+        if (valueTypeDescriptor.isTombstone(value)) {
+            throw new IllegalArgumentException(String.format(
+                    "Can't insert thombstone value '%s' into index", value));
         }
 
-        cache.add(Pair.of(key,value));
-        
+        cache.add(Pair.of(key, value));
+
         // TODO add key value pair into WAL
     }
 
     @Override
     public V get(final K key) {
-        Objects.requireNonNull(key,"Key cant be null");
+        Objects.requireNonNull(key, "Key cant be null");
 
         V out = cache.get(key);
-        if(out == null){
-        // TODO record is not in memory try to look at disk
+        if (out == null) {
+            // TODO record is not in memory try to look at disk
         }
 
         return out;
@@ -68,8 +69,8 @@ public class SstIndexImpl<K,V> implements Index<K,V>, CloseableResource {
 
     @Override
     public void delete(final K key) {
-        Objects.requireNonNull(key,"Key cant be null");
-        
+        Objects.requireNonNull(key, "Key cant be null");
+
         cache.add(Pair.of(key, valueTypeDescriptor.getTombstone()));
     }
 
@@ -79,5 +80,4 @@ public class SstIndexImpl<K,V> implements Index<K,V>, CloseableResource {
         throw new UnsupportedOperationException("Unimplemented method 'close'");
     }
 
-    
 }
