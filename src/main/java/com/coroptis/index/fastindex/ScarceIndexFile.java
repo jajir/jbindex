@@ -17,8 +17,8 @@ import com.coroptis.index.PairIterator;
 import com.coroptis.index.datatype.TypeDescriptor;
 import com.coroptis.index.datatype.TypeDescriptorInteger;
 import com.coroptis.index.directory.Directory;
-import com.coroptis.index.sst.SortedDataFile;
-import com.coroptis.index.sst.SortedDataFileWriter;
+import com.coroptis.index.sstfile.SortedDataFile;
+import com.coroptis.index.sstfile.SortedDataFileWriter;
 
 /**
  * Provide information about keys and particular index files. Each key

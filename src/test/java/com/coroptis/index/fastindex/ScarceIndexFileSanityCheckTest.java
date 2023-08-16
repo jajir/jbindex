@@ -9,8 +9,8 @@ import com.coroptis.index.datatype.TypeDescriptorInteger;
 import com.coroptis.index.datatype.TypeDescriptorString;
 import com.coroptis.index.directory.Directory;
 import com.coroptis.index.directory.MemDirectory;
-import com.coroptis.index.sst.SortedDataFile;
-import com.coroptis.index.sst.SortedDataFileWriter;
+import com.coroptis.index.sstfile.SortedDataFile;
+import com.coroptis.index.sstfile.SortedDataFileWriter;
 
 public class ScarceIndexFileSanityCheckTest {
     private final TypeDescriptorString stringTd = new TypeDescriptorString();

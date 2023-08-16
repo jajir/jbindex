@@ -16,7 +16,7 @@ import com.coroptis.index.directory.Directory;
 import com.coroptis.index.partiallysorteddatafile.UniqueCache;
 import com.coroptis.index.simpledatafile.MergedPairReader;
 import com.coroptis.index.simpledatafile.SortedStringTable;
-import com.coroptis.index.sst.PairComparator;
+import com.coroptis.index.sstfile.PairComparator;
 
 /**
  * Main end user class.

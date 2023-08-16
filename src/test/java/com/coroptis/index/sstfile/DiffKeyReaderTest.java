@@ -1,4 +1,4 @@
-package com.coroptis.index.sst;
+package com.coroptis.index.sstfile;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -14,7 +14,7 @@ import com.coroptis.index.IndexException;
 import com.coroptis.index.datatype.TypeDescriptor;
 import com.coroptis.index.datatype.TypeDescriptorString;
 import com.coroptis.index.directory.FileReader;
-import com.coroptis.index.sst.DiffKeyReader;
+import com.coroptis.index.sstfile.DiffKeyReader;
 
 public class DiffKeyReaderTest {
 

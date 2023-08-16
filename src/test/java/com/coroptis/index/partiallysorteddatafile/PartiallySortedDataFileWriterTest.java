@@ -12,8 +12,8 @@ import org.junit.jupiter.api.Test;
 import com.coroptis.index.Pair;
 import com.coroptis.index.basic.BasicIndex;
 import com.coroptis.index.basic.DefaultValueMerger;
-import com.coroptis.index.sst.SortedDataFile;
-import com.coroptis.index.sst.SortedDataFileWriter;
+import com.coroptis.index.sstfile.SortedDataFile;
+import com.coroptis.index.sstfile.SortedDataFileWriter;
 
 public class PartiallySortedDataFileWriterTest {
 

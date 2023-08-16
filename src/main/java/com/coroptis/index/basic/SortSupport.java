@@ -12,8 +12,8 @@ import java.util.stream.StreamSupport;
 import com.coroptis.index.Pair;
 import com.coroptis.index.PairIterator;
 import com.coroptis.index.directory.Directory;
-import com.coroptis.index.sst.SortedDataFile;
-import com.coroptis.index.sst.SortedDataFileWriter;
+import com.coroptis.index.sstfile.SortedDataFile;
+import com.coroptis.index.sstfile.SortedDataFileWriter;
 
 public class SortSupport<K, V> {
 

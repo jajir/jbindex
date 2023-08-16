@@ -8,7 +8,7 @@ import com.coroptis.index.PairReader;
 import com.coroptis.index.Pair;
 import com.coroptis.index.basic.BasicIndex;
 import com.coroptis.index.basic.SortSupport;
-import com.coroptis.index.sst.SortedDataFile;
+import com.coroptis.index.sstfile.SortedDataFile;
 
 public class PartiallySortedDataFileReader<K, V> implements CloseableResource {
 

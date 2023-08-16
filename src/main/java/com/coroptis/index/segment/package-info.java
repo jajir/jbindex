@@ -13,7 +13,7 @@
  * <ul>
  * <li>SST - Sorted String Table with unique key records</li>
  * <li>meta - some meta information about index like bigger key, number of recorst</li>
- * <li>unsorted - log containing chnages in segment. When this file grow up to some point than have to be merged into SST</li>
+ * <li>updates - Another small SST file containing chnages in index.</li>
  * <li>sparse index - point do exact places in main SST file. It speed up read operation</li>
  * </ul>
  * 

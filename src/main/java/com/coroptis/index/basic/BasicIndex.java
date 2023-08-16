@@ -14,7 +14,7 @@ import com.coroptis.index.datatype.TypeReader;
 import com.coroptis.index.datatype.TypeWriter;
 import com.coroptis.index.directory.Directory;
 import com.coroptis.index.partiallysorteddatafile.PartiallySortedDataFile;
-import com.coroptis.index.sst.SortedDataFile;
+import com.coroptis.index.sstfile.SortedDataFile;
 import com.coroptis.index.unsorteddatafile.UnsortedDataFile;
 
 /**
