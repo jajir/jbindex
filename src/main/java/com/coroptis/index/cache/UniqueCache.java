@@ -1,4 +1,4 @@
-package com.coroptis.index.partiallysorteddatafile;
+package com.coroptis.index.cache;
 
 import java.util.Comparator;
 import java.util.List;

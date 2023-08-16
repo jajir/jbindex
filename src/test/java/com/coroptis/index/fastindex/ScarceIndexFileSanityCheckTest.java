@@ -9,8 +9,8 @@ import com.coroptis.index.datatype.TypeDescriptorInteger;
 import com.coroptis.index.datatype.TypeDescriptorString;
 import com.coroptis.index.directory.Directory;
 import com.coroptis.index.directory.MemDirectory;
-import com.coroptis.index.sstfile.SortedDataFile;
-import com.coroptis.index.sstfile.SortedDataFileWriter;
+import com.coroptis.index.sstfile.SstFile;
+import com.coroptis.index.sstfile.SstFileWriter;
 
 public class ScarceIndexFileSanityCheckTest {
     private final TypeDescriptorString stringTd = new TypeDescriptorString();
@@ -24,13 +24,13 @@ public class ScarceIndexFileSanityCheckTest {
      */
     @Test
     public void test_sanityCheck() throws Exception {
-        final SortedDataFile<String, Integer> sdf = new SortedDataFile<>(
+        final SstFile<String, Integer> sdf = new SstFile<>(
                 directory, "index.map", integerTd.getTypeWriter(),
                 integerTd.getTypeReader(), stringTd.getComparator(),
                 stringTd.getConvertorFromBytes(),
                 stringTd.getConvertorToBytes());
 
-        try (final SortedDataFileWriter<String, Integer> writer = sdf
+        try (final SstFileWriter<String, Integer> writer = sdf
                 .openWriter()) {
             writer.put(Pair.of("aaa", 1));
             writer.put(Pair.of("bbb", 2));

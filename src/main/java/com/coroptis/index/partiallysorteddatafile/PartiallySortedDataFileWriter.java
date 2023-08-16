@@ -8,8 +8,9 @@ import com.coroptis.index.Pair;
 import com.coroptis.index.basic.BasicIndex;
 import com.coroptis.index.basic.SortSupport;
 import com.coroptis.index.basic.ValueMerger;
-import com.coroptis.index.sstfile.SortedDataFile;
-import com.coroptis.index.sstfile.SortedDataFileWriter;
+import com.coroptis.index.cache.UniqueCache;
+import com.coroptis.index.sstfile.SstFile;
+import com.coroptis.index.sstfile.SstFileWriter;
 
 public class PartiallySortedDataFileWriter<K, V> implements CloseableResource {
 
@@ -50,9 +51,9 @@ public class PartiallySortedDataFileWriter<K, V> implements CloseableResource {
             return;
         }
         final String fileName = sortSupport.makeFileName(0, fileCounter);
-        final SortedDataFile<K, V> sortedFile = basicIndex
+        final SstFile<K, V> sortedFile = basicIndex
                 .getSortedDataFile(fileName);
-        try (final SortedDataFileWriter<K, V> writer = sortedFile
+        try (final SstFileWriter<K, V> writer = sortedFile
                 .openWriter()) {
             cache.getAsSortedList().forEach(writer::put);
         }

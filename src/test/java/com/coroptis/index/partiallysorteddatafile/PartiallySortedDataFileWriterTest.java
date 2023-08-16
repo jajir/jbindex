@@ -12,8 +12,8 @@ import org.junit.jupiter.api.Test;
 import com.coroptis.index.Pair;
 import com.coroptis.index.basic.BasicIndex;
 import com.coroptis.index.basic.DefaultValueMerger;
-import com.coroptis.index.sstfile.SortedDataFile;
-import com.coroptis.index.sstfile.SortedDataFileWriter;
+import com.coroptis.index.sstfile.SstFile;
+import com.coroptis.index.sstfile.SstFileWriter;
 
 public class PartiallySortedDataFileWriterTest {
 
@@ -21,18 +21,18 @@ public class PartiallySortedDataFileWriterTest {
     private final BasicIndex<Integer, String> basicIndex = mock(BasicIndex.class);
 
     @SuppressWarnings("unchecked")
-    private final SortedDataFile<Integer, String> sortedDataFile1 = mock(SortedDataFile.class);
+    private final SstFile<Integer, String> sortedDataFile1 = mock(SstFile.class);
 
     @SuppressWarnings("unchecked")
-    private final SortedDataFileWriter<Integer, String> partialWriter1 = mock(
-            SortedDataFileWriter.class);
+    private final SstFileWriter<Integer, String> partialWriter1 = mock(
+            SstFileWriter.class);
 
     @SuppressWarnings("unchecked")
-    private final SortedDataFile<Integer, String> sortedDataFile2 = mock(SortedDataFile.class);
+    private final SstFile<Integer, String> sortedDataFile2 = mock(SstFile.class);
 
     @SuppressWarnings("unchecked")
-    private final SortedDataFileWriter<Integer, String> partialWriter2 = mock(
-            SortedDataFileWriter.class);
+    private final SstFileWriter<Integer, String> partialWriter2 = mock(
+            SstFileWriter.class);
 
     private final PartiallySortedDataFileWriter<Integer, String> writer = new PartiallySortedDataFileWriter<>(
             "datafile", new DefaultValueMerger<>(), 2, basicIndex, Comparator.naturalOrder());

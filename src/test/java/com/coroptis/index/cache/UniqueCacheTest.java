@@ -1,4 +1,4 @@
-package com.coroptis.index.partiallysorteddatafile;
+package com.coroptis.index.cache;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 
 import com.coroptis.index.Pair;
 import com.coroptis.index.basic.ValueMerger;
+import com.coroptis.index.cache.UniqueCache;
 
 public class UniqueCacheTest {
 

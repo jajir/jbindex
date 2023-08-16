@@ -14,8 +14,8 @@ import com.coroptis.index.basic.ValueMerger;
 import com.coroptis.index.datatype.TypeDescriptor;
 import com.coroptis.index.directory.Directory;
 import com.coroptis.index.directory.Directory.Access;
-import com.coroptis.index.sstfile.SortedDataFile;
-import com.coroptis.index.sstfile.SortedDataFileWriter;
+import com.coroptis.index.sstfile.SstFile;
+import com.coroptis.index.sstfile.SstFileWriter;
 import com.coroptis.index.directory.Props;
 import com.coroptis.index.unsorteddatafile.UnsortedDataFile;
 import com.coroptis.index.unsorteddatafile.UnsortedDataFileWriter;
@@ -73,7 +73,7 @@ public class SimpleDataFile<K, V> {
         long cx = 0;
         try (final PairReaderIterator<K, V> iterator = new PairReaderIterator<>(
                 openReader())) {
-            try (final SortedDataFileWriter<K, V> writer = getTempFile()
+            try (final SstFileWriter<K, V> writer = getTempFile()
                     .openWriter()) {
                 while (iterator.hasNext()) {
                     writer.put(iterator.next());
@@ -139,7 +139,7 @@ public class SimpleDataFile<K, V> {
 
             // read bigger half and store it to current simple data file.
             cx = 0;
-            try (final SortedDataFileWriter<K, V> writer = getTempFile()
+            try (final SstFileWriter<K, V> writer = getTempFile()
                     .openWriter()) {
                 while (iterator.hasNext()) {
                     writer.put(iterator.next());
@@ -158,18 +158,18 @@ public class SimpleDataFile<K, V> {
         return maxLowerIndexKey;
     }
 
-    private SortedDataFile<K, V> getMainFile() {
-        final SortedDataFile<K, V> out = getSortedFile(getMainFileName());
+    private SstFile<K, V> getMainFile() {
+        final SstFile<K, V> out = getSortedFile(getMainFileName());
         return out;
     }
 
-    private SortedDataFile<K, V> getTempFile() {
-        final SortedDataFile<K, V> out = getSortedFile(getMergedFileName());
+    private SstFile<K, V> getTempFile() {
+        final SstFile<K, V> out = getSortedFile(getMergedFileName());
         return out;
     }
 
-    private SortedDataFile<K, V> getSortedFile(final String fileName) {
-        final SortedDataFile<K, V> out = SortedDataFile.<K, V>builder()
+    private SstFile<K, V> getSortedFile(final String fileName) {
+        final SstFile<K, V> out = SstFile.<K, V>builder()
                 .withDirectory(directory).withFileName(fileName)
                 .withKeyConvertorFromBytes(
                         keyTypeDescriptor.getConvertorFromBytes())
@@ -207,7 +207,7 @@ public class SimpleDataFile<K, V> {
             long howManyToCopy) {
         K maxLowerIndexKey = null;
         long cx = 0;
-        try (final SortedDataFileWriter<K, V> writer = getSortedFile(
+        try (final SstFileWriter<K, V> writer = getSortedFile(
                 getMainFileName()).openWriter()) {
             while (cx < howManyToCopy) {
                 final Pair<K, V> pair = iterator.next();

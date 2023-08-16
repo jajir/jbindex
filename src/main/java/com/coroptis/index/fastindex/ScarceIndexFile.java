@@ -17,8 +17,8 @@ import com.coroptis.index.PairIterator;
 import com.coroptis.index.datatype.TypeDescriptor;
 import com.coroptis.index.datatype.TypeDescriptorInteger;
 import com.coroptis.index.directory.Directory;
-import com.coroptis.index.sstfile.SortedDataFile;
-import com.coroptis.index.sstfile.SortedDataFileWriter;
+import com.coroptis.index.sstfile.SstFile;
+import com.coroptis.index.sstfile.SstFileWriter;
 
 /**
  * Provide information about keys and particular index files. Each key
@@ -39,7 +39,7 @@ public class ScarceIndexFile<K> implements CloseableResource {
     private final static String FILE_NAME = "index.map";
 
     private TreeMap<K, Integer> list;
-    private final SortedDataFile<K, Integer> sdf;
+    private final SstFile<K, Integer> sdf;
     private final Comparator<K> keyComparator;
     private boolean isDirty = false;
 
@@ -51,7 +51,7 @@ public class ScarceIndexFile<K> implements CloseableResource {
         final TypeDescriptorInteger itd = new TypeDescriptorInteger();
         this.keyComparator = Objects
                 .requireNonNull(keyTypeDescriptor.getComparator());
-        this.sdf = new SortedDataFile<>(directory, FILE_NAME,
+        this.sdf = new SstFile<>(directory, FILE_NAME,
                 itd.getTypeWriter(), itd.getTypeReader(),
                 keyTypeDescriptor.getComparator(),
                 keyTypeDescriptor.getConvertorFromBytes(),
@@ -154,7 +154,7 @@ public class ScarceIndexFile<K> implements CloseableResource {
 
     public void flush() {
         if (isDirty) {
-            try (final SortedDataFileWriter<K, Integer> writer = sdf
+            try (final SstFileWriter<K, Integer> writer = sdf
                     .openWriter()) {
                 list.forEach((k, v) -> writer.put(Pair.of(k, v)));
             }

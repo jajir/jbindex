@@ -12,8 +12,8 @@ import java.util.stream.StreamSupport;
 import com.coroptis.index.Pair;
 import com.coroptis.index.PairIterator;
 import com.coroptis.index.directory.Directory;
-import com.coroptis.index.sstfile.SortedDataFile;
-import com.coroptis.index.sstfile.SortedDataFileWriter;
+import com.coroptis.index.sstfile.SstFile;
+import com.coroptis.index.sstfile.SstFileWriter;
 
 public class SortSupport<K, V> {
 
@@ -65,9 +65,9 @@ public class SortSupport<K, V> {
 
     void mergeSortedFiles(final List<String> filesToMergeLocaly,
             final String producedFile) {
-        final SortedDataFile<K, V> sortedFile = basicIndex
+        final SstFile<K, V> sortedFile = basicIndex
                 .getSortedDataFile(producedFile);
-        try (final SortedDataFileWriter<K, V> indexWriter = sortedFile
+        try (final SstFileWriter<K, V> indexWriter = sortedFile
                 .openWriter()) {
             mergeSortedFiles(filesToMergeLocaly, pair -> indexWriter.put(pair));
         }

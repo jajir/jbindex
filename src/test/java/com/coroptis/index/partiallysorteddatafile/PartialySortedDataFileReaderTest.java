@@ -14,7 +14,7 @@ import com.coroptis.index.Pair;
 import com.coroptis.index.PairReader;
 import com.coroptis.index.basic.BasicIndex;
 import com.coroptis.index.basic.SortSupport;
-import com.coroptis.index.sstfile.SortedDataFile;
+import com.coroptis.index.sstfile.SstFile;
 
 public class PartialySortedDataFileReaderTest {
 
@@ -25,13 +25,13 @@ public class PartialySortedDataFileReaderTest {
     private final SortSupport<Integer, String> sortSupport = mock(SortSupport.class);
 
     @SuppressWarnings("unchecked")
-    private final SortedDataFile<Integer, String> dataFile0 = mock(SortedDataFile.class);
+    private final SstFile<Integer, String> dataFile0 = mock(SstFile.class);
 
     @SuppressWarnings("unchecked")
     private final PairReader<Integer, String> dataFileReader0 = mock(PairReader.class);
 
     @SuppressWarnings("unchecked")
-    private final SortedDataFile<Integer, String> dataFile1 = mock(SortedDataFile.class);
+    private final SstFile<Integer, String> dataFile1 = mock(SstFile.class);
 
     @SuppressWarnings("unchecked")
     private final PairReader<Integer, String> dataFileReader1 = mock(PairReader.class);

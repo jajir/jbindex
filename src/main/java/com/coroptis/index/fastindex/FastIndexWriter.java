@@ -5,7 +5,7 @@ import java.util.Comparator;
 import com.coroptis.index.Pair;
 import com.coroptis.index.PairWriter;
 import com.coroptis.index.basic.ValueMerger;
-import com.coroptis.index.partiallysorteddatafile.UniqueCache;
+import com.coroptis.index.cache.UniqueCache;
 
 public class FastIndexWriter<K, V> implements PairWriter<K, V> {
 

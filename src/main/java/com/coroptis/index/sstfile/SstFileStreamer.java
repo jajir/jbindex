@@ -9,12 +9,12 @@ import com.coroptis.index.CloseableResource;
 import com.coroptis.index.Pair;
 import com.coroptis.index.PairReader;
 
-public class SortedDataFileStreamer<K, V> implements CloseableResource {
+public class SstFileStreamer<K, V> implements CloseableResource {
 
     private final PairComparator<K, V> pairComparator;
     private final PairReader<K, V> pairReader;
 
-    public SortedDataFileStreamer(final PairReader<K, V> pairReader,
+    public SstFileStreamer(final PairReader<K, V> pairReader,
             final Comparator<? super K> keyComparator) {
         this.pairReader = Objects.requireNonNull(pairReader);
         pairComparator = new PairComparator<>(keyComparator);
@@ -22,12 +22,12 @@ public class SortedDataFileStreamer<K, V> implements CloseableResource {
 
     public Stream<Pair<K, V>> stream() {
         return StreamSupport.stream(
-                new SortedDataFileSpliterator<>(pairReader, pairComparator),
+                new SstFileSpliterator<>(pairReader, pairComparator),
                 false);
     }
 
     public Stream<Pair<K, V>> stream(final long estimateSize) {
-        return StreamSupport.stream(new SortedDataFileSpliteratorSized<>(
+        return StreamSupport.stream(new SstFileSpliteratorSized<>(
                 pairReader, pairComparator, estimateSize), false);
     }
 

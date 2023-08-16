@@ -10,7 +10,7 @@ import com.coroptis.index.datatype.TypeWriter;
 import com.coroptis.index.directory.Directory;
 import com.coroptis.index.directory.FileWriter;
 
-public class SortedDataFileWriter<K, V> implements PairWriter<K, V> {
+public class SstFileWriter<K, V> implements PairWriter<K, V> {
 
     private final TypeWriter<V> valueWriter;
 
@@ -20,7 +20,7 @@ public class SortedDataFileWriter<K, V> implements PairWriter<K, V> {
 
     private int position;
 
-    public SortedDataFileWriter(final Directory directory,
+    public SstFileWriter(final Directory directory,
             final String fileName,
             final ConvertorToBytes<K> keyConvertorToBytes,
             final Comparator<K> keyComparator,

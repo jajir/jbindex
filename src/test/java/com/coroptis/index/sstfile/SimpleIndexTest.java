@@ -16,8 +16,8 @@ import com.coroptis.index.datatype.TypeDescriptorString;
 import com.coroptis.index.directory.Directory;
 import com.coroptis.index.directory.FsDirectory;
 import com.coroptis.index.directory.MemDirectory;
-import com.coroptis.index.sstfile.SortedDataFile;
-import com.coroptis.index.sstfile.SortedDataFileWriter;
+import com.coroptis.index.sstfile.SstFile;
+import com.coroptis.index.sstfile.SstFileWriter;
 
 public class SimpleIndexTest {
 
@@ -41,7 +41,7 @@ public class SimpleIndexTest {
     @Test
     public void read_incorrect_insert_order_mem() throws Exception {
         final Directory directory = new MemDirectory();
-        try (final SortedDataFileWriter<String, Byte> siw = new SortedDataFileWriter<>(
+        try (final SstFileWriter<String, Byte> siw = new SstFileWriter<>(
                 directory, FILE_NAME, stringTd.getConvertorToBytes(),
                 Comparator.naturalOrder(), byteTd.getTypeWriter())) {
             assertEquals(0,
@@ -55,9 +55,9 @@ public class SimpleIndexTest {
     private void test_read_write(final Directory directory) {
         final BasicIndex<String, Byte> index = new BasicIndex<>(directory,
                 new TypeDescriptorString(), new TypeDescriptorByte());
-        final SortedDataFile<String, Byte> sortedFile = index
+        final SstFile<String, Byte> sortedFile = index
                 .getSortedDataFile(FILE_NAME);
-        try (final SortedDataFileWriter<String, Byte> siw = sortedFile
+        try (final SstFileWriter<String, Byte> siw = sortedFile
                 .openWriter()) {
             assertEquals(0,
                     siw.put(new Pair<String, Byte>("aaa", (byte) 0), false));
@@ -88,7 +88,7 @@ public class SimpleIndexTest {
 
     @Test
     public void test_invalidOrder() throws Exception {
-        try (final SortedDataFileWriter<String, Byte> siw = new SortedDataFileWriter<>(
+        try (final SstFileWriter<String, Byte> siw = new SstFileWriter<>(
                 new MemDirectory(), FILE_NAME, stringTd.getConvertorToBytes(),
                 Comparator.naturalOrder(), byteTd.getTypeWriter())) {
             siw.put(new Pair<String, Byte>("aaa", (byte) 0));
@@ -100,7 +100,7 @@ public class SimpleIndexTest {
 
     @Test
     public void test_duplicatedValue() throws Exception {
-        try (final SortedDataFileWriter<String, Byte> siw = new SortedDataFileWriter<>(
+        try (final SstFileWriter<String, Byte> siw = new SstFileWriter<>(
                 new MemDirectory(), FILE_NAME, stringTd.getConvertorToBytes(),
                 Comparator.naturalOrder(), byteTd.getTypeWriter())) {
             siw.put(new Pair<String, Byte>("aaa", (byte) 0));
@@ -112,7 +112,7 @@ public class SimpleIndexTest {
 
     @Test
     public void test_null_key() throws Exception {
-        try (final SortedDataFileWriter<String, Byte> siw = new SortedDataFileWriter<>(
+        try (final SstFileWriter<String, Byte> siw = new SstFileWriter<>(
                 new MemDirectory(), FILE_NAME, stringTd.getConvertorToBytes(),
                 Comparator.naturalOrder(), byteTd.getTypeWriter())) {
 

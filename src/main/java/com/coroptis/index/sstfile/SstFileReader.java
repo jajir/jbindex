@@ -7,13 +7,13 @@ import com.coroptis.index.PairReader;
 import com.coroptis.index.datatype.TypeReader;
 import com.coroptis.index.directory.FileReader;
 
-public class SortedDataFileReader<K, V> implements PairReader<K, V> {
+public class SstFileReader<K, V> implements PairReader<K, V> {
 
     private final TypeReader<K> keyTypeReader;
     private final TypeReader<V> valueTypeReader;
     private final FileReader reader;
 
-    SortedDataFileReader(final TypeReader<K> keyReader,
+    SstFileReader(final TypeReader<K> keyReader,
             final TypeReader<V> valueReader, final FileReader reader) {
         this.keyTypeReader = Objects.requireNonNull(keyReader);
         this.valueTypeReader = Objects.requireNonNull(valueReader);

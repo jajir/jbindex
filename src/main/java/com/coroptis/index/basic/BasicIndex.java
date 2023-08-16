@@ -14,7 +14,7 @@ import com.coroptis.index.datatype.TypeReader;
 import com.coroptis.index.datatype.TypeWriter;
 import com.coroptis.index.directory.Directory;
 import com.coroptis.index.partiallysorteddatafile.PartiallySortedDataFile;
-import com.coroptis.index.sstfile.SortedDataFile;
+import com.coroptis.index.sstfile.SstFile;
 import com.coroptis.index.unsorteddatafile.UnsortedDataFile;
 
 /**
@@ -97,8 +97,8 @@ public class BasicIndex<K, V> {
         return out;
     }
 
-    public SortedDataFile<K, V> getSortedDataFile(final String fileName) {
-        final SortedDataFile<K, V> out = SortedDataFile.<K, V>builder()
+    public SstFile<K, V> getSortedDataFile(final String fileName) {
+        final SstFile<K, V> out = SstFile.<K, V>builder()
                 .withDirectory(getDirectory()).withFileName(fileName)
                 .withKeyConvertorFromBytes(getKeyConvertorFromBytes())
                 .withKeyComparator(getKeyComparator())

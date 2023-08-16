@@ -8,18 +8,22 @@ import java.util.function.Consumer;
 import com.coroptis.index.Pair;
 import com.coroptis.index.PairReader;
 
-public class SortedDataFileSpliterator<K, V>
+public class SstFileSpliteratorSized<K, V>
         implements Spliterator<Pair<K, V>> {
 
     private final PairReader<K, V> pairReader;
 
     private final PairComparator<K, V> pairComparator;
 
-    public SortedDataFileSpliterator(final PairReader<K, V> pairReader,
-            final PairComparator<K, V> pairComparator) {
+    private final long estimateSize;
+
+    public SstFileSpliteratorSized(final PairReader<K, V> pairReader,
+            final PairComparator<K, V> pairComparator,
+            final long estimateSize) {
         this.pairReader = Objects.requireNonNull(pairReader);
         this.pairComparator = Objects.requireNonNull(pairComparator,
                 "pair comparator must not be null");
+        this.estimateSize = estimateSize;
     }
 
     @Override
@@ -49,15 +53,15 @@ public class SortedDataFileSpliterator<K, V>
     @Override
     public long estimateSize() {
         /*
-         * Stream is not sized.
+         * Stream is sized.
          */
-        return Integer.MAX_VALUE;
+        return estimateSize;
     }
 
     @Override
     public int characteristics() {
         return Spliterator.DISTINCT | Spliterator.IMMUTABLE
-                | Spliterator.NONNULL | Spliterator.SORTED;
+                | Spliterator.NONNULL | Spliterator.SORTED | Spliterator.SIZED;
     }
 
 }

@@ -12,7 +12,7 @@ import com.coroptis.index.datatype.TypeReader;
 import com.coroptis.index.datatype.TypeWriter;
 import com.coroptis.index.directory.Directory;
 
-public class SortedDataFile<K, V> {
+public class SstFile<K, V> {
 
     private final Directory directory;
 
@@ -28,11 +28,11 @@ public class SortedDataFile<K, V> {
 
     private final ConvertorToBytes<K> keyConvertorToBytes;
 
-    public static <M, N> SortedDataFileBuilder<M, N> builder() {
-        return new SortedDataFileBuilder<M, N>();
+    public static <M, N> SstFileBuilder<M, N> builder() {
+        return new SstFileBuilder<M, N>();
     }
 
-    public SortedDataFile(final Directory directory, final String fileName,
+    public SstFile(final Directory directory, final String fileName,
             final TypeWriter<V> valueWriter, final TypeReader<V> valueReader,
             final Comparator<K> keyComparator,
             final ConvertorFromBytes<K> keyConvertorFromBytes,
@@ -47,8 +47,8 @@ public class SortedDataFile<K, V> {
         this.keyConvertorToBytes = Objects.requireNonNull(keyConvertorToBytes);
     }
 
-    public SortedDataFileStreamer<K, V> openStreamer() {
-        final SortedDataFileStreamer<K, V> streamer = new SortedDataFileStreamer<>(
+    public SstFileStreamer<K, V> openStreamer() {
+        final SstFileStreamer<K, V> streamer = new SstFileStreamer<>(
                 openReader(), keyComparator);
         return streamer;
     }
@@ -59,7 +59,7 @@ public class SortedDataFile<K, V> {
         }
         final DiffKeyReader<K> diffKeyReader = new DiffKeyReader<K>(
                 keyConvertorFromBytes);
-        final SortedDataFileReader<K, V> reader = new SortedDataFileReader<>(
+        final SstFileReader<K, V> reader = new SstFileReader<>(
                 diffKeyReader, valueReader, directory.getFileReader(fileName));
         return reader;
     }
@@ -70,8 +70,8 @@ public class SortedDataFile<K, V> {
         return iterator;
     }
 
-    public SortedDataFileWriter<K, V> openWriter() {
-        final SortedDataFileWriter<K, V> writer = new SortedDataFileWriter<>(
+    public SstFileWriter<K, V> openWriter() {
+        final SstFileWriter<K, V> writer = new SstFileWriter<>(
                 directory, fileName, keyConvertorToBytes, keyComparator,
                 valueWriter);
         return writer;
