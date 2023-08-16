@@ -10,6 +10,11 @@ public class TypeDescriptorString implements TypeDescriptor<String> {
     private final static Charset CHARSET_ENCODING = Charset
             .forName(CHARSET_ENCODING_NAME);
 
+    /**
+     * Thombstone value, use can't use it.
+     */
+    private final static String TOMBSTONE_VALUE = "(*&^%$#@!)-1eaa9b2c-3c11-11ee-be56-0242ac120002";
+
     @Override
     public ConvertorFromBytes<String> getConvertorFromBytes() {
         return array -> new String(array, CHARSET_ENCODING);
@@ -34,4 +39,10 @@ public class TypeDescriptorString implements TypeDescriptor<String> {
     public Comparator<String> getComparator() {
         return (s1, s2) -> s1.compareTo(s2);
     }
+    
+    @Override
+    public String getTombstone() {
+        return TOMBSTONE_VALUE;
+    }
+
 }

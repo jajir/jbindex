@@ -5,6 +5,11 @@ import java.util.Comparator;
 public class TypeDescriptorLong implements TypeDescriptor<Long> {
 
     /**
+     * Thombstone value, use can't use it.
+     */
+    private final static Long TOMBSTONE_VALUE = Long.MIN_VALUE+1;
+
+    /**
      * How many bytes is required to store Integer.
      */
     private static final int REQUIRED_BYTES = 8;
@@ -120,6 +125,12 @@ public class TypeDescriptorLong implements TypeDescriptor<Long> {
     @Override
     public Comparator<Long> getComparator() {
         return (i1, i2) -> i1 == i2 ? 0 : i1 < i2 ? -1 : 1;
+    }
+
+    
+    @Override
+    public Long getTombstone() {
+        return TOMBSTONE_VALUE;
     }
 
 }
