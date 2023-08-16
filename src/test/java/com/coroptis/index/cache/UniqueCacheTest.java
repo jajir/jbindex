@@ -17,20 +17,12 @@ public class UniqueCacheTest {
     private final Logger logger = LoggerFactory
             .getLogger(UniqueCacheTest.class);
 
-    private final ValueMerger<Integer, String> concat = new ValueMerger<Integer, String>() {
-
-        @Override
-        public String merge(Integer key, String value1, String value2) {
-            return value1 + value2;
-        }
-    };
-
-    final UniqueCache<Integer, String> cache = new UniqueCache<>(concat,
+    final UniqueCache<Integer, String> cache = new UniqueCache<>(
             (i1, i2) -> i1 - i2);
 
     @Test
     public void test_basic_function() throws Exception {
-        final UniqueCache<Integer, String> cache = new UniqueCache<>(concat,
+        final UniqueCache<Integer, String> cache = new UniqueCache<>(
                 (i1, i2) -> i1 - i2);
         cache.add(Pair.of(10, "hello"));
         cache.add(Pair.of(13, "my"));
@@ -47,7 +39,7 @@ public class UniqueCacheTest {
 
     @Test
     public void test_basic_function_different_order() throws Exception {
-        final UniqueCache<Integer, String> cache = new UniqueCache<>(concat,
+        final UniqueCache<Integer, String> cache = new UniqueCache<>(
                 (i1, i2) -> i1 - i2);
         cache.add(Pair.of(15, "dear"));
         cache.add(Pair.of(13, "my"));
@@ -69,7 +61,7 @@ public class UniqueCacheTest {
      */
     @Test
     public void test_stream_sorting() throws Exception {
-        final UniqueCache<Integer, String> cache = new UniqueCache<>(concat,
+        final UniqueCache<Integer, String> cache = new UniqueCache<>(
                 (i1, i2) -> i1 - i2);
         cache.add(Pair.of(15, "dear"));
         cache.add(Pair.of(13, "my"));
@@ -91,8 +83,8 @@ public class UniqueCacheTest {
      * @throws Exception
      */
     @Test
-    public void test_merging() throws Exception {
-        final UniqueCache<Integer, String> cache = new UniqueCache<>(concat,
+    public void test_just_last_value_is_stored() throws Exception {
+        final UniqueCache<Integer, String> cache = new UniqueCache<>(
                 (i1, i2) -> i1 - i2);
         logger.debug("Cache size '{}'", cache.size());
         cache.add(Pair.of(10, "hello"));
@@ -102,7 +94,7 @@ public class UniqueCacheTest {
         logger.debug("Cache size '{}'", cache.size());
         final List<Pair<Integer, String>> out = cache.toList();
         assertEquals(1, cache.size());
-        assertEquals(Pair.of(10, "hellomydear"), out.remove(0));
+        assertEquals(Pair.of(10, "dear"), out.remove(0));
         cache.clear();
         assertEquals(0, cache.size());
     }

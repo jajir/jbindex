@@ -13,7 +13,7 @@ public class FastIndexWriter<K, V> implements PairWriter<K, V> {
 
     FastIndexWriter(final ValueMerger<K, V> merger,
             final Comparator<K> keyComparator) {
-        this.cache = new UniqueCache<>(merger, keyComparator);
+        this.cache = new UniqueCache<>(keyComparator);
     }
 
     @Override

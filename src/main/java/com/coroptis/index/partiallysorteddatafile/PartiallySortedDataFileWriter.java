@@ -30,7 +30,7 @@ public class PartiallySortedDataFileWriter<K, V> implements CloseableResource {
         this.howManySortInMemory = Objects.requireNonNull(howManySortInMemory);
         this.basicIndex = Objects.requireNonNull(basicIndex);
         this.sortSupport = new SortSupport<K, V>(basicIndex, merger, fileName);
-        this.cache = new UniqueCache<>(merger, keyComparator);
+        this.cache = new UniqueCache<>(keyComparator);
     }
 
     public void put(final Pair<K, V> pair) {
