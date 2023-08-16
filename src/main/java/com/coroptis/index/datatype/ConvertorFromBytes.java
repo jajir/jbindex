@@ -1,4 +1,4 @@
-package com.coroptis.index.type;
+package com.coroptis.index.datatype;
 
 /**
  * Instantiate object from byte array. Supposing that whole byte array is one

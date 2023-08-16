@@ -1,10 +1,14 @@
-package com.coroptis.index.type;
+package com.coroptis.index.datatype;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Comparator;
 
 import org.junit.jupiter.api.Test;
+
+import com.coroptis.index.datatype.ConvertorFromBytes;
+import com.coroptis.index.datatype.ConvertorToBytes;
+import com.coroptis.index.datatype.TypeDescriptorLong;
 
 public class TypeDescriptorLongTest {
 

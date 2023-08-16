@@ -1,4 +1,4 @@
-package com.coroptis.index.type;
+package com.coroptis.index.datatype;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -6,6 +6,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.Comparator;
 
 import org.junit.jupiter.api.Test;
+
+import com.coroptis.index.datatype.ConvertorFromBytes;
+import com.coroptis.index.datatype.ConvertorToBytes;
+import com.coroptis.index.datatype.TypeDescriptorInteger;
 
 public class TypeDescriptorIntegerTest {
 

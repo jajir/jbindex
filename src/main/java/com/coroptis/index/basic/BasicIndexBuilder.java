@@ -1,7 +1,7 @@
 package com.coroptis.index.basic;
 
+import com.coroptis.index.datatype.TypeDescriptor;
 import com.coroptis.index.directory.Directory;
-import com.coroptis.index.type.TypeDescriptor;
 
 public class BasicIndexBuilder<K, V> {
 

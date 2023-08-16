@@ -11,10 +11,10 @@ import org.mockito.Matchers;
 import org.mockito.invocation.InvocationOnMock;
 
 import com.coroptis.index.IndexException;
+import com.coroptis.index.datatype.TypeDescriptor;
+import com.coroptis.index.datatype.TypeDescriptorString;
 import com.coroptis.index.directory.FileReader;
 import com.coroptis.index.sst.DiffKeyReader;
-import com.coroptis.index.type.TypeDescriptor;
-import com.coroptis.index.type.TypeDescriptorString;
 
 public class DiffKeyReaderTest {
 

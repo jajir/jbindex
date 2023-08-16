@@ -11,12 +11,12 @@ import com.coroptis.index.PairIterator;
 import com.coroptis.index.PairReader;
 import com.coroptis.index.PairWriter;
 import com.coroptis.index.basic.ValueMerger;
+import com.coroptis.index.datatype.TypeDescriptor;
 import com.coroptis.index.directory.Directory;
 import com.coroptis.index.directory.Directory.Access;
 import com.coroptis.index.sst.SortedDataFile;
 import com.coroptis.index.sst.SortedDataFileWriter;
 import com.coroptis.index.directory.Props;
-import com.coroptis.index.type.TypeDescriptor;
 import com.coroptis.index.unsorteddatafile.UnsortedDataFile;
 import com.coroptis.index.unsorteddatafile.UnsortedDataFileWriter;
 

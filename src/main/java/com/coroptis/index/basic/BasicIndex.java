@@ -7,14 +7,14 @@ import java.util.stream.Stream;
 
 import com.coroptis.index.IndexException;
 import com.coroptis.index.Pair;
+import com.coroptis.index.datatype.ConvertorFromBytes;
+import com.coroptis.index.datatype.ConvertorToBytes;
+import com.coroptis.index.datatype.TypeDescriptor;
+import com.coroptis.index.datatype.TypeReader;
+import com.coroptis.index.datatype.TypeWriter;
 import com.coroptis.index.directory.Directory;
 import com.coroptis.index.partiallysorteddatafile.PartiallySortedDataFile;
 import com.coroptis.index.sst.SortedDataFile;
-import com.coroptis.index.type.ConvertorFromBytes;
-import com.coroptis.index.type.ConvertorToBytes;
-import com.coroptis.index.type.TypeDescriptor;
-import com.coroptis.index.type.TypeReader;
-import com.coroptis.index.type.TypeWriter;
 import com.coroptis.index.unsorteddatafile.UnsortedDataFile;
 
 /**

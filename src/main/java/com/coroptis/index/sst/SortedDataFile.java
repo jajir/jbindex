@@ -6,11 +6,11 @@ import java.util.Objects;
 import com.coroptis.index.PairIterator;
 import com.coroptis.index.PairReader;
 import com.coroptis.index.PairReaderEmpty;
+import com.coroptis.index.datatype.ConvertorFromBytes;
+import com.coroptis.index.datatype.ConvertorToBytes;
+import com.coroptis.index.datatype.TypeReader;
+import com.coroptis.index.datatype.TypeWriter;
 import com.coroptis.index.directory.Directory;
-import com.coroptis.index.type.ConvertorFromBytes;
-import com.coroptis.index.type.ConvertorToBytes;
-import com.coroptis.index.type.TypeReader;
-import com.coroptis.index.type.TypeWriter;
 
 public class SortedDataFile<K, V> {
 

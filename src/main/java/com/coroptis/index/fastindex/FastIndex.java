@@ -11,12 +11,12 @@ import com.coroptis.index.CloseableResource;
 import com.coroptis.index.Pair;
 import com.coroptis.index.PairReader;
 import com.coroptis.index.basic.ValueMerger;
+import com.coroptis.index.datatype.TypeDescriptor;
 import com.coroptis.index.directory.Directory;
 import com.coroptis.index.partiallysorteddatafile.UniqueCache;
 import com.coroptis.index.simpledatafile.MergedPairReader;
 import com.coroptis.index.simpledatafile.SortedStringTable;
 import com.coroptis.index.sst.PairComparator;
-import com.coroptis.index.type.TypeDescriptor;
 
 /**
  * Main end user class.

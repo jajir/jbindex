@@ -4,10 +4,10 @@ import java.util.Objects;
 
 import com.coroptis.index.Pair;
 import com.coroptis.index.PairWriter;
+import com.coroptis.index.datatype.TypeWriter;
 import com.coroptis.index.directory.Directory;
 import com.coroptis.index.directory.Directory.Access;
 import com.coroptis.index.directory.FileWriter;
-import com.coroptis.index.type.TypeWriter;
 
 public class UnsortedDataFileWriter<K, V> implements PairWriter<K, V> {
 

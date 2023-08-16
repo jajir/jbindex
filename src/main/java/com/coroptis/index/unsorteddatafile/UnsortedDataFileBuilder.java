@@ -2,9 +2,9 @@ package com.coroptis.index.unsorteddatafile;
 
 import java.util.Objects;
 
+import com.coroptis.index.datatype.TypeReader;
+import com.coroptis.index.datatype.TypeWriter;
 import com.coroptis.index.directory.Directory;
-import com.coroptis.index.type.TypeReader;
-import com.coroptis.index.type.TypeWriter;
 
 public class UnsortedDataFileBuilder<K, V> {
 

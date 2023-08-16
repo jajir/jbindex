@@ -5,12 +5,12 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.Test;
 
 import com.coroptis.index.Pair;
+import com.coroptis.index.datatype.TypeDescriptorInteger;
+import com.coroptis.index.datatype.TypeDescriptorString;
 import com.coroptis.index.directory.Directory;
 import com.coroptis.index.directory.MemDirectory;
 import com.coroptis.index.sst.SortedDataFile;
 import com.coroptis.index.sst.SortedDataFileWriter;
-import com.coroptis.index.type.TypeDescriptorInteger;
-import com.coroptis.index.type.TypeDescriptorString;
 
 public class ScarceIndexFileSanityCheckTest {
     private final TypeDescriptorString stringTd = new TypeDescriptorString();

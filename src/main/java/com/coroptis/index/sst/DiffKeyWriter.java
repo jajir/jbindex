@@ -7,9 +7,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.coroptis.index.ByteTool;
+import com.coroptis.index.datatype.ConvertorToBytes;
+import com.coroptis.index.datatype.TypeWriter;
 import com.coroptis.index.directory.FileWriter;
-import com.coroptis.index.type.ConvertorToBytes;
-import com.coroptis.index.type.TypeWriter;
 
 public class DiffKeyWriter<K> implements TypeWriter<K> {
 

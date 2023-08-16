@@ -1,9 +1,9 @@
 package com.coroptis.index.sst;
 
 import com.coroptis.index.IndexException;
+import com.coroptis.index.datatype.ConvertorFromBytes;
+import com.coroptis.index.datatype.TypeReader;
 import com.coroptis.index.directory.FileReader;
-import com.coroptis.index.type.ConvertorFromBytes;
-import com.coroptis.index.type.TypeReader;
 
 public class DiffKeyReader<K> implements TypeReader<K> {
 

@@ -3,8 +3,8 @@ package com.coroptis.index.fastindex;
 import java.util.Objects;
 
 import com.coroptis.index.basic.ValueMerger;
+import com.coroptis.index.datatype.TypeDescriptor;
 import com.coroptis.index.directory.Directory;
-import com.coroptis.index.type.TypeDescriptor;
 
 public class FastIndexBuilder<K, V> {
 

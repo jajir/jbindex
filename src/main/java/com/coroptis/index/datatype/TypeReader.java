@@ -1,4 +1,4 @@
-package com.coroptis.index.type;
+package com.coroptis.index.datatype;
 
 import com.coroptis.index.directory.FileReader;
 

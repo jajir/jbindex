@@ -4,8 +4,8 @@ import java.util.Objects;
 
 import com.coroptis.index.Pair;
 import com.coroptis.index.PairReader;
+import com.coroptis.index.datatype.TypeReader;
 import com.coroptis.index.directory.FileReader;
-import com.coroptis.index.type.TypeReader;
 
 public class SortedDataFileReader<K, V> implements PairReader<K, V> {
 

@@ -7,4 +7,4 @@
  * @author jan
  *
  */
-package com.coroptis.index.type;
+package com.coroptis.index.datatype;

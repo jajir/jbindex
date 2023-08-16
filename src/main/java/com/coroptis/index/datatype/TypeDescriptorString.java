@@ -1,4 +1,4 @@
-package com.coroptis.index.type;
+package com.coroptis.index.datatype;
 
 import java.nio.charset.Charset;
 import java.util.Comparator;

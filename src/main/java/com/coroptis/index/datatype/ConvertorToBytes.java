@@ -1,4 +1,4 @@
-package com.coroptis.index.type;
+package com.coroptis.index.datatype;
 
 /**
  * Convert object of some type into byte array.

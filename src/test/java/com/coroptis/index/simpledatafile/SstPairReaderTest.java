@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test;
 
 import com.coroptis.index.Pair;
 import com.coroptis.index.PairReader;
-import com.coroptis.index.type.TypeDescriptorInteger;
+import com.coroptis.index.datatype.TypeDescriptorInteger;
 
 public class SstPairReaderTest {
 

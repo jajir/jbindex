@@ -1,22 +1,26 @@
-package com.coroptis.index.type;
+package com.coroptis.index.datatype;
 
 import java.util.Objects;
 
 import com.coroptis.index.directory.FileWriter;
 
-public class FixedLengthWriter<T> implements TypeWriter<T> {
+public class VarLengthWriter<T> implements TypeWriter<T> {
 
     private final ConvertorToBytes<T> convertor;
 
-    public FixedLengthWriter(final ConvertorToBytes<T> convertor) {
+    public VarLengthWriter(final ConvertorToBytes<T> convertor) {
         this.convertor = Objects.requireNonNull(convertor, "Convertor is null");
     }
 
     @Override
     public int write(final FileWriter writer, final T object) {
         final byte[] out = convertor.toBytes(object);
+        if (out.length > 127) {
+            throw new IllegalArgumentException("Converted type is too big");
+        }
+        writer.write((byte) out.length);
         writer.write(out);
-        return out.length;
+        return 1 + out.length;
     }
 
 }

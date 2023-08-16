@@ -7,10 +7,10 @@ import org.junit.jupiter.api.Test;
 import com.coroptis.index.Pair;
 import com.coroptis.index.PairReader;
 import com.coroptis.index.PairWriter;
+import com.coroptis.index.datatype.TypeDescriptorInteger;
+import com.coroptis.index.datatype.TypeDescriptorString;
 import com.coroptis.index.directory.Directory;
 import com.coroptis.index.directory.MemDirectory;
-import com.coroptis.index.type.TypeDescriptorInteger;
-import com.coroptis.index.type.TypeDescriptorString;
 
 public class SimpleDataFileTest {
 
