@@ -1,4 +1,4 @@
-package com.coroptis.index.fastindex;
+package com.coroptis.index.segment;
 
 /**
  * Index segments consisting of Sorted String Table (sst).

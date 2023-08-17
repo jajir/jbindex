@@ -17,6 +17,7 @@ import com.coroptis.index.Pair;
 import com.coroptis.index.datatype.TypeDescriptorString;
 import com.coroptis.index.directory.Directory;
 import com.coroptis.index.directory.MemDirectory;
+import com.coroptis.index.segment.SegmentId;
 
 public class ScarceIndexFileTest {
 
@@ -30,7 +31,7 @@ public class ScarceIndexFileTest {
     @BeforeEach
     public void prepareData() {
         directory = new MemDirectory();
-        try (final ScarceIndexFile<String> fif = new ScarceIndexFile<>(
+        try (final ScarceIndexFileOld<String> fif = new ScarceIndexFileOld<>(
                 directory, stringTd)) {
             fif.insertSegment("ahoj", SegmentId.of(1));
             fif.insertSegment("betka", SegmentId.of(2));
@@ -52,7 +53,7 @@ public class ScarceIndexFileTest {
     @Test
     public void test_constructor_empty_directory() throws Exception {
         assertThrows(NullPointerException.class, () -> {
-            try (final ScarceIndexFile<String> fif = new ScarceIndexFile<>(null,
+            try (final ScarceIndexFileOld<String> fif = new ScarceIndexFileOld<>(null,
                     stringTd)) {
             }
         });
@@ -61,7 +62,7 @@ public class ScarceIndexFileTest {
     @Test
     public void test_constructor_empty_keyTypeDescriptor() throws Exception {
         assertThrows(NullPointerException.class, () -> {
-            try (final ScarceIndexFile<String> fif = new ScarceIndexFile<>(
+            try (final ScarceIndexFileOld<String> fif = new ScarceIndexFileOld<>(
                     directory, null)) {
             }
         });
@@ -69,7 +70,7 @@ public class ScarceIndexFileTest {
 
     @Test
     public void test_insertSegment_duplicate_segmentId() throws Exception {
-        try (final ScarceIndexFile<String> fif = new ScarceIndexFile<>(
+        try (final ScarceIndexFileOld<String> fif = new ScarceIndexFileOld<>(
                 directory, stringTd)) {
             assertThrows(IllegalArgumentException.class,
                     () -> fif.insertSegment("aaa", SegmentId.of(1)),
@@ -79,7 +80,7 @@ public class ScarceIndexFileTest {
 
     @Test
     public void test_insertKeyToSegment_higher_segment() throws Exception {
-        try (final ScarceIndexFile<String> fif = new ScarceIndexFile<>(
+        try (final ScarceIndexFileOld<String> fif = new ScarceIndexFileOld<>(
                 directory, stringTd)) {
             assertEquals(4, fif.insertKeyToSegment("zzz"));
             assertEquals(4, fif.findSegmentId("zzz"));
@@ -95,7 +96,7 @@ public class ScarceIndexFileTest {
 
     @Test
     public void test_insetSegment_normal() throws Exception {
-        try (final ScarceIndexFile<String> fif = new ScarceIndexFile<>(
+        try (final ScarceIndexFileOld<String> fif = new ScarceIndexFileOld<>(
                 directory, stringTd)) {
             assertEquals(4, fif.insertKeyToSegment("zzz"));
             assertEquals(4, fif.findSegmentId("zzz"));
@@ -111,7 +112,7 @@ public class ScarceIndexFileTest {
 
     @Test
     public void test_getSegmentsAsStream_print_data() throws Exception {
-        try (final ScarceIndexFile<String> fif = new ScarceIndexFile<>(
+        try (final ScarceIndexFileOld<String> fif = new ScarceIndexFileOld<>(
                 directory, stringTd)) {
             fif.getSegmentsAsStream().forEach(p -> {
                 logger.debug("Segment '{}'", p.toString());
@@ -121,7 +122,7 @@ public class ScarceIndexFileTest {
 
     @Test
     public void test_getSegmentsAsStream_number_of_segments() throws Exception {
-        try (final ScarceIndexFile<String> fif = new ScarceIndexFile<>(
+        try (final ScarceIndexFileOld<String> fif = new ScarceIndexFileOld<>(
                 directory, stringTd)) {
             assertEquals(4, fif.getSegmentsAsStream().count());
         }
@@ -129,7 +130,7 @@ public class ScarceIndexFileTest {
 
     @Test
     public void test_getSegmentsAsStream_correct_page_order() throws Exception {
-        try (final ScarceIndexFile<String> fif = new ScarceIndexFile<>(
+        try (final ScarceIndexFileOld<String> fif = new ScarceIndexFileOld<>(
                 directory, stringTd)) {
             /*
              * Verify that pages are returned as sorted stream.
@@ -145,7 +146,7 @@ public class ScarceIndexFileTest {
 
     @Test
     public void test_findSegmentId() throws Exception {
-        try (final ScarceIndexFile<String> fif = new ScarceIndexFile<>(
+        try (final ScarceIndexFileOld<String> fif = new ScarceIndexFileOld<>(
                 directory, stringTd)) {
             assertEquals(3, fif.findSegmentId("cuketa"));
             assertEquals(3, fif.findSegmentId("bziknout"));

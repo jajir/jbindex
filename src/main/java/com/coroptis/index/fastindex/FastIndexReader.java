@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 
 import com.coroptis.index.Pair;
 import com.coroptis.index.PairReader;
+import com.coroptis.index.segment.SegmentId;
 import com.coroptis.index.simpledatafile.SortedStringTable;
 
 public class FastIndexReader<K, V> implements PairReader<K, V> {
@@ -16,7 +17,7 @@ public class FastIndexReader<K, V> implements PairReader<K, V> {
     private PairReader<K, V> currentReader;
 
     FastIndexReader(final FastIndex<K, V> fastIndex,
-            final ScarceIndexFile<K> scarceIndexFile) {
+            final ScarceIndexFileOld<K> scarceIndexFile) {
         this.fastIndex = Objects.requireNonNull(fastIndex);
         this.pageIdsd = scarceIndexFile.getSegmentsAsStream()
                 .map(pair -> pair.getValue()).collect(Collectors.toList());

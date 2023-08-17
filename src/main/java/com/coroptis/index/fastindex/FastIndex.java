@@ -14,6 +14,7 @@ import com.coroptis.index.basic.ValueMerger;
 import com.coroptis.index.cache.UniqueCache;
 import com.coroptis.index.datatype.TypeDescriptor;
 import com.coroptis.index.directory.Directory;
+import com.coroptis.index.segment.SegmentId;
 import com.coroptis.index.simpledatafile.MergedPairReader;
 import com.coroptis.index.simpledatafile.SortedStringTable;
 import com.coroptis.index.sstfile.PairComparator;
@@ -42,7 +43,7 @@ public class FastIndex<K, V> implements CloseableResource {
     private final TypeDescriptor<K> keyTypeDescriptor;
     private final TypeDescriptor<V> valueTypeDescriptor;
     private final ValueMerger<K, V> valueMerger;
-    private final ScarceIndexFile<K> scarceIndexFile;
+    private final ScarceIndexFileOld<K> scarceIndexFile;
     private final UniqueCache<K, V> cache;
 
     public static <M, N> FastIndexBuilder<M, N> builder() {
@@ -66,7 +67,7 @@ public class FastIndex<K, V> implements CloseableResource {
         this.keyTypeDescriptor = Objects.requireNonNull(keyTypeDescriptor);
         this.valueTypeDescriptor = Objects.requireNonNull(valueTypeDescriptor);
         this.valueMerger = Objects.requireNonNull(valueMerger);
-        this.scarceIndexFile = new ScarceIndexFile<>(directory,
+        this.scarceIndexFile = new ScarceIndexFileOld<>(directory,
                 keyTypeDescriptor);
         this.cache = new UniqueCache<>(
                 keyTypeDescriptor.getComparator());

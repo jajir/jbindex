@@ -31,6 +31,11 @@ public class UniqueCache<K, V> {
         map.merge(pair.getKey(), pair.getValue(), (oldVal, newVal) -> newVal);
     }
 
+    public V get(final K key){
+        Objects.requireNonNull(key,"Key cant be null");
+        return map.get(key);
+    }
+
     public void clear() {
         map.clear();
     }

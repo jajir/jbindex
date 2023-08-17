@@ -39,7 +39,7 @@ public interface TypeDescriptor<T> {
      * @param value
      * @return return <code>true</code> when given value is equal to thomstone value otherwise return false
      */
-    default boolean isTombstone(final Byte value) {
+    default boolean isTombstone(final T value) {
         if(value==null){
             return false;
         }

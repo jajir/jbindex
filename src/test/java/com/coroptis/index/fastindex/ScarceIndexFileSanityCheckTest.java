@@ -41,7 +41,7 @@ public class ScarceIndexFileSanityCheckTest {
         }
 
         assertThrows(IllegalStateException.class, () -> {
-            try (final ScarceIndexFile<String> fif = new ScarceIndexFile<>(
+            try (final ScarceIndexFileOld<String> fif = new ScarceIndexFileOld<>(
                     directory, stringTd)) {
             }
         }, "Unable to load scarce index, sanity check failed.");

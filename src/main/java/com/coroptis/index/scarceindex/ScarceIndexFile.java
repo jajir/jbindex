@@ -1,4 +1,4 @@
-package com.coroptis.index.fastindex;
+package com.coroptis.index.scarceindex;
 
 import java.util.Comparator;
 import java.util.HashMap;
@@ -17,6 +17,8 @@ import com.coroptis.index.PairIterator;
 import com.coroptis.index.datatype.TypeDescriptor;
 import com.coroptis.index.datatype.TypeDescriptorInteger;
 import com.coroptis.index.directory.Directory;
+import com.coroptis.index.fastindex.ScarceIndexFileOld;
+import com.coroptis.index.segment.SegmentId;
 import com.coroptis.index.sstfile.SstFile;
 import com.coroptis.index.sstfile.SstFileWriter;
 
@@ -31,8 +33,8 @@ import com.coroptis.index.sstfile.SstFileWriter;
  *
  * @param <K>
  */
-public class ScarceIndexFile<K> implements CloseableResource {
-
+public class ScarceIndexFile<K> implements CloseableResource  {
+    
     private final Logger logger = LoggerFactory
             .getLogger(ScarceIndexFile.class);
 

@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 
 import com.coroptis.index.Pair;
 import com.coroptis.index.PairWriter;
+import com.coroptis.index.segment.SegmentId;
 import com.coroptis.index.simpledatafile.SortedStringTable;
 
 public class CompactSupport<K, V> {
@@ -16,7 +17,7 @@ public class CompactSupport<K, V> {
     private final Logger logger = LoggerFactory.getLogger(CompactSupport.class);
 
     private final List<Pair<K, V>> toSameSegment = new ArrayList<>();
-    private final ScarceIndexFile<K> scarceIndexFile;
+    private final ScarceIndexFileOld<K> scarceIndexFile;
     private final FastIndex<K, V> fastIndex;
     private int currentSegmentId = -1;
     /**
@@ -25,7 +26,7 @@ public class CompactSupport<K, V> {
     private List<SegmentId> eligibleSegments = new ArrayList<>();
 
     CompactSupport(final FastIndex<K, V> fastIndex,
-            final ScarceIndexFile<K> scarceIndexFile) {
+            final ScarceIndexFileOld<K> scarceIndexFile) {
         this.fastIndex = fastIndex;
         this.scarceIndexFile = scarceIndexFile;
     }
