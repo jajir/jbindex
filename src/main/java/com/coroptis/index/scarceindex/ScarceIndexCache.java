@@ -33,39 +33,23 @@ import com.coroptis.index.sstfile.SstFileWriter;
  *
  * @param <K>
  */
-public class ScarceIndexFile<K> implements CloseableResource  {
+public class ScarceIndexCache<K> {
     
     private final Logger logger = LoggerFactory
-            .getLogger(ScarceIndexFile.class);
+            .getLogger(ScarceIndexCache.class);
 
-    private final static String FILE_NAME = "index.map";
+    private final TreeMap<K, Integer> list;
 
-    private TreeMap<K, Integer> list;
-    private final SstFile<K, Integer> sdf;
-    private final Comparator<K> keyComparator;
-    private boolean isDirty = false;
-
-    ScarceIndexFile(final Directory directory,
+    ScarceIndexCache(
             final TypeDescriptor<K> keyTypeDescriptor) {
-        Objects.requireNonNull(directory, "Directory object is null.");
-        Objects.requireNonNull(keyTypeDescriptor,
-                "Key type comparator is null.");
-        final TypeDescriptorInteger itd = new TypeDescriptorInteger();
-        this.keyComparator = Objects
+        Objects
                 .requireNonNull(keyTypeDescriptor.getComparator());
-        this.sdf = new SstFile<>(directory, FILE_NAME,
-                itd.getTypeWriter(), itd.getTypeReader(),
-                keyTypeDescriptor.getComparator(),
-                keyTypeDescriptor.getConvertorFromBytes(),
-                keyTypeDescriptor.getConvertorToBytes());
-        this.list = new TreeMap<>(keyComparator);
-        try (final PairIterator<K, Integer> reader = sdf.openIterator()) {
-            while (reader.hasNext()) {
-                final Pair<K, Integer> pair = reader.next();
-                list.put(pair.getKey(), pair.getValue());
-            }
-        }
-        sanityCheck();
+        this.list = new TreeMap<>(keyTypeDescriptor.getComparator());
+    }
+
+    void put(final Pair<K, Integer> pair){
+        Objects.requireNonNull(pair,"Pair is null.");
+        list.put(pair.getKey(), pair.getValue());
     }
 
     public void sanityCheck() {
@@ -99,22 +83,6 @@ public class ScarceIndexFile<K> implements CloseableResource  {
         return SegmentId.of((int) (getSegmentsAsStream().count()));
     }
 
-    public int insertKeyToSegment(final K key) {
-        Objects.requireNonNull(key, "Key can't be null");
-        final Pair<K, Integer> pair = localFindSegmentForKey(key);
-        if (pair == null) {
-            /*
-             * Key is bigger that all key so it will at last segment. But key at
-             * last segment is smaller than adding one. Because of that key have
-             * to be upgraded.
-             */
-            isDirty = true;
-            return updateMaxKey(key);
-        } else {
-            return pair.getValue();
-        }
-    }
-
     private Pair<K, Integer> localFindSegmentForKey(final K key) {
         Objects.requireNonNull(key, "Key can't be null");
         final Map.Entry<K, Integer> ceilingEntry = list.ceilingEntry(key);
@@ -125,48 +93,13 @@ public class ScarceIndexFile<K> implements CloseableResource  {
         }
     }
 
-    private int updateMaxKey(final K key) {
-        if (list.size() == 0) {
-            list.put(key, 0);
-            return 0;
-        } else {
-            final Pair<K, Integer> max = Pair.of(list.lastEntry().getKey(),
-                    list.lastEntry().getValue());
-            list.remove(max.getKey());
-            final Pair<K, Integer> newMax = Pair.of(key, max.getValue());
-            list.put(newMax.getKey(), newMax.getValue());
-            return newMax.getValue();
-        }
-    }
-
-    public void insertSegment(final K key, final SegmentId segmentId) {
-        Objects.requireNonNull(key, "Key can't be null");
-        if (list.containsValue(segmentId.getId())) {
-            throw new IllegalArgumentException(
-                    String.format("Segment id '%s' already exists", segmentId));
-        }
-        list.put(key, segmentId.getId());
-        isDirty = true;
+    public void clear(){
+        list.clear();
     }
 
     public Stream<Pair<K, Integer>> getSegmentsAsStream() {
         return list.entrySet().stream()
                 .map(entry -> Pair.of(entry.getKey(), entry.getValue()));
-    }
-
-    public void flush() {
-        if (isDirty) {
-            try (final SstFileWriter<K, Integer> writer = sdf
-                    .openWriter()) {
-                list.forEach((k, v) -> writer.put(Pair.of(k, v)));
-            }
-        }
-        isDirty = false;
-    }
-
-    @Override
-    public void close() {
-        flush();
     }
 
 }

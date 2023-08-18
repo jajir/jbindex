@@ -4,7 +4,6 @@ import java.util.Objects;
 
 import com.coroptis.index.datatype.TypeDescriptor;
 import com.coroptis.index.directory.Directory;
-import com.coroptis.index.sstfile.SstFileBuilder;
 
 public class ScarceIndexBuilder<K> {
 
