@@ -7,10 +7,14 @@ import com.coroptis.index.directory.Directory;
 
 public class SegmentBuilder<K, V> {
 
+    private final static int DEFAULT_MAX_NUMBER_OF_KEYS_IN_SEGMENT_CACHE = 1000
+            * 1000 * 10;
+
     private Directory directory;
     private SegmentId id;
     private TypeDescriptor<K> keyTypeDescriptor;
     private TypeDescriptor<V> valueTypeDescriptor;
+    private long maxNumeberOfKeysInSegmentCache = DEFAULT_MAX_NUMBER_OF_KEYS_IN_SEGMENT_CACHE;
 
     SegmentBuilder() {
 
@@ -38,9 +42,16 @@ public class SegmentBuilder<K, V> {
         return this;
     }
 
+    public SegmentBuilder<K, V> withMaxNumeberOfKeysInSegmentCache(
+            final long maxNumeberOfKeysInSegmentCache) {
+        this.maxNumeberOfKeysInSegmentCache = Objects
+                .requireNonNull(maxNumeberOfKeysInSegmentCache);
+        return this;
+    }
+
     public Segment<K, V> build() {
-        return new Segment<>(directory, id, keyTypeDescriptor,
-                valueTypeDescriptor);
+        return new Segment<>(directory, id, maxNumeberOfKeysInSegmentCache,
+                keyTypeDescriptor, valueTypeDescriptor);
     }
 
 }

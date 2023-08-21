@@ -8,7 +8,7 @@ import com.coroptis.index.sstfile.SstFileWriter;
 
 /**
  * Encapsulate writing of new index data. When writer is closed cache is
- * refreshedn from disk.
+ * refreshed from disk.
  */
 public class ScarceIndexWriter<K> implements PairWriter<K, Integer> {
 

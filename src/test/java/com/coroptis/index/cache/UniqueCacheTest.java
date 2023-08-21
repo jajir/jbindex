@@ -22,9 +22,9 @@ public class UniqueCacheTest {
     public void test_basic_function() throws Exception {
         final UniqueCache<Integer, String> cache = new UniqueCache<>(
                 (i1, i2) -> i1 - i2);
-        cache.add(Pair.of(10, "hello"));
-        cache.add(Pair.of(13, "my"));
-        cache.add(Pair.of(15, "dear"));
+        cache.put(Pair.of(10, "hello"));
+        cache.put(Pair.of(13, "my"));
+        cache.put(Pair.of(15, "dear"));
 
         final List<Pair<Integer, String>> out = cache.toList();
         assertEquals(3, cache.size());
@@ -39,9 +39,9 @@ public class UniqueCacheTest {
     public void test_basic_function_different_order() throws Exception {
         final UniqueCache<Integer, String> cache = new UniqueCache<>(
                 (i1, i2) -> i1 - i2);
-        cache.add(Pair.of(15, "dear"));
-        cache.add(Pair.of(13, "my"));
-        cache.add(Pair.of(-199, "hello"));
+        cache.put(Pair.of(15, "dear"));
+        cache.put(Pair.of(13, "my"));
+        cache.put(Pair.of(-199, "hello"));
 
         final List<Pair<Integer, String>> out = cache.getAsSortedList();
         assertEquals(3, cache.size());
@@ -61,10 +61,10 @@ public class UniqueCacheTest {
     public void test_stream_sorting() throws Exception {
         final UniqueCache<Integer, String> cache = new UniqueCache<>(
                 (i1, i2) -> i1 - i2);
-        cache.add(Pair.of(15, "dear"));
-        cache.add(Pair.of(13, "my"));
-        cache.add(Pair.of(-199, "hello"));
-        cache.add(Pair.of(-19, "Duck"));
+        cache.put(Pair.of(15, "dear"));
+        cache.put(Pair.of(13, "my"));
+        cache.put(Pair.of(-199, "hello"));
+        cache.put(Pair.of(-19, "Duck"));
 
         final List<Pair<Integer, String>> out = cache.getAsSortedList();
         assertEquals(4, cache.size());
@@ -85,9 +85,9 @@ public class UniqueCacheTest {
         final UniqueCache<Integer, String> cache = new UniqueCache<>(
                 (i1, i2) -> i1 - i2);
         logger.debug("Cache size '{}'", cache.size());
-        cache.add(Pair.of(10, "hello"));
-        cache.add(Pair.of(10, "my"));
-        cache.add(Pair.of(10, "dear"));
+        cache.put(Pair.of(10, "hello"));
+        cache.put(Pair.of(10, "my"));
+        cache.put(Pair.of(10, "dear"));
 
         logger.debug("Cache size '{}'", cache.size());
         final List<Pair<Integer, String>> out = cache.toList();

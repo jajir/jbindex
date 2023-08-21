@@ -74,7 +74,7 @@ public class FastIndex<K, V> implements CloseableResource {
 
     public void put(final Pair<K, V> pair) {
         Objects.requireNonNull(pair);
-        cache.add(pair);
+        cache.put(pair);
         if (cache.size() > maxNumberOfKeysInCache) {
             compact();
         }

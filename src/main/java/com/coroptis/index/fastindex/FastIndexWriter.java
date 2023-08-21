@@ -23,7 +23,7 @@ public class FastIndexWriter<K, V> implements PairWriter<K, V> {
 
     @Override
     public void put(final Pair<K, V> pair) {
-        cache.add(pair);
+        cache.put(pair);
     }
 
 }

@@ -32,7 +32,7 @@ public class CacheSortedReader<K, V> implements PairReader<K, V> {
         final UniqueCache<K, V> cache = new UniqueCache<>(keyComparator);
         try (final UnsortedDataFileStreamer<K, V> streamer = unsortedDataFile
                 .openStreamer()) {
-            streamer.stream().forEach(cache::add);
+            streamer.stream().forEach(cache::put);
         }
         final PairComparator<K, V> pairComparator = new PairComparator<>(
                 Objects.requireNonNull(keyComparator));

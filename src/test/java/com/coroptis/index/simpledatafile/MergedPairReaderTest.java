@@ -20,6 +20,8 @@ public class MergedPairReaderTest {
     @SuppressWarnings("unchecked")
     private final PairReader<Integer, String> reader2 = mock(PairReader.class);
 
+    //FIXME there is used same mock instance in all tests 
+    
     @Test
     public void test_reader2_is_empty() throws Exception {
         when(reader1.read()).thenReturn(Pair.of(1, "a"));

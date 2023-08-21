@@ -38,7 +38,7 @@ public class PartiallySortedDataFileWriter<K, V> implements CloseableResource {
             throw new IllegalStateException(
                     "Attempt to put values into closed index.");
         }
-        cache.add(pair);
+        cache.put(pair);
         cx++;
         if (cx % howManySortInMemory == 0) {
             writeCacheToFile(fileCounter);

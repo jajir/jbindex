@@ -50,7 +50,7 @@ public class SstIndexImpl<K, V> implements Index<K, V>, CloseableResource {
                     "Can't insert thombstone value '%s' into index", value));
         }
 
-        cache.add(Pair.of(key, value));
+        cache.put(Pair.of(key, value));
 
         // TODO add key value pair into WAL
     }
@@ -71,7 +71,7 @@ public class SstIndexImpl<K, V> implements Index<K, V>, CloseableResource {
     public void delete(final K key) {
         Objects.requireNonNull(key, "Key cant be null");
 
-        cache.add(Pair.of(key, valueTypeDescriptor.getTombstone()));
+        cache.put(Pair.of(key, valueTypeDescriptor.getTombstone()));
     }
 
     @Override
