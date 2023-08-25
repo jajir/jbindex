@@ -53,7 +53,17 @@ public class SstFile<K, V> {
         return streamer;
     }
 
+    public SstFileStreamer<K, V> openStreamerFromPosition(final long position) {
+        final SstFileStreamer<K, V> streamer = new SstFileStreamer<>(
+                openReader(position), keyComparator);
+        return streamer;
+    }
+
     public PairReader<K, V> openReader() {
+        return openReader(0);
+    }
+
+    public PairReader<K, V> openReader(final long position) {
         if (!directory.isFileExists(fileName)) {
             return new PairReaderEmpty<>();
         }
@@ -61,6 +71,7 @@ public class SstFile<K, V> {
                 keyConvertorFromBytes);
         final SstFileReader<K, V> reader = new SstFileReader<>(diffKeyReader,
                 valueReader, directory.getFileReader(fileName));
+        reader.skip(position);
         return reader;
     }
 

@@ -42,6 +42,11 @@ public class SegmentBuilder<K, V> {
         return this;
     }
 
+    public SegmentBuilder<K, V> withId(final SegmentId id) {
+        this.id = Objects.requireNonNull(id);
+        return this;
+    }
+
     public SegmentBuilder<K, V> withMaxNumeberOfKeysInSegmentCache(
             final long maxNumeberOfKeysInSegmentCache) {
         this.maxNumeberOfKeysInSegmentCache = Objects

@@ -101,6 +101,18 @@ public class MergeSpliteratorTest {
         assertEquals(Pair.of(8,8), list.get(3));
     }
 
+    @Test
+    void test_merge_tombstone_and_empty_index() throws Exception {
+        when(sstReader.read()).thenReturn(null);
+        when(cacheReader.read()).thenReturn(Pair.of(3,3)).thenReturn(Pair.of(4,TypeDescriptorInteger.TOMBSTONE_VALUE)).thenReturn(Pair.of(8,8)).thenReturn(null);
+        stream = makeStream();
+
+        final List<Pair<Integer,Integer>> list = stream.collect(Collectors.toList());
+        assertEquals(2, list.size());
+        assertEquals(Pair.of(3,3), list.get(0));
+        assertEquals(Pair.of(8,8), list.get(1));
+    }
+
     @BeforeEach
     void beforeEach() {
         MockitoAnnotations.initMocks(this);

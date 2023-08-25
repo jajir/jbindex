@@ -11,9 +11,9 @@ public class TypeDescriptorString implements TypeDescriptor<String> {
             .forName(CHARSET_ENCODING_NAME);
 
     /**
-     * Thombstone value, use can't use it.
+     * Tombstones value, use can't use it.
      */
-    private final static String TOMBSTONE_VALUE = "(*&^%$#@!)-1eaa9b2c-3c11-11ee-be56-0242ac120002";
+    public final static String TOMBSTONE_VALUE = "(*&^%$#@!)-1eaa9b2c-3c11-11ee-be56-0242ac120002";
 
     @Override
     public ConvertorFromBytes<String> getConvertorFromBytes() {

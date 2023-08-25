@@ -20,6 +20,10 @@ public class SstFileReader<K, V> implements PairReader<K, V> {
         this.reader = Objects.requireNonNull(reader);
     }
 
+    public void skip(final long position) {
+        reader.skip(position);
+    }
+
     @Override
     public Pair<K, V> read() {
         final K key = keyTypeReader.read(reader);

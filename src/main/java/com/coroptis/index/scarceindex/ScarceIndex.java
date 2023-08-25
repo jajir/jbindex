@@ -11,11 +11,26 @@ import com.coroptis.index.sstfile.SstFile;
 
 /**
  * Scarce index contain map that contain just subset of keys from SST. It's a
- * map 'key,integer' records orderd by key value. It allows faster search for
+ * map 'key,integer' records ordered by key value. It allows faster search for
  * exact key in SST.
  * 
- * Scarce index is writen during process of creating main SST file. Later can't
+ * Scarce index is written during process of creating main SST file. Later can't
  * be changed.
+ * 
+ * Scarce index structure:
+ * <ul>
+ * <li>first key - it's lover key in scarce index. Value is 0, because it's
+ * first record in main index file.</li>
+ * <li>remaining keys - value point to main index file where can be found value
+ * of this key and higher key values.</li>
+ * <li>last key - higher key in main index file</li>
+ * </ul>
+ * 
+ *   
+ * Index can't contains just one value. Even when main index file contains one
+ * key value pair there should be two values - min and max keys pointing to
+ * first and only one record.
+ * 
  */
 public class ScarceIndex<K> {
 
@@ -53,7 +68,7 @@ public class ScarceIndex<K> {
         loadCache();
     }
 
-    void loadCache() {
+    public void loadCache() {
         ScarceIndexCache<K> tmp = new ScarceIndexCache<>(keyTypeDescriptor);
         if (directory.isFileExists(fileName)) {
             try (final PairIterator<K, Integer> reader = sstFile

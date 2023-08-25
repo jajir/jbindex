@@ -3,6 +3,8 @@ package com.coroptis.index.segment;
 /**
  * Provide some basic statistic information about segment.
  * 
+ * In number of keys in cache is counted even tombstones.
+ * 
  * @author honza
  *
  */

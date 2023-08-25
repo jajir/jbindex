@@ -27,6 +27,8 @@ import com.coroptis.index.sstfile.SstFileWriter;
  * higher key in index. When new value in index is entered it should be called
  * {@link #insertKeyToSegment(Object)}. This method update higher key value when
  * it's necessary.
+ *
+ * TODO note that this is similar to scarce index, but still different.
  * 
  * @author honza
  *

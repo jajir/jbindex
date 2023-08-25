@@ -35,6 +35,11 @@ public class SegmentStatsManager {
         props.setLong(NUMBER_OF_KEYS_IN_CACHE, numberOfKeysInCache);
     }
 
+    public void incrementNumberOfKeysInCache() {
+        props.setLong(NUMBER_OF_KEYS_IN_CACHE,
+                props.getLong(NUMBER_OF_KEYS_IN_CACHE) + 1);
+    }
+
     public void setNumberOfKeysInIndex(final long numberOfKeysInIndex) {
         props.setLong(NUMBER_OF_KEYS_IN_INDEX, numberOfKeysInIndex);
     }

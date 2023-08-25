@@ -80,12 +80,18 @@ public class MergeSpliterator<K, V> implements Spliterator<Pair<K, V>> {
                 }
             } else {
                 final Pair<K, V> out = sstFile.next();
+                /*
+                 * Check for tombstones is not required, because tombstones are
+                 * not stored in index.
+                 */
                 consumer.accept(out);
             }
         } else {
             if (cache.hasNext()) {
                 final Pair<K, V> out = cache.next();
-                consumer.accept(out);
+                if (!valueTypeDescriptor.isTombstone(out.getValue())) {
+                    consumer.accept(out);
+                }
             } else {
                 // no more records
                 return false;

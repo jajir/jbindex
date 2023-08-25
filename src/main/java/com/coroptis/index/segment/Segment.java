@@ -68,7 +68,7 @@ public class Segment<K, V> implements CloseableResource {
         final UniqueCache<K, V> out = new UniqueCache<>(
                 keyTypeDescriptor.getComparator());
         sstFile.openStreamer().stream().forEach(pair -> out.put(pair));
-        return null;
+        return out;
     }
 
     private long getScarceIndexPageSize() {
@@ -110,6 +110,15 @@ public class Segment<K, V> implements CloseableResource {
                 keyTypeDescriptor.getConvertorToBytes());
     }
 
+    private SstFile<K, V> getIndexSstFile() {
+        return new SstFile<>(directory, getIndexFileName(),
+                valueTypeDescriptor.getTypeWriter(),
+                valueTypeDescriptor.getTypeReader(),
+                keyTypeDescriptor.getComparator(),
+                keyTypeDescriptor.getConvertorFromBytes(),
+                keyTypeDescriptor.getConvertorToBytes());
+    }
+
     private SstFile<K, V> getTempIndexFile() {
         return new SstFile<>(directory, getTempIndexFileName(),
                 valueTypeDescriptor.getTypeWriter(),
@@ -127,10 +136,15 @@ public class Segment<K, V> implements CloseableResource {
         if (cache.size() > maxNumeberOfKeysInSegmentCache) {
             forceCompact();
         } else {
+            final AtomicLong cx = new AtomicLong(0);
             try (final SstFileWriter<K, V> writer = getCacheSstFile()
                     .openWriter()) {
-                cache.getStream().forEach(writer::put);
+                cache.getStream().forEach(pair -> {
+                    writer.put(pair);
+                    cx.incrementAndGet();
+                });
             }
+            segmentStatsManager.setNumberOfKeysInCache(cx.get());
         }
     }
 
@@ -140,9 +154,9 @@ public class Segment<K, V> implements CloseableResource {
         }
     }
 
-    public Stream<Pair<K, V>> getPairStream() {
+    public Stream<Pair<K, V>> getStream() {
         return StreamSupport
-                .stream(new MergeSpliterator<>(getCacheSstFile().openIterator(),
+                .stream(new MergeSpliterator<>(getIndexSstFile().openIterator(),
                         getCache().getSortedIterator(), keyTypeDescriptor,
                         valueTypeDescriptor), false);
     }
@@ -155,7 +169,7 @@ public class Segment<K, V> implements CloseableResource {
         try (final ScarceIndexWriter<K> scarceWriter = scarceTmp.openWriter()) {
             try (final SstFileWriter<K, V> indexWriter = getTempIndexFile()
                     .openWriter()) {
-                getPairStream().forEach(pair -> {
+                getStream().forEach(pair -> {
                     final long i = cx.getAndIncrement();
                     if (i % getScarceIndexPageSize() == 0) {
                         final int position = indexWriter.put(pair, true);
@@ -168,13 +182,33 @@ public class Segment<K, V> implements CloseableResource {
         }
         cache.clear();
         flushCache();
+        segmentStatsManager.setNumberOfKeysInCache(0);
+        segmentStatsManager.setNumberOfKeysInIndex(cx.get());
+        segmentStatsManager.flush();
         directory.renameFile(getTempIndexFileName(), getIndexFileName());
         directory.renameFile(getTempScarceFileName(), getScarceFileName());
+        scarceIndex.loadCache();
     }
 
-    public Object get(Object key) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'get'");
+    public SegmentWriter<K, V> openWriter() {
+        return new SegmentWriter<>(this);
+    }
+
+    public V get(final K key) {
+        final V out = cache.get(key);
+        if (valueTypeDescriptor.isTombstone(out)) {
+            return null;
+        }
+        if (out == null) {
+            final Integer position = scarceIndex.get(key);
+            if (position == null) {
+                return null;
+            }
+            return getIndexSstFile().openStreamerFromPosition(position).stream()
+                    .filter(pair -> pair.getKey().equals(key)).findAny()
+                    .map(pair -> pair.getValue()).orElseGet(() -> null);
+        }
+        return out;
     }
 
     @Override

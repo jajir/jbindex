@@ -1,6 +1,7 @@
 package com.coroptis.index.datatype;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Comparator;
@@ -36,4 +37,12 @@ public class TypeDescriptorIntegerTest {
         assertTrue(cmp.compare(3, 12) < 0);
         assertTrue(cmp.compare(3, 2) > 0);
     }
+
+    @Test
+    public void test_isTombStone() throws Exception {
+        assertFalse(ti.isTombstone(-1));
+        assertFalse(ti.isTombstone(Integer.MIN_VALUE));
+        assertTrue(ti.isTombstone(Integer.MIN_VALUE + 1));
+    }
+
 }

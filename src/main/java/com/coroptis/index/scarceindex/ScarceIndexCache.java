@@ -1,6 +1,8 @@
 package com.coroptis.index.scarceindex;
 
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.TreeMap;
@@ -12,7 +14,6 @@ import org.slf4j.LoggerFactory;
 
 import com.coroptis.index.Pair;
 import com.coroptis.index.datatype.TypeDescriptor;
-import com.coroptis.index.segment.SegmentId;
 
 /**
  * Provide information about keys and particular index files. Each key
@@ -31,10 +32,13 @@ public class ScarceIndexCache<K> {
             .getLogger(ScarceIndexCache.class);
 
     private final TreeMap<K, Integer> list;
+    private final Comparator<K> keyComparator;
 
     ScarceIndexCache(final TypeDescriptor<K> keyTypeDescriptor) {
         Objects.requireNonNull(keyTypeDescriptor.getComparator());
-        this.list = new TreeMap<>(keyTypeDescriptor.getComparator());
+        this.keyComparator = Objects
+                .requireNonNull(keyTypeDescriptor.getComparator());
+        this.list = new TreeMap<>(keyComparator);
     }
 
     void put(final Pair<K, Integer> pair) {
@@ -42,20 +46,33 @@ public class ScarceIndexCache<K> {
         list.put(pair.getKey(), pair.getValue());
     }
 
+    /**
+     * Verify that no different keys have same value (position in file) and
+     * verify that value position in file just grow.
+     */
     public void sanityCheck() {
-        final HashMap<Integer, K> tmp = new HashMap<Integer, K>();
         final AtomicBoolean fail = new AtomicBoolean(false);
-        list.forEach((key, segmentId) -> {
-            final K oldKey = tmp.get(segmentId);
-            if (oldKey == null) {
-                tmp.put(segmentId, key);
-            } else {
-                logger.error(String.format(
-                        "Segment id '%s' is used for segment with "
-                                + "key '%s' and segment with key '%s'.",
-                        segmentId, key, oldKey));
-                fail.set(true);
+        final List<Pair<K, Integer>> tmp = new ArrayList<>();
+        list.entrySet().stream().forEach(entry -> {
+            if (!tmp.isEmpty()) {
+                final Pair<K, Integer> previous = tmp.get(0);
+                if (keyComparator.compare(previous.getKey(),
+                        entry.getKey()) >= 0) {
+                    fail.set(true);
+                    logger.error(String.format(
+                            "Scarce index is not correctle ordered key '%s' is before  "
+                                    + "key '%s' but first key is higher or equals then second one.",
+                            previous.getKey(), entry.getKey()));
+                }
+                if (previous.getValue() >= entry.getValue()) {
+                    fail.set(true);
+                    logger.error(String.format(
+                            "key '%s' and key '%s' should have correct order of values '%s' and '%s'.",
+                            previous.getKey(), entry.getKey(),
+                            previous.getValue(), entry.getValue()));
+                }
             }
+            tmp.add(0, Pair.of(entry.getKey(), entry.getValue()));
         });
         if (fail.get()) {
             throw new IllegalStateException(
@@ -69,17 +86,19 @@ public class ScarceIndexCache<K> {
         return pair == null ? null : pair.getValue();
     }
 
-    public SegmentId findNewSegmentId() {
-        return SegmentId.of((int) (getSegmentsAsStream().count()));
-    }
-
     private Pair<K, Integer> localFindSegmentForKey(final K key) {
         Objects.requireNonNull(key, "Key can't be null");
-        final Map.Entry<K, Integer> ceilingEntry = list.ceilingEntry(key);
+        final Map.Entry<K, Integer> ceilingEntry = list.floorEntry(key);
         if (ceilingEntry == null) {
             return null;
         } else {
-            return Pair.of(ceilingEntry.getKey(), ceilingEntry.getValue());
+            final K higherKey = list.lastKey();
+            if (keyComparator.compare(key, higherKey) > 0) {
+                // given key is higher that higher key in scarce and main index
+                return null;
+            } else {
+                return Pair.of(ceilingEntry.getKey(), ceilingEntry.getValue());
+            }
         }
     }
 
