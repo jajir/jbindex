@@ -102,6 +102,10 @@ public class ScarceIndexCache<K> {
         }
     }
 
+    public int getKeyCount() {
+        return list.size();
+    }
+
     public void clear() {
         list.clear();
     }

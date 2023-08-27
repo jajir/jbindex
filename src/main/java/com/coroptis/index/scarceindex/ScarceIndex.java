@@ -26,10 +26,9 @@ import com.coroptis.index.sstfile.SstFile;
  * <li>last key - higher key in main index file</li>
  * </ul>
  * 
- *   
- * Index can't contains just one value. Even when main index file contains one
- * key value pair there should be two values - min and max keys pointing to
- * first and only one record.
+ * Index contains no key value pairs when main index is empty. Index contains
+ * one key value pair when main index contains just one key value pair. In all
+ * other cases scarce index contain more than one key value pairs.
  * 
  */
 public class ScarceIndex<K> {
@@ -81,6 +80,10 @@ public class ScarceIndex<K> {
         }
         tmp.sanityCheck();
         this.cache = tmp;
+    }
+
+    public int getKeyCount() {
+        return cache.getKeyCount();
     }
 
     public Integer get(final K key) {

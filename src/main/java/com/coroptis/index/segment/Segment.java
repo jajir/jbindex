@@ -1,6 +1,6 @@
 package com.coroptis.index.segment;
 
-import java.io.File;
+import java.util.Iterator;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Stream;
@@ -25,14 +25,10 @@ import com.coroptis.index.sstfile.SstFileWriter;
  */
 public class Segment<K, V> implements CloseableResource {
 
-    private final static String INDEX_FILE_NAME_EXTENSION = File.separator
-            + "index";
-    private final static String SCARCE_FILE_NAME_EXTENSION = File.separator
-            + "scarce";
-    private final static String CACHE_FILE_NAME_EXTENSION = File.separator
-            + "cache";
-    private final static String TEMP_FILE_NAME_EXTENSION = File.separator
-            + "tmp";
+    private final static String INDEX_FILE_NAME_EXTENSION = ".index";
+    private final static String SCARCE_FILE_NAME_EXTENSION = ".scarce";
+    private final static String CACHE_FILE_NAME_EXTENSION = ".cache";
+    private final static String TEMP_FILE_NAME_EXTENSION = ".tmp";
     private final Directory directory;
     private final SegmentId id;
     private final long maxNumeberOfKeysInSegmentCache;
@@ -41,7 +37,7 @@ public class Segment<K, V> implements CloseableResource {
     private final UniqueCache<K, V> cache;
     private final ScarceIndex<K> scarceIndex;
     private final SegmentStatsManager segmentStatsManager;
-    private final static long SCARCE_INDEX_PAGE_SIZE = 1000;
+    private final int maxNumberOfKeysInIndexPage;
 
     public static <M, N> SegmentBuilder<M, N> builder() {
         return new SegmentBuilder<>();
@@ -50,7 +46,8 @@ public class Segment<K, V> implements CloseableResource {
     public Segment(final Directory directory, final SegmentId id,
             final long maxNumeberOfKeysInSegmentCache,
             final TypeDescriptor<K> keyTypeDescriptor,
-            final TypeDescriptor<V> valueTypeDescriptor) {
+            final TypeDescriptor<V> valueTypeDescriptor,
+            final int maxNumberOfKeysInIndexPage) {
         this.directory = Objects.requireNonNull(directory);
         this.id = Objects.requireNonNull(id);
         this.maxNumeberOfKeysInSegmentCache = maxNumeberOfKeysInSegmentCache;
@@ -61,6 +58,7 @@ public class Segment<K, V> implements CloseableResource {
                 .withFileName(getScarceFileName())
                 .withKeyTypeDescriptor(keyTypeDescriptor).build();
         this.segmentStatsManager = new SegmentStatsManager(directory, id);
+        this.maxNumberOfKeysInIndexPage = maxNumberOfKeysInIndexPage;
     }
 
     private UniqueCache<K, V> loadCache() {
@@ -71,8 +69,8 @@ public class Segment<K, V> implements CloseableResource {
         return out;
     }
 
-    private long getScarceIndexPageSize() {
-        return SCARCE_INDEX_PAGE_SIZE;
+    private int getMaxNumberOfKeysInIndexPage() {
+        return maxNumberOfKeysInIndexPage;
     }
 
     private String getCacheFileName() {
@@ -132,20 +130,35 @@ public class Segment<K, V> implements CloseableResource {
         return cache;
     }
 
-    void flushCache() {
+    /**
+     * It's called after writing is done. It ensure that all data are stored in
+     * directory.
+     */
+    public void flush() {
         if (cache.size() > maxNumeberOfKeysInSegmentCache) {
             forceCompact();
         } else {
-            final AtomicLong cx = new AtomicLong(0);
-            try (final SstFileWriter<K, V> writer = getCacheSstFile()
-                    .openWriter()) {
-                cache.getStream().forEach(pair -> {
-                    writer.put(pair);
-                    cx.incrementAndGet();
-                });
-            }
-            segmentStatsManager.setNumberOfKeysInCache(cx.get());
+            flushCache();
         }
+        if (!directory.isFileExists(getScarceFileName())) {
+            directory.touch(getScarceFileName());
+        }
+        if (!directory.isFileExists(getIndexFileName())) {
+            directory.touch(getIndexFileName());
+        }
+    }
+
+    private void flushCache() {
+        final AtomicLong cx = new AtomicLong(0);
+        try (final SstFileWriter<K, V> writer = getCacheSstFile()
+                .openWriter()) {
+            cache.getStream().forEach(pair -> {
+                writer.put(pair);
+                cx.incrementAndGet();
+            });
+        }
+        segmentStatsManager.setNumberOfKeysInCache(cx.get());
+        segmentStatsManager.flush();
     }
 
     void optionallyCompact() {
@@ -169,25 +182,34 @@ public class Segment<K, V> implements CloseableResource {
         try (final ScarceIndexWriter<K> scarceWriter = scarceTmp.openWriter()) {
             try (final SstFileWriter<K, V> indexWriter = getTempIndexFile()
                     .openWriter()) {
-                getStream().forEach(pair -> {
+                final Iterator<Pair<K, V>> iterator = getStream().iterator();
+                while (iterator.hasNext()) {
+                    final Pair<K, V> pair = iterator.next();
                     final long i = cx.getAndIncrement();
-                    if (i % getScarceIndexPageSize() == 0) {
+                    /*
+                     * Write to scarce index will be made when it's first, last
+                     * or page size count equal pair.
+                     */
+                    if (i % getMaxNumberOfKeysInIndexPage() == 0
+                            || !iterator.hasNext()) {
                         final int position = indexWriter.put(pair, true);
                         scarceWriter.put(Pair.of(pair.getKey(), position));
                     } else {
                         indexWriter.put(pair);
                     }
-                });
+                }
             }
         }
         cache.clear();
         flushCache();
-        segmentStatsManager.setNumberOfKeysInCache(0);
-        segmentStatsManager.setNumberOfKeysInIndex(cx.get());
-        segmentStatsManager.flush();
         directory.renameFile(getTempIndexFileName(), getIndexFileName());
         directory.renameFile(getTempScarceFileName(), getScarceFileName());
         scarceIndex.loadCache();
+        segmentStatsManager.setNumberOfKeysInCache(0);
+        segmentStatsManager.setNumberOfKeysInIndex(cx.get());
+        segmentStatsManager
+                .setNumberOfKeysInScarceIndex(scarceIndex.getKeyCount());
+        segmentStatsManager.flush();
     }
 
     public SegmentWriter<K, V> openWriter() {
@@ -205,6 +227,7 @@ public class Segment<K, V> implements CloseableResource {
                 return null;
             }
             return getIndexSstFile().openStreamerFromPosition(position).stream()
+                    .limit(getMaxNumberOfKeysInIndexPage())
                     .filter(pair -> pair.getKey().equals(key)).findAny()
                     .map(pair -> pair.getValue()).orElseGet(() -> null);
         }

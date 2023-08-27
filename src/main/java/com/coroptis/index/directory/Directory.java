@@ -24,6 +24,17 @@ public interface Directory {
                 Access.OVERWRITE);
     }
 
+    /**
+     * It overwrite already existing file or create new one and close it. In all
+     * cases result file size is zero.
+     * 
+     * @param fileName required file name
+     */
+    default void touch(final String fileName) {
+        final FileWriter fileWriter = getFileWriter(fileName);
+        fileWriter.close();
+    }
+
     boolean isFileExists(final String fileName);
 
     FileWriter getFileWriter(String fileName, Access access);

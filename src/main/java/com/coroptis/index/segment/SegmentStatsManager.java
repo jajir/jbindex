@@ -1,6 +1,5 @@
 package com.coroptis.index.segment;
 
-import java.io.File;
 import java.util.Objects;
 
 import com.coroptis.index.directory.Directory;
@@ -10,8 +9,8 @@ public class SegmentStatsManager {
 
     private final static String NUMBER_OF_KEYS_IN_CACHE = "numberOfKeysInCache";
     private final static String NUMBER_OF_KEYS_IN_INDEX = "numberOfKeysInIndex";
-    private final static String PROPERTIES_FILENAME_EXTENSION = File.separator
-            + "properties";
+    private final static String NUMBER_OF_KEYS_IN_SCARCE_INDEX = "numberOfKeysInScarceIndex";
+    private final static String PROPERTIES_FILENAME_EXTENSION = ".properties";
 
     private final SegmentId id;
     private final Props props;
@@ -28,7 +27,8 @@ public class SegmentStatsManager {
 
     public SegmentStats getSegmentStats() {
         return new SegmentStats(props.getLong(NUMBER_OF_KEYS_IN_CACHE),
-                props.getLong(NUMBER_OF_KEYS_IN_INDEX));
+                props.getLong(NUMBER_OF_KEYS_IN_INDEX),
+                props.getLong(NUMBER_OF_KEYS_IN_SCARCE_INDEX));
     }
 
     public void setNumberOfKeysInCache(final long numberOfKeysInCache) {
@@ -42,6 +42,12 @@ public class SegmentStatsManager {
 
     public void setNumberOfKeysInIndex(final long numberOfKeysInIndex) {
         props.setLong(NUMBER_OF_KEYS_IN_INDEX, numberOfKeysInIndex);
+    }
+
+    public void setNumberOfKeysInScarceIndex(
+            final long numberOfKeysInScarceIndex) {
+        props.setLong(NUMBER_OF_KEYS_IN_SCARCE_INDEX,
+                numberOfKeysInScarceIndex);
     }
 
     void flush() {

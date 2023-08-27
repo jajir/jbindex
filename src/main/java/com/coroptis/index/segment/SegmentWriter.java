@@ -26,7 +26,7 @@ public class SegmentWriter<K, V> implements PairWriter<K, V> {
 
     @Override
     public void close() {
-        segment.flushCache();
+        segment.flush();
     }
 
 }

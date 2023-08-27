@@ -12,11 +12,13 @@ public class SegmentStats {
 
     private final long numberOfKeysInCache;
     private final long numberOfKeysInIndex;
+    private final long numberOfKeysInScarceIndex;
 
-    SegmentStats(final long numberOfKeysInCache,
-            final long numberOfKeysInIndex) {
+    SegmentStats(final long numberOfKeysInCache, final long numberOfKeysInIndex,
+            final long numberOfKeysInScarceIndex) {
         this.numberOfKeysInCache = numberOfKeysInCache;
         this.numberOfKeysInIndex = numberOfKeysInIndex;
+        this.numberOfKeysInScarceIndex = numberOfKeysInScarceIndex;
     }
 
     public long getNumberOfKeysInCache() {
@@ -29,5 +31,9 @@ public class SegmentStats {
 
     public long getNumberOfKeys() {
         return getNumberOfKeysInCache() + getNumberOfKeysInIndex();
+    }
+
+    public long getNumberOfKeysInScarceIndex() {
+        return numberOfKeysInScarceIndex;
     }
 }
