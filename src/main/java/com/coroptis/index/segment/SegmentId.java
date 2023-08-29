@@ -1,5 +1,7 @@
 package com.coroptis.index.segment;
 
+import java.util.Objects;
+
 /**
  * Index segments consisting of Sorted String Table (sst).
  * 
@@ -44,5 +46,24 @@ public class SegmentId {
     public String toString() {
         return getName();
     }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        SegmentId other = (SegmentId) obj;
+        return id == other.id;
+    }
+    
+    
 
 }

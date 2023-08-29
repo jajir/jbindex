@@ -1,43 +1,42 @@
 package com.coroptis.index.sst;
 
+import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.coroptis.index.CloseableResource;
 import com.coroptis.index.Pair;
-import com.coroptis.index.basic.ValueMerger;
 import com.coroptis.index.cache.UniqueCache;
 import com.coroptis.index.datatype.TypeDescriptor;
 import com.coroptis.index.directory.Directory;
+import com.coroptis.index.segment.Segment;
+import com.coroptis.index.segment.SegmentId;
+import com.coroptis.index.sstfile.PairComparator;
 
 public class SstIndexImpl<K, V> implements Index<K, V>, CloseableResource {
 
-    private final long maxNumberOfKeysInCache;
-    private final long maxNumeberOfKeysInSegmentCache;
-    private final long maxNumeberOfKeysInSegment;
+    private final Logger logger = LoggerFactory.getLogger(SstIndexImpl.class);
+
+    private final SsstIndexConf conf;
     private final Directory directory;
     private final TypeDescriptor<K> keyTypeDescriptor;
     private final TypeDescriptor<V> valueTypeDescriptor;
     private final UniqueCache<K, V> cache;
+    private final SegmentCache<K> segmentCache;
 
     public SstIndexImpl(final Directory directory,
-            final ValueMerger<K, V> valueMerger,
             TypeDescriptor<K> keyTypeDescriptor,
-            TypeDescriptor<V> valueTypeDescriptor,
-            final long maxNumberOfKeysInCache,
-            final long maxNumeberOfKeysInSegmentCache,
-            final long maxNumeberOfKeysInSegment) {
+            TypeDescriptor<V> valueTypeDescriptor, final SsstIndexConf conf) {
         this.directory = Objects.requireNonNull(directory);
         this.keyTypeDescriptor = Objects.requireNonNull(keyTypeDescriptor);
         this.valueTypeDescriptor = Objects.requireNonNull(valueTypeDescriptor);
-        this.maxNumberOfKeysInCache = Objects
-                .requireNonNull(maxNumberOfKeysInCache);
-        this.maxNumeberOfKeysInSegmentCache = Objects
-                .requireNonNull(maxNumeberOfKeysInSegmentCache);
-        this.maxNumeberOfKeysInSegment = Objects
-                .requireNonNull(maxNumeberOfKeysInSegment);
-
+        this.conf = Objects.requireNonNull(conf);
         this.cache = new UniqueCache<K, V>(
                 this.keyTypeDescriptor.getComparator());
+        this.segmentCache = new SegmentCache<>(directory, keyTypeDescriptor);
     }
 
     @Override
@@ -50,9 +49,79 @@ public class SstIndexImpl<K, V> implements Index<K, V>, CloseableResource {
                     "Can't insert thombstone value '%s' into index", value));
         }
 
+        // TODO add key value pair into WAL
+
         cache.put(Pair.of(key, value));
 
-        // TODO add key value pair into WAL
+        if (cache.size() > conf.getMaxNumberOfKeysInCache()) {
+            compact();
+        }
+    }
+
+    private void compact() {
+        logger.debug(
+                "Cache compacting of '{}' key value pairs in cache started.",
+                cache.size());
+        final CompactSupport<K, V> support = new CompactSupport<>(this,
+                segmentCache);
+        cache.getStream()
+                .sorted(new PairComparator<>(keyTypeDescriptor.getComparator()))
+                .forEach(support::compact);
+        support.compactRest();
+        cache.clear();
+        segmentCache.flush();
+        logger.debug(
+                "Cache compacting is done. Cache contains '{}' key value pairs.",
+                cache.size());
+    }
+
+    Segment<K, V> getSegment(final SegmentId segmentId) {
+        final Segment<K, V> out = Segment.<K, V>builder()
+                .withDirectory(directory).withId(segmentId)
+                .withKeyTypeDescriptor(keyTypeDescriptor)
+                .withMaxNumberOfKeysInSegmentCache(
+                        conf.getMaxNumberOfKeysInSegmentCache())
+                .withMaxNumeberOfKeysInIndexPage(
+                        conf.getMaxNumberOfKeysInSegmentIndexPage())
+                .withValueTypeDescriptor(valueTypeDescriptor).build();
+        return out;
+    }
+
+    public void forceCompactSegments() {
+        /*
+         * Defensive copy have to be done, because further splitting will affect
+         * list size. In the future it will be slow.
+         */
+        final List<SegmentId> eligibleSegmentIds = segmentCache
+                .getSegmentsAsStream().map(Pair::getValue)
+                .collect(Collectors.toList());
+        eligibleSegmentIds.forEach(segmentId -> {
+            final Segment<K, V> segment = getSegment(segmentId);
+            segment.forceCompact();
+        });
+    }
+
+    /**
+     * If number of keys reach threshold split segment into two.
+     * 
+     * @param sdf       required simple data file
+     * @param segmentId required segment id
+     * @return
+     */
+    private boolean optionallySplit(final Segment<K, V> sdf,
+            final SegmentId segmentId) {
+        if (sdf.getStats().getNumberOfKeys() > conf
+                .getMaxNumberOfKeysInSegment()) {
+            logger.debug("Splitting of '{}' started.", segmentId);
+            final SegmentId newSegmentId = segmentCache.findNewSegmentId();
+            //FIXME add SimpleDataFile.split to segment 
+//            final K newPageKey = sdf.split(newSegmentId.getName());
+//            segmentCache.insertSegment(newPageKey, newSegmentId);
+            logger.debug("Splitting of segment '{}' to '{}' is done.",
+                    segmentId, newSegmentId);
+            return true;
+        }
+        return false;
     }
 
     @Override

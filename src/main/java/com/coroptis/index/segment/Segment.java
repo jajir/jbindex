@@ -174,7 +174,7 @@ public class Segment<K, V> implements CloseableResource {
                         valueTypeDescriptor), false);
     }
 
-    void forceCompact() {
+    public void forceCompact() {
         final ScarceIndex<K> scarceTmp = ScarceIndex.<K>builder()
                 .withDirectory(directory).withFileName(getTempScarceFileName())
                 .withKeyTypeDescriptor(keyTypeDescriptor).build();
