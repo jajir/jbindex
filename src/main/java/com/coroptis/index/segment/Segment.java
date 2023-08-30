@@ -8,11 +8,14 @@ import java.util.stream.StreamSupport;
 
 import com.coroptis.index.CloseableResource;
 import com.coroptis.index.Pair;
+import com.coroptis.index.PairIterator;
 import com.coroptis.index.cache.UniqueCache;
 import com.coroptis.index.datatype.TypeDescriptor;
 import com.coroptis.index.directory.Directory;
 import com.coroptis.index.scarceindex.ScarceIndex;
 import com.coroptis.index.scarceindex.ScarceIndexWriter;
+import com.coroptis.index.simpledatafile.PairWriterCountPair;
+import com.coroptis.index.simpledatafile.SimpleDataFile;
 import com.coroptis.index.sstfile.SstFile;
 import com.coroptis.index.sstfile.SstFileWriter;
 
@@ -232,6 +235,42 @@ public class Segment<K, V> implements CloseableResource {
                     .map(pair -> pair.getValue()).orElseGet(() -> null);
         }
         return out;
+    }
+
+    public Segment<K, V> split(final SegmentId segmentId) {
+        Objects.requireNonNull(segmentId);
+        long cx = 0;
+        long half = getStats().getNumberOfKeys() / 2;
+//        K maxLowerIndexKey = null;
+//        final Iterable<Pair<K, V>> iterable = getStream()::iterator;
+//        for (final Pair<K, V> pair : iterable) { 
+//            
+//        }
+//        try (final PairIterator<K, V> iterator = new PairIterator<>(
+//                openReader())) {
+//            final SimpleDataFile<K, V> sdfLower = new SimpleDataFile<>(
+//                    directory, smallerDataFileName, keyTypeDescriptor,
+//                    valueTypeDescriptor, valueMerger);
+//            maxLowerIndexKey = sdfLower.writePairsFromIterator(iterator, half);
+//
+//            // read bigger half and store it to current simple data file.
+//            cx = 0;
+//            try (final SstFileWriter<K, V> writer = getTempFile()
+//                    .openWriter()) {
+//                while (iterator.hasNext()) {
+//                    writer.put(iterator.next());
+//                    cx++;
+//                }
+//            }
+//            directory.deleteFile(getCacheFileName());
+//            directory.deleteFile(getMainFileName());
+//            directory.renameFile(getMergedFileName(), getMainFileName());
+//            props.setLong(
+//                    PairWriterCountPair.NUMBER_OF_KEY_VALUE_PAIRS_IN_CACHE, 0);
+//            props.setLong(NUMBER_OF_KEY_VALUE_PAIRS_IN_MAIN_FILE, cx);
+//            props.writeData();
+//        }
+        return null;
     }
 
     @Override
