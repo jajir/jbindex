@@ -57,7 +57,7 @@ public class SegmentBuilder<K, V> {
         return this;
     }
 
-    public SegmentBuilder<K, V> withMaxNumeberOfKeysInIndexPage(
+    public SegmentBuilder<K, V> withMaxNumberOfKeysInIndexPage(
             final int maxNumberOfKeysInIndexPage) {
         this.maxNumberOfKeysInIndexPage = Objects
                 .requireNonNull(maxNumberOfKeysInIndexPage);

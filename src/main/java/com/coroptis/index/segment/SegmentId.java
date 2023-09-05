@@ -63,7 +63,5 @@ public class SegmentId {
         SegmentId other = (SegmentId) obj;
         return id == other.id;
     }
-    
-    
 
 }

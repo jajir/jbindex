@@ -27,7 +27,7 @@ import com.coroptis.index.sstfile.SstFileWriter;
  * it should be called {@link #insertKeyToSegment(Object)}. This method update
  * higher key value when it's necessary.
  *
- * TODO note that this is similar to scarce index, but still different.
+ * Note that this is similar to scarce index, but still different.
  * 
  * @author honza
  *

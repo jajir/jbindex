@@ -27,7 +27,7 @@ public class UniqueCache<K, V> {
     }
 
     /**
-     * When there is old value than old value si rewritten.
+     * When there is old value than old value is rewritten.
      */
     public void put(final Pair<K, V> pair) {
         map.merge(pair.getKey(), pair.getValue(), (oldVal, newVal) -> newVal);

@@ -106,6 +106,13 @@ public class ScarceIndexCache<K> {
         return list.size();
     }
 
+    public K getMaxKey() {
+        if (list.isEmpty()) {
+            return null;
+        }
+        return list.lastKey();
+    }
+
     public void clear() {
         list.clear();
     }

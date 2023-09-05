@@ -2,7 +2,6 @@ package com.coroptis.index.sst;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,6 +26,10 @@ public class SstIndexImpl<K, V> implements Index<K, V>, CloseableResource {
     private final UniqueCache<K, V> cache;
     private final SegmentCache<K> segmentCache;
 
+    public static <M, N> SstIndexBuilder<M, N> builder() {
+        return new SstIndexBuilder<>();
+    }
+
     public SstIndexImpl(final Directory directory,
             TypeDescriptor<K> keyTypeDescriptor,
             TypeDescriptor<V> valueTypeDescriptor, final SsstIndexConf conf) {
@@ -37,6 +40,11 @@ public class SstIndexImpl<K, V> implements Index<K, V>, CloseableResource {
         this.cache = new UniqueCache<K, V>(
                 this.keyTypeDescriptor.getComparator());
         this.segmentCache = new SegmentCache<>(directory, keyTypeDescriptor);
+    }
+
+    public void put(final Pair<K, V> pair) {
+        Objects.requireNonNull(pair, "Pair cant be null");
+        put(pair.getKey(), pair.getValue());
     }
 
     @Override
@@ -68,6 +76,9 @@ public class SstIndexImpl<K, V> implements Index<K, V>, CloseableResource {
                 .sorted(new PairComparator<>(keyTypeDescriptor.getComparator()))
                 .forEach(support::compact);
         support.compactRest();
+        List<SegmentId> segmentIds = support.getEligibleSegmentIds();
+        segmentIds.stream().map(this::getSegment)
+                .forEach(this::optionallySplit);
         cache.clear();
         segmentCache.flush();
         logger.debug(
@@ -81,42 +92,30 @@ public class SstIndexImpl<K, V> implements Index<K, V>, CloseableResource {
                 .withKeyTypeDescriptor(keyTypeDescriptor)
                 .withMaxNumberOfKeysInSegmentCache(
                         conf.getMaxNumberOfKeysInSegmentCache())
-                .withMaxNumeberOfKeysInIndexPage(
+                .withMaxNumberOfKeysInIndexPage(
                         conf.getMaxNumberOfKeysInSegmentIndexPage())
                 .withValueTypeDescriptor(valueTypeDescriptor).build();
         return out;
     }
 
-    public void forceCompactSegments() {
-        /*
-         * Defensive copy have to be done, because further splitting will affect
-         * list size. In the future it will be slow.
-         */
-        final List<SegmentId> eligibleSegmentIds = segmentCache
-                .getSegmentsAsStream().map(Pair::getValue)
-                .collect(Collectors.toList());
-        eligibleSegmentIds.forEach(segmentId -> {
-            final Segment<K, V> segment = getSegment(segmentId);
-            segment.forceCompact();
-        });
+    public void forceCompact() {
+        compact();
     }
 
     /**
      * If number of keys reach threshold split segment into two.
      * 
-     * @param sdf       required simple data file
-     * @param segmentId required segment id
+     * @param segment required simple data file
      * @return
      */
-    private boolean optionallySplit(final Segment<K, V> sdf,
-            final SegmentId segmentId) {
-        if (sdf.getStats().getNumberOfKeys() > conf
+    private boolean optionallySplit(final Segment<K, V> segment) {
+        if (segment.getStats().getNumberOfKeys() > conf
                 .getMaxNumberOfKeysInSegment()) {
+            final SegmentId segmentId = segment.getId();
             logger.debug("Splitting of '{}' started.", segmentId);
             final SegmentId newSegmentId = segmentCache.findNewSegmentId();
-            //FIXME add SimpleDataFile.split to segment 
-//            final K newPageKey = sdf.split(newSegmentId.getName());
-//            segmentCache.insertSegment(newPageKey, newSegmentId);
+            final Segment<K, V> splitted = segment.split(newSegmentId);
+            segmentCache.insertSegment(splitted.getMaxKey(), newSegmentId);
             logger.debug("Splitting of segment '{}' to '{}' is done.",
                     segmentId, newSegmentId);
             return true;

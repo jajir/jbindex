@@ -8,14 +8,10 @@ import java.util.stream.StreamSupport;
 
 import com.coroptis.index.CloseableResource;
 import com.coroptis.index.Pair;
-import com.coroptis.index.PairIterator;
 import com.coroptis.index.cache.UniqueCache;
 import com.coroptis.index.datatype.TypeDescriptor;
 import com.coroptis.index.directory.Directory;
 import com.coroptis.index.scarceindex.ScarceIndex;
-import com.coroptis.index.scarceindex.ScarceIndexWriter;
-import com.coroptis.index.simpledatafile.PairWriterCountPair;
-import com.coroptis.index.simpledatafile.SimpleDataFile;
 import com.coroptis.index.sstfile.SstFile;
 import com.coroptis.index.sstfile.SstFileWriter;
 
@@ -34,7 +30,7 @@ public class Segment<K, V> implements CloseableResource {
     private final static String TEMP_FILE_NAME_EXTENSION = ".tmp";
     private final Directory directory;
     private final SegmentId id;
-    private final long maxNumeberOfKeysInSegmentCache;
+    private final long maxNumberOfKeysInSegmentCache;
     private final TypeDescriptor<K> keyTypeDescriptor;
     private final TypeDescriptor<V> valueTypeDescriptor;
     private final UniqueCache<K, V> cache;
@@ -53,7 +49,7 @@ public class Segment<K, V> implements CloseableResource {
             final int maxNumberOfKeysInIndexPage) {
         this.directory = Objects.requireNonNull(directory);
         this.id = Objects.requireNonNull(id);
-        this.maxNumeberOfKeysInSegmentCache = maxNumeberOfKeysInSegmentCache;
+        this.maxNumberOfKeysInSegmentCache = maxNumeberOfKeysInSegmentCache;
         this.keyTypeDescriptor = Objects.requireNonNull(keyTypeDescriptor);
         this.valueTypeDescriptor = Objects.requireNonNull(valueTypeDescriptor);
         this.cache = loadCache();
@@ -72,7 +68,11 @@ public class Segment<K, V> implements CloseableResource {
         return out;
     }
 
-    private int getMaxNumberOfKeysInIndexPage() {
+    public K getMaxKey() {
+        return scarceIndex.getMaxKey();
+    }
+
+    int getMaxNumberOfKeysInIndexPage() {
         return maxNumberOfKeysInIndexPage;
     }
 
@@ -120,7 +120,7 @@ public class Segment<K, V> implements CloseableResource {
                 keyTypeDescriptor.getConvertorToBytes());
     }
 
-    private SstFile<K, V> getTempIndexFile() {
+    SstFile<K, V> getTempIndexFile() {
         return new SstFile<>(directory, getTempIndexFileName(),
                 valueTypeDescriptor.getTypeWriter(),
                 valueTypeDescriptor.getTypeReader(),
@@ -138,7 +138,7 @@ public class Segment<K, V> implements CloseableResource {
      * directory.
      */
     public void flush() {
-        if (cache.size() > maxNumeberOfKeysInSegmentCache) {
+        if (cache.size() > maxNumberOfKeysInSegmentCache) {
             forceCompact();
         } else {
             flushCache();
@@ -165,7 +165,7 @@ public class Segment<K, V> implements CloseableResource {
     }
 
     void optionallyCompact() {
-        if (cache.size() > maxNumeberOfKeysInSegmentCache) {
+        if (cache.size() > maxNumberOfKeysInSegmentCache) {
             forceCompact();
         }
     }
@@ -177,42 +177,38 @@ public class Segment<K, V> implements CloseableResource {
                         valueTypeDescriptor), false);
     }
 
-    public void forceCompact() {
-        final ScarceIndex<K> scarceTmp = ScarceIndex.<K>builder()
-                .withDirectory(directory).withFileName(getTempScarceFileName())
+    ScarceIndex<K> getTempScarceIndex() {
+        return ScarceIndex.<K>builder().withDirectory(directory)
+                .withFileName(getTempScarceFileName())
                 .withKeyTypeDescriptor(keyTypeDescriptor).build();
-        final AtomicLong cx = new AtomicLong(0L);
-        try (final ScarceIndexWriter<K> scarceWriter = scarceTmp.openWriter()) {
-            try (final SstFileWriter<K, V> indexWriter = getTempIndexFile()
-                    .openWriter()) {
-                final Iterator<Pair<K, V>> iterator = getStream().iterator();
-                while (iterator.hasNext()) {
-                    final Pair<K, V> pair = iterator.next();
-                    final long i = cx.getAndIncrement();
-                    /*
-                     * Write to scarce index will be made when it's first, last
-                     * or page size count equal pair.
-                     */
-                    if (i % getMaxNumberOfKeysInIndexPage() == 0
-                            || !iterator.hasNext()) {
-                        final int position = indexWriter.put(pair, true);
-                        scarceWriter.put(Pair.of(pair.getKey(), position));
-                    } else {
-                        indexWriter.put(pair);
-                    }
-                }
-            }
+    }
+
+    public void forceCompact() {
+        try (final SegmentFullWriter<K, V> writer = openFullWriter()) {
+            getStream().forEach(writer::put);
         }
+    }
+
+    void finishFullWrite(final long numberOfKeysInMainIndex) {
         cache.clear();
         flushCache();
         directory.renameFile(getTempIndexFileName(), getIndexFileName());
         directory.renameFile(getTempScarceFileName(), getScarceFileName());
         scarceIndex.loadCache();
         segmentStatsManager.setNumberOfKeysInCache(0);
-        segmentStatsManager.setNumberOfKeysInIndex(cx.get());
+        segmentStatsManager.setNumberOfKeysInIndex(numberOfKeysInMainIndex);
         segmentStatsManager
                 .setNumberOfKeysInScarceIndex(scarceIndex.getKeyCount());
         segmentStatsManager.flush();
+    }
+
+    /**
+     * Method should be called just from inside of this package. Method open
+     * direct writer to scarce index and main sst file. It's useful for
+     * compacting.
+     */
+    SegmentFullWriter<K, V> openFullWriter() {
+        return new SegmentFullWriter<K, V>(this);
     }
 
     public SegmentWriter<K, V> openWriter() {
@@ -241,42 +237,44 @@ public class Segment<K, V> implements CloseableResource {
         Objects.requireNonNull(segmentId);
         long cx = 0;
         long half = getStats().getNumberOfKeys() / 2;
-//        K maxLowerIndexKey = null;
-//        final Iterable<Pair<K, V>> iterable = getStream()::iterator;
-//        for (final Pair<K, V> pair : iterable) { 
-//            
-//        }
-//        try (final PairIterator<K, V> iterator = new PairIterator<>(
-//                openReader())) {
-//            final SimpleDataFile<K, V> sdfLower = new SimpleDataFile<>(
-//                    directory, smallerDataFileName, keyTypeDescriptor,
-//                    valueTypeDescriptor, valueMerger);
-//            maxLowerIndexKey = sdfLower.writePairsFromIterator(iterator, half);
-//
-//            // read bigger half and store it to current simple data file.
-//            cx = 0;
-//            try (final SstFileWriter<K, V> writer = getTempFile()
-//                    .openWriter()) {
-//                while (iterator.hasNext()) {
-//                    writer.put(iterator.next());
-//                    cx++;
-//                }
-//            }
-//            directory.deleteFile(getCacheFileName());
-//            directory.deleteFile(getMainFileName());
-//            directory.renameFile(getMergedFileName(), getMainFileName());
-//            props.setLong(
-//                    PairWriterCountPair.NUMBER_OF_KEY_VALUE_PAIRS_IN_CACHE, 0);
-//            props.setLong(NUMBER_OF_KEY_VALUE_PAIRS_IN_MAIN_FILE, cx);
-//            props.writeData();
-//        }
-        return null;
+
+        final Segment<K, V> lowerSegment = Segment.<K, V>builder()
+                .withDirectory(directory).withId(segmentId)
+                .withKeyTypeDescriptor(this.keyTypeDescriptor)
+                .withValueTypeDescriptor(this.valueTypeDescriptor)
+                .withMaxNumberOfKeysInSegmentCache(
+                        maxNumberOfKeysInSegmentCache)
+                .withMaxNumberOfKeysInIndexPage(maxNumberOfKeysInIndexPage)
+                .build();
+        final Iterable<Pair<K, V>> iterable = getStream()::iterator;
+        final Iterator<Pair<K, V>> iterator = iterable.iterator();
+        try (final SegmentFullWriter<K, V> writer = lowerSegment
+                .openFullWriter()) {
+            while (cx < half && iterator.hasNext()) {
+                cx++;
+                final Pair<K, V> pair = iterator.next();
+                writer.put(pair);
+            }
+        }
+
+        try (final SegmentFullWriter<K, V> writer = openFullWriter()) {
+            while (iterator.hasNext()) {
+                final Pair<K, V> pair = iterator.next();
+                writer.put(pair);
+            }
+        }
+
+        return lowerSegment;
     }
 
     @Override
     public void close() {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'close'");
+    }
+
+    public SegmentId getId() {
+        return id;
     }
 
 }

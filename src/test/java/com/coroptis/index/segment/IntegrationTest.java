@@ -30,8 +30,6 @@ public class IntegrationTest {
     private final TypeDescriptorString tds = new TypeDescriptorString();
     private final TypeDescriptorInteger tdi = new TypeDescriptorInteger();
 
-    // TODO overit pocet souboru v directory, po testu
-
     @ParameterizedTest
     @MethodSource("segmentProvider")
     void test_empty_segment_stats(final TypeDescriptorInteger tdi,
@@ -86,6 +84,46 @@ public class IntegrationTest {
         assertEquals("d", seg.get(5));
 
         assertEquals(4, numberOfFilesInDirectoryP(directory));
+    }
+
+    @ParameterizedTest
+    @MethodSource("segmentProvider")
+    void test_split(final TypeDescriptorInteger tdi,
+            final TypeDescriptorString tds, final Directory directory,
+            final Segment<Integer, String> seg,
+            final int expectedNumberKeysInScarceIndex) throws Exception {
+
+        try (final SegmentWriter<Integer, String> writer = seg.openWriter()) {
+            writer.put(Pair.of(2, "a"));
+            writer.put(Pair.of(3, "b"));
+            writer.put(Pair.of(4, "c"));
+            writer.put(Pair.of(5, "d"));
+        }
+
+        final SegmentId segId = SegmentId.of(3);
+        final Segment<Integer, String> smaller = seg.split(segId);
+
+        final List<Pair<Integer, String>> list1 = toList(seg.getStream());
+        assertEquals(Pair.of(4, "c"), list1.get(0));
+        assertEquals(Pair.of(5, "d"), list1.get(1));
+        assertEquals(2, list1.size());
+
+        final List<Pair<Integer, String>> list2 = toList(smaller.getStream());
+        assertEquals(Pair.of(2, "a"), list2.get(0));
+        assertEquals(Pair.of(3, "b"), list2.get(1));
+        assertEquals(2, list2.size());
+
+        assertNull(seg.get(2));
+        assertNull(seg.get(3));
+        assertEquals("c", seg.get(4));
+        assertEquals("d", seg.get(5));
+
+        assertNull(smaller.get(4));
+        assertNull(smaller.get(5));
+        assertEquals("a", smaller.get(2));
+        assertEquals("b", smaller.get(3));
+
+        assertEquals(8, numberOfFilesInDirectoryP(directory));
     }
 
     @Test
@@ -221,7 +259,7 @@ public class IntegrationTest {
                                 .withKeyTypeDescriptor(tdi)
                                 .withValueTypeDescriptor(tds)
                                 .withMaxNumberOfKeysInSegmentCache(1)
-                                .withMaxNumeberOfKeysInIndexPage(1).build(),
+                                .withMaxNumberOfKeysInIndexPage(1).build(),
                         4),
                 arguments(tdi, tds, directory,
                         Segment.<Integer, String>builder()
@@ -229,7 +267,7 @@ public class IntegrationTest {
                                 .withKeyTypeDescriptor(tdi)
                                 .withValueTypeDescriptor(tds)
                                 .withMaxNumberOfKeysInSegmentCache(2)
-                                .withMaxNumeberOfKeysInIndexPage(2).build(),
+                                .withMaxNumberOfKeysInIndexPage(2).build(),
                         3));
     }
 

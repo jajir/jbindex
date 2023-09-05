@@ -43,6 +43,30 @@ public class SstIndexBuilder<K, V> {
         return this;
     }
 
+    public SstIndexBuilder<K, V> withMaxNumberOfKeysInSegmentCache(
+            long maxNumberOfKeysInSegmentCache) {
+        this.maxNumberOfKeysInSegmentCache = maxNumberOfKeysInSegmentCache;
+        return this;
+    }
+
+    public SstIndexBuilder<K, V> withMaxNumberOfKeysInSegmentIndexPage(
+            int maxNumberOfKeysInSegmentIndexPage) {
+        this.maxNumberOfKeysInSegmentIndexPage = maxNumberOfKeysInSegmentIndexPage;
+        return this;
+    }
+
+    public SstIndexBuilder<K, V> withMaxNumberOfKeysInCache(
+            int maxNumberOfKeysInCache) {
+        this.maxNumberOfKeysInCache = maxNumberOfKeysInCache;
+        return this;
+    }
+
+    public SstIndexBuilder<K, V> withMaxNumberOfKeysInSegment(
+            int maxNumberOfKeysInSegment) {
+        this.maxNumberOfKeysInSegment = maxNumberOfKeysInSegment;
+        return this;
+    }
+
     public SstIndexImpl<K, V> build() {
         final SsstIndexConf conf = new SsstIndexConf(
                 maxNumberOfKeysInSegmentCache,
