@@ -2,6 +2,8 @@ package com.coroptis.index.sst;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,6 +66,15 @@ public class SstIndexImpl<K, V> implements Index<K, V>, CloseableResource {
         if (cache.size() > conf.getMaxNumberOfKeysInCache()) {
             compact();
         }
+    }
+
+    public List<SegmentId> getSegmentIds() {
+        return segmentCache.getSegmentsAsStream().map(pair -> pair.getValue())
+                .collect(Collectors.toUnmodifiableList());
+    }
+
+    public Stream<Pair<K, V>> getSegmentStream(final SegmentId segmentId) {
+        return getSegment(segmentId).getStream();
     }
 
     private void compact() {
@@ -129,7 +140,9 @@ public class SstIndexImpl<K, V> implements Index<K, V>, CloseableResource {
 
         V out = cache.get(key);
         if (out == null) {
-            // TODO record is not in memory try to look at disk
+            final SegmentId id = segmentCache.findSegmentId(key);
+            final Segment<K, V> seg = getSegment(id);
+            return seg.get(key);
         }
 
         return out;
@@ -144,8 +157,7 @@ public class SstIndexImpl<K, V> implements Index<K, V>, CloseableResource {
 
     @Override
     public void close() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'close'");
+        compact();
     }
 
 }
