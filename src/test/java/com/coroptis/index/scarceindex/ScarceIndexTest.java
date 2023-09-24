@@ -27,6 +27,7 @@ public class ScarceIndexTest {
         assertNull(index.get("aaa"));
         assertNull(index.get("ccc"));
 
+        assertEquals("bbb", index.getMinKey());
         assertEquals("bbb", index.getMaxKey());
     }
 
@@ -38,6 +39,7 @@ public class ScarceIndexTest {
         assertNull(index.get("bbb"));
         assertNull(index.get("ccc"));
 
+        assertNull(index.getMinKey());
         assertNull(index.getMaxKey());
     }
 
@@ -54,6 +56,7 @@ public class ScarceIndexTest {
         assertEquals(2, index.get("cee"));
         assertEquals(5, index.get("fff"));
         assertNull(index.get("ggg"));
+        assertEquals("bbb", index.getMinKey());
         assertEquals("fff", index.getMaxKey());
     }
 

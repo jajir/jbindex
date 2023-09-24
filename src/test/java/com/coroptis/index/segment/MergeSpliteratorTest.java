@@ -15,6 +15,7 @@ import org.mockito.MockitoAnnotations;
 
 import com.coroptis.index.Pair;
 import com.coroptis.index.PairIterator;
+import com.coroptis.index.PairIteratorReader;
 import com.coroptis.index.PairReader;
 import com.coroptis.index.datatype.TypeDescriptorInteger;
 
@@ -119,9 +120,9 @@ public class MergeSpliteratorTest {
     }
 
     private Stream<Pair<Integer, Integer>> makeStream() {
-        PairIterator<Integer, Integer> sstIterator = new PairIterator<>(
+        PairIterator<Integer, Integer> sstIterator = new PairIteratorReader<>(
                 sstReader);
-        PairIterator<Integer, Integer> cacheIterator = new PairIterator<>(
+        PairIterator<Integer, Integer> cacheIterator = new PairIteratorReader<>(
                 cacheReader);
 
         final MergeSpliterator<Integer, Integer> spliterator = new MergeSpliterator<>(

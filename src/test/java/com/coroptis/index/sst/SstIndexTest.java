@@ -85,6 +85,45 @@ public class SstIndexTest {
 
     }
 
+    @Test
+    void test_merging_values_from_cache_and_segment() throws Exception {
+        final SstIndexImpl<Integer, String> index1 = makeSstIndex();
+        final List<Pair<Integer, String>> data = List.of(Pair.of(1, "bbb"),
+                Pair.of(2, "ccc"), Pair.of(3, "dde"), Pair.of(4, "ddf"),
+                Pair.of(5, "ddg"), Pair.of(6, "ddh"), Pair.of(7, "ddi"),
+                Pair.of(8, "ddj"), Pair.of(9, "ddk"), Pair.of(10, "ddl"),
+                Pair.of(11, "ddm"));
+        data.stream().forEach(index1::put);
+
+        final List<Pair<Integer, String>> list = index1.getStream()
+                .collect(Collectors.toList());
+        assertEquals(data.size(), list.size());
+    }
+
+    /**
+     * Verify that stream could be read repeatedly without concurrent
+     * modification problem.
+     * 
+     * @throws Exception
+     */
+    @Test
+    void test_repeated_read() throws Exception {
+        final SstIndexImpl<Integer, String> index1 = makeSstIndex();
+        final List<Pair<Integer, String>> data = List.of(Pair.of(1, "bbb"),
+                Pair.of(2, "ccc"), Pair.of(3, "dde"), Pair.of(4, "ddf"),
+                Pair.of(5, "ddg"), Pair.of(6, "ddh"), Pair.of(7, "ddi"),
+                Pair.of(8, "ddj"), Pair.of(9, "ddk"), Pair.of(10, "ddl"),
+                Pair.of(11, "ddm"));
+        data.stream().forEach(index1::put);
+
+        final List<Pair<Integer, String>> list1 = index1.getStream()
+                .collect(Collectors.toList());
+        final List<Pair<Integer, String>> list2 = index1.getStream()
+                .collect(Collectors.toList());
+        assertEquals(data.size(), list1.size());
+        assertEquals(data.size(), list2.size());
+    }
+
     private SstIndexImpl<Integer, String> makeSstIndex() {
         return SstIndexImpl.<Integer, String>builder().withDirectory(directory)
                 .withKeyTypeDescriptor(tdi).withValueTypeDescriptor(tds)

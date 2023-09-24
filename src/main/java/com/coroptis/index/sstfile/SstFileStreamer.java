@@ -22,7 +22,7 @@ public class SstFileStreamer<K, V> implements CloseableResource {
 
     public Stream<Pair<K, V>> stream() {
         return StreamSupport.stream(
-                new SstFileSpliterator<>(pairReader, pairComparator), false);
+                new PairReaderSpliterator<>(pairReader, pairComparator), false);
     }
 
     public Stream<Pair<K, V>> stream(final long estimateSize) {

@@ -4,15 +4,18 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.coroptis.index.CloseableResource;
 import com.coroptis.index.Pair;
+import com.coroptis.index.PairIterator;
 import com.coroptis.index.cache.UniqueCache;
 import com.coroptis.index.datatype.TypeDescriptor;
 import com.coroptis.index.directory.Directory;
+import com.coroptis.index.segment.MergeIterator;
 import com.coroptis.index.segment.Segment;
 import com.coroptis.index.segment.SegmentId;
 import com.coroptis.index.sstfile.PairComparator;
@@ -73,8 +76,47 @@ public class SstIndexImpl<K, V> implements Index<K, V>, CloseableResource {
                 .collect(Collectors.toUnmodifiableList());
     }
 
+    /**
+     * This is correct way to obtain data from segment.
+     * 
+     * @param segmentId required segment id
+     * @return
+     */
     public Stream<Pair<K, V>> getSegmentStream(final SegmentId segmentId) {
-        return getSegment(segmentId).getStream();
+        Objects.requireNonNull(segmentId, "SegmentId can't be null.");
+        final Segment<K, V> seg = getSegment(segmentId);
+        final PairIterator<K, V> limitedSegment = new LimitedPairIterator<>(
+                cache.getSortedIterator(), keyTypeDescriptor.getComparator(),
+                seg.getMinKey(), seg.getMaxKey());
+        final PairIterator<K, V> out = new MergeIterator<K, V>(
+                seg.openIterator(), limitedSegment, keyTypeDescriptor,
+                valueTypeDescriptor);
+        return StreamSupport.stream(
+                new PairIteratorToSpliterator<K, V>(out, keyTypeDescriptor),
+                false);
+    }
+
+    /**
+     * return segment iterator. It doesn't count with mein cache.
+     * 
+     * @param segmentId required segment id
+     * @return
+     */
+    PairIterator<K, V> openSegmentIterator(final SegmentId segmentId) {
+        Objects.requireNonNull(segmentId, "SegmentId can't be null.");
+        final Segment<K, V> seg = getSegment(segmentId);
+        return seg.openIterator();
+    }
+
+    public PairIterator<K, V> openIterator() {
+        final PairIterator<K, V> segments = new SegmentsIterator<>(this);
+        return new MergeIterator<K, V>(segments, cache.getSortedIterator(),
+                keyTypeDescriptor, valueTypeDescriptor);
+    }
+
+    public Stream<Pair<K, V>> getStream() {
+        return StreamSupport.stream(new PairIteratorToSpliterator<K, V>(
+                openIterator(), keyTypeDescriptor), false);
     }
 
     private void compact() {
@@ -98,6 +140,7 @@ public class SstIndexImpl<K, V> implements Index<K, V>, CloseableResource {
     }
 
     Segment<K, V> getSegment(final SegmentId segmentId) {
+        Objects.requireNonNull(segmentId, "Segment id is required");
         final Segment<K, V> out = Segment.<K, V>builder()
                 .withDirectory(directory).withId(segmentId)
                 .withKeyTypeDescriptor(keyTypeDescriptor)
@@ -120,6 +163,7 @@ public class SstIndexImpl<K, V> implements Index<K, V>, CloseableResource {
      * @return
      */
     private boolean optionallySplit(final Segment<K, V> segment) {
+        Objects.requireNonNull(segment, "Segment is required");
         if (segment.getStats().getNumberOfKeys() > conf
                 .getMaxNumberOfKeysInSegment()) {
             final SegmentId segmentId = segment.getId();
@@ -141,6 +185,9 @@ public class SstIndexImpl<K, V> implements Index<K, V>, CloseableResource {
         V out = cache.get(key);
         if (out == null) {
             final SegmentId id = segmentCache.findSegmentId(key);
+            if (id == null) {
+                return null;
+            }
             final Segment<K, V> seg = getSegment(id);
             return seg.get(key);
         }

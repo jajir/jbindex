@@ -86,6 +86,10 @@ public class ScarceIndex<K> {
         return cache.getMaxKey();
     }
 
+    public K getMinKey() {
+        return cache.getMinKey();
+    }
+
     public int getKeyCount() {
         return cache.getKeyCount();
     }

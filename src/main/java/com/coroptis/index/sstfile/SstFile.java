@@ -4,6 +4,7 @@ import java.util.Comparator;
 import java.util.Objects;
 
 import com.coroptis.index.PairIterator;
+import com.coroptis.index.PairIteratorReader;
 import com.coroptis.index.PairReader;
 import com.coroptis.index.PairReaderEmpty;
 import com.coroptis.index.datatype.ConvertorFromBytes;
@@ -77,7 +78,8 @@ public class SstFile<K, V> {
 
     @SuppressWarnings("resource")
     public PairIterator<K, V> openIterator() {
-        final PairIterator<K, V> iterator = new PairIterator<>(openReader());
+        final PairIterator<K, V> iterator = new PairIteratorReader<>(
+                openReader());
         return iterator;
     }
 

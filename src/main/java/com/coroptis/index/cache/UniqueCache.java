@@ -9,6 +9,7 @@ import java.util.stream.Stream;
 
 import com.coroptis.index.Pair;
 import com.coroptis.index.PairIterator;
+import com.coroptis.index.PairIteratorReader;
 import com.coroptis.index.PairReader;
 import com.coroptis.index.sstfile.PairComparator;
 
@@ -78,9 +79,13 @@ public class UniqueCache<K, V> {
     }
 
     public PairIterator<K, V> getSortedIterator() {
-        final PairIterator<K, V> iterator = new PairIterator<>(openReader());
+        final PairIterator<K, V> iterator = new PairIteratorReader<>(
+                openSortedClonedReader());
         return iterator;
     }
+
+    // TODO openSortedClonedReader or getStream are not consistent. Sort al
+    // methods
 
     /**
      * It's unsorted.

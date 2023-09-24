@@ -8,6 +8,7 @@ import java.util.stream.StreamSupport;
 
 import com.coroptis.index.CloseableResource;
 import com.coroptis.index.Pair;
+import com.coroptis.index.PairIterator;
 import com.coroptis.index.cache.UniqueCache;
 import com.coroptis.index.datatype.TypeDescriptor;
 import com.coroptis.index.directory.Directory;
@@ -70,6 +71,10 @@ public class Segment<K, V> implements CloseableResource {
 
     public K getMaxKey() {
         return scarceIndex.getMaxKey();
+    }
+
+    public K getMinKey() {
+        return scarceIndex.getMinKey();
     }
 
     int getMaxNumberOfKeysInIndexPage() {
@@ -175,6 +180,12 @@ public class Segment<K, V> implements CloseableResource {
                 .stream(new MergeSpliterator<>(getIndexSstFile().openIterator(),
                         getCache().getSortedIterator(), keyTypeDescriptor,
                         valueTypeDescriptor), false);
+    }
+
+    public PairIterator<K, V> openIterator() {
+        return new MergeIterator<K, V>(getIndexSstFile().openIterator(),
+                getCache().getSortedIterator(), keyTypeDescriptor,
+                valueTypeDescriptor);
     }
 
     ScarceIndex<K> getTempScarceIndex() {
