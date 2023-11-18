@@ -14,6 +14,7 @@ import com.coroptis.index.datatype.TypeDescriptor;
 import com.coroptis.index.directory.Directory;
 import com.coroptis.index.scarceindex.ScarceIndex;
 import com.coroptis.index.sstfile.SstFile;
+import com.coroptis.index.sstfile.SstFileStreamer;
 import com.coroptis.index.sstfile.SstFileWriter;
 
 /**
@@ -62,10 +63,12 @@ public class Segment<K, V> implements CloseableResource {
     }
 
     private UniqueCache<K, V> loadCache() {
-        final SstFile<K, V> sstFile = getCacheSstFile();
         final UniqueCache<K, V> out = new UniqueCache<>(
                 keyTypeDescriptor.getComparator());
-        sstFile.openStreamer().stream().forEach(pair -> out.put(pair));
+        try (final SstFileStreamer<K, V> fileStreamer = getCacheSstFile()
+                .openStreamer()) {
+            fileStreamer.stream().forEach(pair -> out.put(pair));
+        }
         return out;
     }
 
@@ -236,10 +239,13 @@ public class Segment<K, V> implements CloseableResource {
             if (position == null) {
                 return null;
             }
-            return getIndexSstFile().openStreamerFromPosition(position).stream()
-                    .limit(getMaxNumberOfKeysInIndexPage())
-                    .filter(pair -> pair.getKey().equals(key)).findAny()
-                    .map(pair -> pair.getValue()).orElseGet(() -> null);
+            try (final SstFileStreamer<K, V> fileStreamer = getIndexSstFile()
+                    .openStreamerFromPosition(position)) {
+                return fileStreamer.stream()
+                        .limit(getMaxNumberOfKeysInIndexPage())
+                        .filter(pair -> pair.getKey().equals(key)).findAny()
+                        .map(pair -> pair.getValue()).orElseGet(() -> null);
+            }
         }
         return out;
     }
