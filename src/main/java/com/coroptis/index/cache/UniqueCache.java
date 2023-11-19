@@ -15,7 +15,10 @@ import com.coroptis.index.sstfile.PairComparator;
 
 /**
  * Cache for index operation. When there are two operations with same key value
- * than jast lastest is stored. Because just last one is valid.
+ * than just latest is stored. Because just last one is valid.
+ * 
+ * This cache doesn't support eviction. When is full that all data are evicted
+ * at once.
  */
 public class UniqueCache<K, V> {
 

@@ -9,6 +9,7 @@ import java.util.stream.StreamSupport;
 import com.coroptis.index.CloseableResource;
 import com.coroptis.index.Pair;
 import com.coroptis.index.PairIterator;
+import com.coroptis.index.PairReader;
 import com.coroptis.index.cache.UniqueCache;
 import com.coroptis.index.datatype.TypeDescriptor;
 import com.coroptis.index.directory.Directory;
@@ -239,12 +240,23 @@ public class Segment<K, V> implements CloseableResource {
             if (position == null) {
                 return null;
             }
-            try (final SstFileStreamer<K, V> fileStreamer = getIndexSstFile()
-                    .openStreamerFromPosition(position)) {
-                return fileStreamer.stream()
-                        .limit(getMaxNumberOfKeysInIndexPage())
-                        .filter(pair -> pair.getKey().equals(key)).findAny()
-                        .map(pair -> pair.getValue()).orElseGet(() -> null);
+            try (final PairReader<K, V> fileReader = getIndexSstFile()
+                    .openReader(position)) {
+                for (int i = 0; i < getMaxNumberOfKeysInIndexPage(); i++) {
+                    final Pair<K, V> pair = fileReader.read();
+                    final int cmp = keyTypeDescriptor.getComparator()
+                            .compare(pair.getKey(), key);
+                    if (cmp == 0) {
+                        return pair.getValue();
+                    }
+                    /**
+                     * Keys are in ascending order. When searched key is smaller
+                     * than key read from sorted data than key is not found.
+                     */
+                    if (cmp > 0) {
+                        return null;
+                    }
+                }
             }
         }
         return out;

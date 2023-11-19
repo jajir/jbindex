@@ -30,6 +30,7 @@ public class SstIndexImpl<K, V> implements Index<K, V>, CloseableResource {
     private final TypeDescriptor<V> valueTypeDescriptor;
     private final UniqueCache<K, V> cache;
     private final SegmentCache<K> segmentCache;
+    private final SegmentManager<K, V> segmentManager;
 
     public static <M, N> SstIndexBuilder<M, N> builder() {
         return new SstIndexBuilder<>();
@@ -45,6 +46,8 @@ public class SstIndexImpl<K, V> implements Index<K, V>, CloseableResource {
         this.cache = new UniqueCache<K, V>(
                 this.keyTypeDescriptor.getComparator());
         this.segmentCache = new SegmentCache<>(directory, keyTypeDescriptor);
+        this.segmentManager = new SegmentManager<>(directory, keyTypeDescriptor,
+                valueTypeDescriptor, conf, 10);
     }
 
     public void put(final Pair<K, V> pair) {
@@ -140,16 +143,7 @@ public class SstIndexImpl<K, V> implements Index<K, V>, CloseableResource {
     }
 
     Segment<K, V> getSegment(final SegmentId segmentId) {
-        Objects.requireNonNull(segmentId, "Segment id is required");
-        final Segment<K, V> out = Segment.<K, V>builder()
-                .withDirectory(directory).withId(segmentId)
-                .withKeyTypeDescriptor(keyTypeDescriptor)
-                .withMaxNumberOfKeysInSegmentCache(
-                        conf.getMaxNumberOfKeysInSegmentCache())
-                .withMaxNumberOfKeysInIndexPage(
-                        conf.getMaxNumberOfKeysInSegmentIndexPage())
-                .withValueTypeDescriptor(valueTypeDescriptor).build();
-        return out;
+        return segmentManager.getSegment(segmentId);
     }
 
     public void forceCompact() {
