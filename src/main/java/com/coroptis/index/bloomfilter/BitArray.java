@@ -6,97 +6,34 @@ import java.io.IOException;
 import java.util.Arrays;
 
 public class BitArray {
-    private final long[] data;
-    private long bitCount;
+    
+    private final byte[] byteArray;
+    
+    public BitArray(int length) {
+        byteArray = new byte[length];
+    }
+    
+    public boolean setBit(int index) {
+        if (index < 0 || index >= byteArray.length * 8) {
+            throw new IndexOutOfBoundsException("Invalid index");
+        }
 
-    static int numWords(long numBits) {
-        if (numBits <= 0) {
-            throw new IllegalArgumentException(
-                    "numBits must be positive, but got " + numBits);
-        }
-        long numWords = (long) Math.ceil(numBits / 64.0);
-        if (numWords > Integer.MAX_VALUE) {
-            throw new IllegalArgumentException(
-                    "Can't allocate enough space for " + numBits + " bits");
-        }
-        return (int) numWords;
+        int byteIndex = index / 8;
+        int bitIndex = index % 8;
+
+        byte oldValue = byteArray[byteIndex];
+        byte newValue = (byte) (oldValue | (1 << bitIndex));
+        byteArray[byteIndex] = newValue;
+
+        return oldValue != newValue;
     }
 
-    BitArray(long numBits) {
-        this(new long[numWords(numBits)]);
+    public byte[] getByteArray() {
+        return byteArray;
     }
 
-    private BitArray(long[] data) {
-        this.data = data;
-        long bitCount = 0;
-        for (long word : data) {
-            bitCount += Long.bitCount(word);
-        }
-        this.bitCount = bitCount;
-    }
-
-    /** Returns true if the bit changed value. */
-    boolean set(long index) {
-        if (!get(index)) {
-            data[(int) (index >>> 6)] |= (1L << index);
-            bitCount++;
-            return true;
-        }
+    public boolean get(final int index) {
         return false;
-    }
-
-    boolean get(long index) {
-        return (data[(int) (index >>> 6)] & (1L << index)) != 0;
-    }
-
-    /** Number of bits */
-    long bitSize() {
-        return (long) data.length * Long.SIZE;
-    }
-
-    /** Number of set bits (1s) */
-    long cardinality() {
-        return bitCount;
-    }
-
-    /** Combines the two BitArrays using bitwise OR. */
-    void putAll(BitArray array) {
-        assert data.length == array.data.length
-                : "BitArrays must be of equal length when merging";
-        long bitCount = 0;
-        for (int i = 0; i < data.length; i++) {
-            data[i] |= array.data[i];
-            bitCount += Long.bitCount(data[i]);
-        }
-        this.bitCount = bitCount;
-    }
-
-    /** Combines the two BitArrays using bitwise AND. */
-    void and(BitArray array) {
-        assert data.length == array.data.length
-                : "BitArrays must be of equal length when merging";
-        long bitCount = 0;
-        for (int i = 0; i < data.length; i++) {
-            data[i] &= array.data[i];
-            bitCount += Long.bitCount(data[i]);
-        }
-        this.bitCount = bitCount;
-    }
-
-    void writeTo(DataOutputStream out) throws IOException {
-        out.writeInt(data.length);
-        for (long datum : data) {
-            out.writeLong(datum);
-        }
-    }
-
-    static BitArray readFrom(DataInputStream in) throws IOException {
-        int numWords = in.readInt();
-        long[] data = new long[numWords];
-        for (int i = 0; i < numWords; i++) {
-            data[i] = in.readLong();
-        }
-        return new BitArray(data);
     }
 
     @Override
