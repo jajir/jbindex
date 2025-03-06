@@ -6,31 +6,22 @@ import java.util.Objects;
 import com.coroptis.index.Pair;
 import com.coroptis.index.PairWriter;
 import com.coroptis.index.datatype.ConvertorToBytes;
-import com.coroptis.index.datatype.TypeWriter;
-import com.coroptis.index.directory.Directory;
-import com.coroptis.index.directory.FileWriter;
 
 public class SortedDataFileWriter<K, V> implements PairWriter<K, V> {
 
-    private final TypeWriter<V> valueWriter;
-
-    private final FileWriter writer;
+    private final SeekeableFileWriter writer;
 
     private final DiffKeyWriter<K> diffKeyWriter;
 
-    private long position;
+    private final ConvertorToBytes<V> valueConvertorToBytes;
 
-    public SortedDataFileWriter(final Directory directory, final String fileName,
+    public SortedDataFileWriter(final SeekeableFileWriter writer,
             final ConvertorToBytes<K> keyConvertorToBytes,
-            final Comparator<K> keyComparator, final TypeWriter<V> valueWriter,
-            final int diskIoBufferSize) {
-        Objects.requireNonNull(directory);
-        Objects.requireNonNull(fileName);
-        this.writer = directory.getFileWriter(fileName,
-                Directory.Access.OVERWRITE, diskIoBufferSize);
-        this.valueWriter = valueWriter;
+            final Comparator<K> keyComparator, final ConvertorToBytes<V> valueConvertorToBytes) {
+        Objects.requireNonNull(writer);
+        this.writer = writer;
+        this.valueConvertorToBytes = Objects.requireNonNull(valueConvertorToBytes);
         diffKeyWriter = new DiffKeyWriter<>(keyConvertorToBytes, keyComparator);
-        position = 0;
     }
 
     /**
@@ -42,15 +33,11 @@ public class SortedDataFileWriter<K, V> implements PairWriter<K, V> {
      * @return position of end of record.
      */
     public long put(final Pair<K, V> pair, final boolean fullWrite) {
-        final int diffKeyLength = diffKeyWriter.write(writer, pair.getKey(),
+        diffKeyWriter.write(writer, pair.getKey(),
                 fullWrite);
+        final long position = writer.flushAndWrite(valueConvertorToBytes.toBytes(pair.getValue()));
 
-        final int writenBytesInValue = valueWriter.write(writer,
-                pair.getValue());
-
-        long lastPosition = position;
-        position = position + diffKeyLength + writenBytesInValue;
-        return lastPosition;
+        return position;
     }
 
     @Override

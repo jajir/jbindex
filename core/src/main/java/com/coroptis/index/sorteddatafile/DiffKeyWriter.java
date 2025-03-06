@@ -11,7 +11,7 @@ import com.coroptis.index.datatype.ConvertorToBytes;
 import com.coroptis.index.datatype.TypeWriter;
 import com.coroptis.index.directory.FileWriter;
 
-public class DiffKeyWriter<K> implements TypeWriter<K> {
+public class DiffKeyWriter<K> {
 
     private final Logger logger = LoggerFactory.getLogger(DiffKeyWriter.class);
 
@@ -40,12 +40,11 @@ public class DiffKeyWriter<K> implements TypeWriter<K> {
                 this.keyComparator.getClass().getSimpleName());
     }
 
-    @Override
-    public int write(final FileWriter fileWriter, final K key) {
+    public int write(final SeekeableFileWriter fileWriter, final K key) {
         return write(fileWriter, key, false);
     }
 
-    public int write(final FileWriter fileWriter, final K key,
+    public int write(final SeekeableFileWriter fileWriter, final K key,
             final boolean fullWrite) {
         Objects.requireNonNull(key, "key can't be null");
         if (previousKey != null) {
@@ -85,7 +84,7 @@ public class DiffKeyWriter<K> implements TypeWriter<K> {
         }
     }
 
-    private int write(final FileWriter fileWriter, final int sharedByteLength,
+    private int write(final SeekeableFileWriter fileWriter, final int sharedByteLength,
             final byte[] diffBytes, final K key, final byte[] keyBytes) {
         fileWriter.write((byte) (sharedByteLength));
         fileWriter.write((byte) (diffBytes.length));
