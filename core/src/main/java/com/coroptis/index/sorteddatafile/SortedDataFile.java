@@ -64,7 +64,7 @@ public class SortedDataFile<K, V> {
                 keyTypeDescriptor.getConvertorFromBytes());
         final SortedDataFileReader<K, V> reader = new SortedDataFileReader<>(diffKeyReader,
                 valueTypeDescriptor.getTypeReader(),
-                directory.getFileReader(fileName, diskIoBufferSize));
+                directory.getFileReader(fileName, diskIoBufferSize),null);
         if (position > 0) {
             reader.skip(position);
         }
